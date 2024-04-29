@@ -1,0 +1,211 @@
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+}
+
+html {
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  font-size: 62.5%;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  font-weight: 1000;
+  font-size: 1.5rem;
+  color: #222f3e;
+}
+
+@keyframes SmoothColorChange {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 100% 100%; /* End with the gradient fully visible */
+  }
+}
+@keyframes FadeInOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+.main_container {
+  display: flex;
+  min-height: 100vh;
+}
+.main_container__nav {
+  flex: 0 1 auto;
+  background-color: #222f3e;
+  display: flex;
+  gap: 1.1rem;
+  flex-direction: column;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+}
+.main_container__nav__logo {
+  padding-right: 0.5rem;
+  max-width: 20rem;
+}
+.main_container__nav__parameters {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin-left: 0.9rem;
+}
+.main_container__nav__parameters__main_menu {
+  display: flex;
+  gap: 1.2rem;
+}
+.main_container__nav__parameters__main_menu :hover {
+  cursor: pointer;
+}
+.main_container__nav__parameters__main_menu > span {
+  align-self: center;
+}
+.main_container__nav__parameters__main_menu__svg {
+  align-self: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #97c0c0;
+}
+.main_container .menu_text {
+  color: white;
+  transition: color 0.2s ease-in-out;
+}
+.main_container .menu_text:hover {
+  color: #A3D8FF;
+}
+
+.main_container {
+  position: relative;
+  display: flex;
+  gap: 7vw;
+  background-color: #78C4ED;
+}
+
+form {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+caption {
+  font-size: 4rem !important;
+}
+
+.success-adding {
+  padding-left: 1rem;
+  align-self: end;
+  width: auto;
+  height: 5em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  border-radius: 10px;
+  opacity: 1;
+  gap: 1rem;
+  animation: FadeInOut 5s ease-in-out forwards;
+}
+.success-adding > svg {
+  fill: green;
+  width: 5em;
+}
+.success-adding__text {
+  font-size: 1.5rem;
+  color: #222f3e;
+}
+.success-adding__description > strong {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.table {
+  border-radius: 3rem;
+  width: 70%;
+  height: auto;
+  background-color: #FEFAF6;
+  margin: 2vw;
+  padding: 2vw;
+  box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.5);
+}
+.table > caption {
+  font-size: 2.5rem;
+  margin-bottom: 2vw;
+}
+.table__text {
+  text-transform: uppercase;
+  font-size: 1.9rem;
+}
+.table tr {
+  background-size: 200% 100%; /* Larger background size for animation */
+  transition: background-color 0.5s ease; /* Smooth transition for background color change */
+  width: 100%; /* Ensure the row uses full width if not set */
+}
+.table tr:hover {
+  animation: SmoothColorChange 0.5s forwards;
+}
+.table tr:nth-child(odd) {
+  background-color: white;
+}
+.table tr:nth-child(odd) {
+  background-image: linear-gradient(to right, white, #e6e6e6);
+}
+.table tr:nth-child(even):not(:last-child) {
+  background-image: linear-gradient(to right, #FEFAF6, #f9e1c8);
+}
+.table__input {
+  width: 100%;
+  transition: scale 0.2s ease-in-out;
+}
+.table__input::placeholder {
+  padding-left: 1vw;
+}
+.table__save {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+.table__save__button {
+  background-color: #FEFAF6;
+  cursor: pointer;
+  border-radius: 3rem;
+  border-color: white;
+  width: 10rem;
+  margin-top: 1vw;
+  font-size: 2.5rem;
+  transition: background-color 0.5s ease-in-out, transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+}
+.table__save__button:hover {
+  background-color: #f9e1c8;
+}
+.table__save__button:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+}
+
+.focused {
+  scale: 1.1;
+}
+
+td {
+  padding: 1vw;
+  display: table-cell;
+}
+
+.rounded {
+  height: 3.5rem;
+  border-radius: 0.35rem;
+}
+
+/*# sourceMappingURL=home.css.map */

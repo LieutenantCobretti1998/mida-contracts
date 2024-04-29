@@ -1,0 +1,53 @@
+.main_container {
+  display: flex;
+  min-height: 100vh;
+
+  &__nav {
+    flex: 0 1 auto;
+    background-color: $color-black;
+    display: flex;
+    gap: 1.1rem;
+    flex-direction: column;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5); // Adds subtle shadow for depth
+
+    &__logo {
+      padding-right: .5rem;
+      max-width: 20rem;
+    }
+
+    &__parameters {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+      margin-left: 0.9rem;
+      &__main_menu {
+        display: flex;
+        gap: 1.2rem;
+
+        & :hover {
+          cursor: pointer;
+        }
+
+        > span {
+          align-self: center;
+        }
+
+        &__svg {
+          align-self: center;
+          width: 1.5rem;
+          height: 1.5rem;
+          color: $color-alice-blue;
+        }
+      }
+    }
+  }
+
+  .menu_text {
+    color: $color-white;
+    transition: color .2s ease-in-out;
+
+    &:hover {
+      color: $color-light-blue;
+    }
+  }
+}

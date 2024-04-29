@@ -1,0 +1,20 @@
+@keyframes SmoothColorChange {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+        background-position: 100% 100%; /* End with the gradient fully visible */
+    }
+}
+
+
+@keyframes FadeInOut {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
