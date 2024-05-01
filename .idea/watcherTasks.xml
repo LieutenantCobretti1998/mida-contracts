@@ -2,14 +2,14 @@
 <project version="4">
   <component name="ProjectTasksOptions">
     <TaskOptions isEnabled="true">
-      <option name="arguments" value="$FileName$:$ProjectFileDir$/static/css/home.css" />
+      <option name="arguments" value="$ProjectFileDir$/static/scss/home.scss:$ProjectFileDir$/static/css/home.css" />
       <option name="checkSyntaxErrors" value="true" />
       <option name="description" />
       <option name="exitCodeBehavior" value="ERROR" />
       <option name="fileExtension" value="scss" />
       <option name="immediateSync" value="true" />
       <option name="name" value="HOME SCSS WATCHER" />
-      <option name="output" value="$ProjectFileDir$/static/css/$home$.css:$ProjectFileDir$/static/css/home.css.map" />
+      <option name="output" value="$ProjectFileDir$/static/css/home.css:$ProjectFileDir$/static/css/home.css.map" />
       <option name="outputFilters">
         <array />
       </option>
@@ -37,6 +37,26 @@
       <option name="program" value="sass" />
       <option name="runOnExternalChanges" value="true" />
       <option name="scopeName" value="BASE" />
+      <option name="trackOnlyRoot" value="true" />
+      <option name="workingDir" value="$FileDir$" />
+      <envs />
+    </TaskOptions>
+    <TaskOptions isEnabled="true">
+      <option name="arguments" value="$ProjectFileDir$/static/scss/check_contracts/check_contracts.scss:$ProjectFileDir$/static/css/all.css" />
+      <option name="checkSyntaxErrors" value="true" />
+      <option name="description" />
+      <option name="exitCodeBehavior" value="ERROR" />
+      <option name="fileExtension" value="scss" />
+      <option name="immediateSync" value="true" />
+      <option name="name" value="all_scss" />
+      <option name="output" value="$ProjectFileDir$/static/css/all.css:$ProjectFileDir$/static/css/all.css.map" />
+      <option name="outputFilters">
+        <array />
+      </option>
+      <option name="outputFromStdout" value="false" />
+      <option name="program" value="sass" />
+      <option name="runOnExternalChanges" value="true" />
+      <option name="scopeName" value="Project Files" />
       <option name="trackOnlyRoot" value="true" />
       <option name="workingDir" value="$FileDir$" />
       <envs />
