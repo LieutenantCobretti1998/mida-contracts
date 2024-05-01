@@ -46,11 +46,13 @@ caption {
 }
 
 .table {
+  transition: width 3s ease-in-out;
   border-radius: 3rem;
   width: 70%;
   height: auto;
   background-color: $color-table-background;
   margin: 2vw;
+  margin-left: 7vw;
   padding: 2vw;
   box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.5); // Adds subtle shadow for depth
 
@@ -63,8 +65,6 @@ caption {
     text-transform: uppercase;
     font-size: $font-size-medium;
   }
-
-
   tr {
     background-size: 200% 100%; /* Larger background size for animation */
     transition: background-color .5s ease; /* Smooth transition for background color change */
@@ -128,6 +128,10 @@ caption {
   scale: (1.1);
 }
 
+.shrink {
+    width: 60%;
+  }
+
 td {
   padding: $padding-small;
   display: table-cell;
@@ -137,4 +141,5 @@ td {
   height: 3.5rem;
   border-radius: .35rem;
 }
+
 

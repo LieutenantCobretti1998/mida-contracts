@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %} Check Contracts {% endblock title %}
+{% block style %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/all.css') }}">
+{% endblock style %}
+
+{% block content_part %}
+    <table class="table">
+        <caption>All Contracts</caption>
+        <thead>
+            <tr>
+                <th><strong>No</strong></th>
+                <th>COMPANY</th>
+                <th>Voen</th>
+                <th>Contract number</th>
+                <th>date</th>
+                <th>amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% set counter = namespace(value=0) %}
+            {% for company in companies %}
+
+                {% for contract in company.contracts %}
+                    {% set counter.value = counter.value + 1 %}
+                    <tr>
+                        <td>{{ counter.value}}</td>
+                        <td>{{ company.company_name }}</td>
+                        <td>{{ company.voen }}</td>
+                        <td>{{ contract.contract_number }}</td>
+                        <td>{{ contract.date }}</td>
+                        <td>{{ "%.2f"| format(contract.amount)  }}</td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+{#            {% endfor %}#}
+        </tbody>
+    </table>
+{% endblock content_part %}
