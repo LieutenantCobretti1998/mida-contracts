@@ -3,8 +3,8 @@ from sqlalchemy.exc import OperationalError, IntegrityError
 from forms.create_contract_form import CreateContractForm
 from database.models import *
 from database.db_init import db
-from forms.filters import (filter_string_fields, filter_voen, get_or_create_company, check_voen,
-                           filter_contract_number, check_voen_contract_company_exists)
+from database.validators import ContractManager
+from forms.filters import *
 
 create_contract_bp = Blueprint('create_contract', __name__)
 
@@ -13,37 +13,42 @@ create_contract_bp = Blueprint('create_contract', __name__)
 @create_contract_bp.route('/create_contract', methods=["GET", 'POST'])
 def create_contract():
     form = CreateContractForm()
-    return render_template("add_contract.html", form=form)
+    return render_template("add_contract.html",
+                           form=form,
+                           new_contract=False,
+                           all_contracts=True,
+                           dashboard=True)
 
 
 @create_contract_bp.route('/save_contract', methods=["POST"])
 def save_contract():
     form = CreateContractForm(request.form)
+    filtered_company_name = filter_string_fields(form.company.data)
+    filtered_voen = filter_voen(form.voen.data)
+    filtered_contract = filter_contract_number(form.contract_number.data)
+    contract_manager = ContractManager(db.session)
     if request.method == "POST" and form.validate_on_submit():
-        company_name = filter_string_fields(form.company.data)
-        company = get_or_create_company(company_name)
-        voen_id = check_voen(form.voen.data, company.id)
-
-        if isinstance(voen_id, dict) and voen_id["status"] is None:
-            flash(f"VOEN is already linked to "
-                  f"{db.session.query(Companies).filter_by(id=voen_id["company_id"]).one().company_name} "
-                  f"company", "warning")
-            return render_template('add_contract.html', form=form)
-
-        if check_voen_contract_company_exists(voen_id, form.contract_number.data, float(form.amount.data)):
-            flash("A contract with the same voen, contract_number and amount is already existed", "warning")
-            return render_template('add_contract.html', form=form)
         try:
-            contract = Contract(contract_number=filter_contract_number(form.contract_number.data), date=form.date.data,
-                                voen_id=voen_id if isinstance(voen_id, int) else voen_id.id, amount=float(form.amount.data))
+            company = contract_manager.get_or_create_company(filtered_company_name, filtered_voen)
+            contract = Contract(contract_number=filtered_contract,
+                                date=form.date.data,
+                                amount=float(form.amount.data),
+                                company_id=company.id
+                                )
             db.session.add(contract)
             db.session.commit()
             flash("The contract is saved successfully!", "success")
             return redirect(url_for("create_contract.create_contract"))
+
+        except ValueError as e:
+            flash(str(e), "warning")
+            return render_template('add_contract.html', form=form, new_contract=False, all_contracts=True,
+                                   dashboard=True)
         except OperationalError as e:
             flash("Something went wrong. transaction was restored", "error")
             db.session.rollback()
-            return render_template('add_contract.html', form=form)
+            return render_template('add_contract.html', form=form, new_contract=False, all_contracts=True, dashboard=True)
     else:
         flash("Something went wrong", "error")
-        return render_template('add_contract.html', form=form)
+        return render_template('add_contract.html', form=form, new_contract=False, all_contracts=True,
+                               dashboard=True)

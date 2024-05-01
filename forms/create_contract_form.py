@@ -11,9 +11,9 @@ class CreateContractForm(FlaskForm):
                                       Length(min=1, max=16, message=company_error_message),
                                       ])
     voen = StringField("voen", validators=[DataRequired(),
-                                           Length(min=1, max=12, message=voen_error_message),
+                                           Length(min=1, max=20, message=voen_error_message),
                                            check_only_numbers])
-    contract_number = StringField("contract_number",
+    contract_number = StringField("contract number",
                                   validators=[DataRequired(), Length(min=1, max=16, message=company_error_message)])
     date = DateField("date", validators=[DataRequired()])
     amount = DecimalField("amount", validators=[DataRequired(), NumberRange(min=1, max=1000000000)])
