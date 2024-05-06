@@ -6,7 +6,8 @@
 {% block style %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
 {% endblock style %}
-
+{% block class_create_contract %}active{% endblock class_create_contract %}
+{% block class_create_contract_li %}remove-pointer{% endblock class_create_contract_li %}
 {% block content_part %}
     <form action="{{ url_for('create_contract.save_contract') }}" method="post">
         {{ form.csrf_token() }}
