@@ -3,12 +3,13 @@
   min-height: 100vh;
 
   &__nav {
+    width: 12vw;
     flex: 0 1 auto;
     background-color: $color-black;
     display: flex;
-    gap: 1.1rem;
+    gap: 2rem;
     flex-direction: column;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5); // Adds subtle shadow for depth
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); // Adds subtle shadow for depth
 
     &__logo {
       padding-right: .5rem;
@@ -18,11 +19,19 @@
     &__parameters {
       display: flex;
       flex-direction: column;
-      gap: 0.9rem;
+      gap: 2rem;
       margin-left: 0.9rem;
       &__main_menu {
         display: flex;
+        flex-direction: column;
         gap: 1.2rem;
+        justify-content: center;
+
+        &__container {
+          display: flex;
+          gap: 2rem;
+          pointer-events: none;
+        }
 
         & :hover {
           cursor: pointer;
@@ -33,6 +42,7 @@
         }
 
         &__svg {
+          //pointer-events: none;
           align-self: center;
           width: 1.5rem;
           height: 1.5rem;
@@ -50,4 +60,88 @@
       color: $color-light-blue;
     }
   }
+}
+
+
+.toggle-menu-button {
+  border: none;
+  color: inherit;
+  background: none;
+  pointer-events: visible;
+
+  &__text {
+    color: $color-white;
+    font-size: $font-size-small;
+    transition: color .2s ease-in-out;
+
+    &:hover {
+      color: $color-light-blue;
+    }
+  }
+}
+
+.submenu-companies,
+.submenu-contracts{
+  &__sub-options {
+    text-align: center;
+    background-color: $color-submenu-background;
+    flex-direction: column;
+    gap: .8vh;
+    text-decoration: none;
+    font-size: .9em;
+    color: $color-white;
+    list-style: none;
+    overflow: hidden;
+    transition: all .2s ease-in-out;
+    &:hover {
+      color: $color-light-blue;
+    }
+  }
+}
+
+.hidden {
+  display: none;
+  opacity: 0;
+  height: 0;
+  transition: height .8s ease, opacity .8s ease;
+}
+
+.collapsing {
+  display: flex;
+  opacity: 0;
+  transition: height .8s ease, opacity .8s ease;
+}
+
+.show {
+  height: auto;
+  display: flex;
+  opacity: 1;
+  transition: height .8s ease, opacity .8s ease;
+}
+
+.active {
+  color: $color-submenu-active;
+  text-decoration: #A3D8FF;
+  pointer-events: none !important;
+  cursor: default !important;
+}
+
+.home:active,
+.home:link,
+.home:visited{
+  cursor: pointer;
+  pointer-events: visible;
+  font-weight: normal;
+  color: $color-white;
+  text-decoration: none;
+
+  transition: color .2s ease-in-out;
+
+  &:hover {
+    color: $color-light-blue;
+  }
+}
+
+.remove-pointer {
+  cursor: default !important;
 }
