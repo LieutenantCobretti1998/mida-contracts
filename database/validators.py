@@ -38,3 +38,17 @@ class ContractManager:
     def one_voen_one_company(self, voen: str) -> bool:
         if not voen:
             return False
+
+
+class SearchEngine:
+    def __init__(self, search: str, db_session: Session):
+        self.search = search
+        self.db_session = db_session
+
+    def search_query(self):
+        print("none")
+
+    def search_voen(self) -> Companies:
+        searched_voen = (self.db_session.query(Companies).join(Contract, Companies.id == Contract.company_id)
+                         .filter(Companies.voen == self.search))
+        return searched_voen
