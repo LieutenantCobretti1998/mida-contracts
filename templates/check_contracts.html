@@ -3,10 +3,22 @@
 {% block style %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/all.css') }}">
 {% endblock style %}
-
+{% block class_all_contracts %}active{% endblock class_all_contracts %}
+{% block class_check_contract_li %}remove-pointer{% endblock class_check_contract_li %}
 {% block content_part %}
     <table class="table">
-        <caption>All Contracts</caption>
+
+        <caption>
+            <div class="table__header">
+                <div class="table__header__search">
+                    <form action="{{ url_for('all_contracts.get_all_contracts') }}" method="get">
+                        {{ form.search(class="table__header__search__label", placeholder="Search") }}
+                        <button type="submit">Search</button>
+                    </form>
+                </div>
+                All Contracts
+            </div>
+        </caption>
         <thead>
             <tr>
                 <th><strong>No</strong></th>
