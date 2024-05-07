@@ -4,4 +4,4 @@ from wtforms.validators import DataRequired
 
 
 class SearchContract(FlaskForm):
-    search = SearchField(validators=[DataRequired()])
+    search = SearchField("Search")

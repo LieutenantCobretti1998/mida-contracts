@@ -48,7 +48,8 @@ class SearchEngine:
     def search_query(self):
         print("none")
 
-    def search_voen(self) -> Companies:
+    def search_voen(self) -> list:
         searched_voen = (self.db_session.query(Companies).join(Contract, Companies.id == Contract.company_id)
                          .filter(Companies.voen == self.search))
         return searched_voen
+
