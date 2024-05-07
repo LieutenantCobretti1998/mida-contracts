@@ -3,6 +3,8 @@
   min-height: 100vh;
 
   &__nav {
+    position: fixed;
+    height: 100vh;
     width: 12vw;
     flex: 0 1 auto;
     background-color: $color-black;

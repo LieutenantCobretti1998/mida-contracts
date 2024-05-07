@@ -6,17 +6,18 @@
 {% block class_all_contracts %}active{% endblock class_all_contracts %}
 {% block class_check_contract_li %}remove-pointer{% endblock class_check_contract_li %}
 {% block content_part %}
+    {% set counter = namespace(value=0) %}
     <table class="table">
-
         <caption>
             <div class="table__header">
                 <div class="table__header__search">
                     <form action="{{ url_for('all_contracts.get_all_contracts') }}" method="get">
                         {{ form.search(class="table__header__search__label", placeholder="Search") }}
-                        <button type="submit">Search</button>
+                        <button type="submit" name="action" value="search">Search</button>
+                        <button type="submit" name="action" value="all">All Contracts</button>
                     </form>
                 </div>
-                All Contracts
+                Contracts -{% if amount_of_companies %} {{ amount_of_companies }} {% else %} 0 {% endif %}
             </div>
         </caption>
         <thead>
@@ -30,7 +31,6 @@
             </tr>
         </thead>
         <tbody>
-            {% set counter = namespace(value=0) %}
             {% for company in companies %}
 
                 {% for contract in company.contracts %}

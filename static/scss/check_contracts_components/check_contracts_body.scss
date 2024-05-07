@@ -8,10 +8,8 @@
   border-radius: 3rem;
   border-spacing: 0 50px;
   width: 70%;
-  height: 100%;
   background-color: #FEFAF6;
-  margin: 2vw;
-  margin-left: 1vw;
+  margin: 2vw 2vw 2vw 19vw ;
   padding: 2vw;
   box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.2);
 
@@ -26,12 +24,55 @@
     padding-bottom: 2rem;
   }
 
-  & tbody > tr {
+   tbody > tr {
     font-size: 2rem;
     text-align: center;
+    background-size: 200% 100%;
+    max-width: 100%;
+    height: 10vh;
+    &:hover {
+      animation: SmoothColorChange .5s forwards;
+    }
+    &:nth-child(odd) {
+      background-color: $color-white;
+    }
+    &:nth-child(odd) {
+      background-image: linear-gradient(to right, $color-white, darken($color-white, 10%));
+    }
+    &:nth-child(even) {
+      background-image: linear-gradient(to right, $color-table-background, darken($color-table-background, 10%)); // Gradient adjustment
+  }
+
+
   }
 
   &__header {
     display: flex;
+    justify-content: space-evenly;
+
+    &__search {
+       form {
+        display: flex;
+         align-content: center;
+        gap: 1.5rem;
+
+        > :first-child {
+          width: 15em;
+          height: 2em;
+        }
+        > :not(:first-child) {
+          align-self: center;
+          width: 10em;
+          height: 1.5em;
+          border-radius: 1.2rem;
+        }
+      }
+      &__label {
+        border-radius: 1.2rem;
+        &::placeholder {
+          padding-left: $margin-small;
+        }
+      }
+    }
   }
 }
