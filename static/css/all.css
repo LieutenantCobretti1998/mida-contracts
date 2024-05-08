@@ -183,6 +183,7 @@ body {
   border-radius: 3rem;
   border-spacing: 0 50px;
   width: 70%;
+  max-height: 1rem;
   background-color: #FEFAF6;
   margin: 2vw 2vw 2vw 19vw;
   padding: 2vw;
@@ -225,21 +226,35 @@ body {
   align-content: center;
   gap: 1.5rem;
 }
-.table__header__search form > :first-child {
+.table__header__search__label {
   width: 15em;
   height: 2em;
-}
-.table__header__search form > :not(:first-child) {
-  align-self: center;
-  width: 10em;
-  height: 1.5em;
   border-radius: 1.2rem;
-}
-.table__header__search__label {
-  border-radius: 1.2rem;
+  align-self: end;
+  transition: scale 0.2s ease-in-out;
 }
 .table__header__search__label::placeholder {
   padding-left: 1vw;
+}
+.table__header__search__button {
+  width: 8em;
+  height: 2em;
+  border-radius: 1.2rem;
+  background-color: #FEFAF6;
+  cursor: pointer;
+  border-color: white;
+  margin-top: 1vw;
+  font-size: 2.5rem;
+  transition: background-color 0.5s ease-in-out, transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.2);
+}
+.table__header__search__button:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+}
+
+.focused {
+  scale: 1.1;
 }
 
 /*# sourceMappingURL=all.css.map */

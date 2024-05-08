@@ -54,7 +54,7 @@ caption {
   margin: 2vw;
   margin-left: 7vw;
   padding: 2vw;
-  box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.3); // Adds subtle shadow for depth
+  box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.2);
 
   > caption {
     font-size: $font-size-big;
@@ -110,7 +110,7 @@ caption {
       margin-top: $margin-small;
       font-size: $font-size-big;
       transition: background-color .5s ease-in-out, transform .3s ease-in-out, box-shadow .3s ease-in-out;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5); // Adds subtle shadow for depth
+      box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.2);
 
 
       &:hover {

@@ -226,7 +226,7 @@ caption {
   margin: 2vw;
   margin-left: 7vw;
   padding: 2vw;
-  box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.2);
 }
 .table > caption {
   font-size: 2.5rem;
@@ -276,7 +276,7 @@ caption {
   margin-top: 1vw;
   font-size: 2.5rem;
   transition: background-color 0.5s ease-in-out, transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.2);
 }
 .table__save__button:hover {
   background-color: #f9e1c8;
