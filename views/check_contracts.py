@@ -8,9 +8,14 @@ from database.validators import SearchEngine
 
 def handle_search(search_query: str, form: flask_wtf.Form) -> render_template:
     search_engine = SearchEngine(search_query, db.session)
-    search_results = search_engine.search_voen()
-    total_contracts = sum(len(company.contracts) for company in search_results)
-    print("voen")
+    search_results = search_engine.search_query()
+    total_contracts = 0
+    for item in search_results:
+        if isinstance(item, Companies):
+            total_contracts += len(item.contracts)
+        elif isinstance(item, Contract):
+            total_contracts += 1
+
     return render_template("check_contracts.html",
                            amount_of_companies=total_contracts,
                            companies=search_results,
@@ -36,7 +41,6 @@ check_contracts_bp = Blueprint('all_contracts', __name__)
 
 @check_contracts_bp.route('/all_contracts', methods=['GET'])
 def get_all_contracts():
-    print(request.args)
     form = SearchContract()
     action = request.args.get("action", "all")
     search_query = request.args.get("search", None)

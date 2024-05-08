@@ -8,6 +8,7 @@
   border-radius: 3rem;
   border-spacing: 0 50px;
   width: 70%;
+  max-height: 1rem;
   background-color: #FEFAF6;
   margin: 2vw 2vw 2vw 19vw ;
   padding: 2vw;
@@ -55,24 +56,37 @@
         display: flex;
          align-content: center;
         gap: 1.5rem;
-
-        > :first-child {
-          width: 15em;
-          height: 2em;
-        }
-        > :not(:first-child) {
-          align-self: center;
-          width: 10em;
-          height: 1.5em;
-          border-radius: 1.2rem;
-        }
       }
       &__label {
+        width: 15em;
+        height: 2em;
         border-radius: 1.2rem;
+        align-self: end;
+        transition: scale .2s ease-in-out;
         &::placeholder {
           padding-left: $margin-small;
         }
       }
+      &__button {
+        width: 8em;
+        height: 2em;
+        border-radius: 1.2rem;
+        background-color: $color-table-background;
+        cursor: pointer;
+        border-color: $color-white;
+        margin-top: $margin-small;
+        font-size: $font-size-big;
+        transition: background-color .5s ease-in-out, transform .3s ease-in-out, box-shadow .3s ease-in-out;
+        box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.2);
+
+        &:active {
+        transform: scale(0.95);
+        box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+      }
+      }
     }
   }
+}
+.focused {
+  scale: (1.1);
 }

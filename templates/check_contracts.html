@@ -13,8 +13,8 @@
                 <div class="table__header__search">
                     <form action="{{ url_for('all_contracts.get_all_contracts') }}" method="get">
                         {{ form.search(class="table__header__search__label", placeholder="Search") }}
-                        <button type="submit" name="action" value="search">Search</button>
-                        <button type="submit" name="action" value="all">All Contracts</button>
+                        <button class="table__header__search__button" type="submit" name="action" value="search">Search</button>
+                        <button class="table__header__search__button" type="submit" name="action" value="all">All Contracts</button>
                     </form>
                 </div>
                 Contracts -{% if amount_of_companies %} {{ amount_of_companies }} {% else %} 0 {% endif %}
@@ -32,20 +32,33 @@
         </thead>
         <tbody>
             {% for company in companies %}
-
-                {% for contract in company.contracts %}
+                {% if company.__class__.__name__ == 'Companies' %}
+                    {% for contract in company.contracts %}
+                        {% set counter.value = counter.value + 1 %}
+                        <tr>
+                            <td>{{ counter.value}}</td>
+                            <td>{{ company.company_name }}</td>
+                            <td>{{ company.voen }}</td>
+                            <td>{{ contract.contract_number }}</td>
+                            <td>{{ contract.date }}</td>
+                            <td>{{ "%.2f"| format(contract.amount)  }}</td>
+                        </tr>
+                    {% endfor %}
+                {% elif company.__class__.__name__ == 'Contract' %}
                     {% set counter.value = counter.value + 1 %}
                     <tr>
-                        <td>{{ counter.value}}</td>
-                        <td>{{ company.company_name }}</td>
-                        <td>{{ company.voen }}</td>
-                        <td>{{ contract.contract_number }}</td>
-                        <td>{{ contract.date }}</td>
-                        <td>{{ "%.2f"| format(contract.amount)  }}</td>
-                    </tr>
-                {% endfor %}
+                            <td>{{ counter.value}}</td>
+                            <td>{{ company.company.company_name }}</td>
+                            <td>{{ company.company.voen }}</td>
+                            <td>{{ company.contract_number }}</td>
+                            <td>{{ company.date }}</td>
+                            <td>{{ "%.2f"| format(company.amount)  }}</td>
+                        </tr>
+                {% endif %}
             {% endfor %}
-{#            {% endfor %}#}
         </tbody>
     </table>
 {% endblock content_part %}
+{% block javascript %}
+<script src="{{ url_for('static', filename='js/all_contracts_search_bar.js') }}"></script>
+{% endblock javascript %}

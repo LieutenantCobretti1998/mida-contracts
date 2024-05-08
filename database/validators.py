@@ -1,4 +1,5 @@
 from flask_sqlalchemy.session import Session
+from sqlalchemy import or_
 from sqlalchemy.exc import NoResultFound, IntegrityError, ArgumentError
 from database.models import *
 from database.models import Companies
@@ -45,11 +46,29 @@ class SearchEngine:
         self.search = search
         self.db_session = db_session
 
-    def search_query(self):
-        print("none")
+    def search_query(self) -> list:
+        results = self.db_session.query(Companies).join(Contract).filter(or_(
+            Companies.company_name.ilike(f"%{self.search}%"),
+            Companies.voen.ilike(f"%{self.search}%"),
+            Contract.contract_number.ilike(f"%{self.search}%")
+        )).all()
+        print(len(results))
+        filtered_results = self.filter_results(results)
+        return filtered_results
 
     def search_voen(self) -> list:
         searched_voen = (self.db_session.query(Companies).join(Contract, Companies.id == Contract.company_id)
                          .filter(Companies.voen == self.search))
         return searched_voen
 
+    def filter_results(self, results: list) -> list:
+        filtered_results = []
+        for result in results:
+            print(result.company_name, result.voen)
+            if (result.voen.find(self.search) != -1) or (result.company_name.find(self.search) != -1):
+                filtered_results.append(result)
+            else:
+                for contract in result.contracts:
+                    filtered_results.append(contract) if contract.contract_number.find(self.search) != -1 else None
+        print(filtered_results)
+        return filtered_results
