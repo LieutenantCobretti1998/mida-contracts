@@ -74,7 +74,7 @@ body {
   transition: color 0.2s ease-in-out;
 }
 .main_container .menu_text:hover {
-  color: #A3D8FF;
+  color: #36c7c7;
 }
 
 .toggle-menu-button {
@@ -89,7 +89,7 @@ body {
   transition: color 0.2s ease-in-out;
 }
 .toggle-menu-button__text:hover {
-  color: #A3D8FF;
+  color: #36c7c7;
 }
 
 .submenu-companies__sub-options,
@@ -107,7 +107,7 @@ body {
 }
 .submenu-companies__sub-options:hover,
 .submenu-contracts__sub-options:hover {
-  color: #A3D8FF;
+  color: #36c7c7;
 }
 
 .hidden {
@@ -150,7 +150,7 @@ body {
 .home:active:hover,
 .home:link:hover,
 .home:visited:hover {
-  color: #A3D8FF;
+  color: #36c7c7;
 }
 
 .remove-pointer {
@@ -254,6 +254,20 @@ body {
 }
 
 .focused {
+  scale: 1.1;
+}
+
+.check {
+  text-decoration: none;
+  color: #179999;
+}
+
+.check_option {
+  cursor: pointer;
+  scale: 0.9;
+  transition: scale 0.7s linear;
+}
+.check_option:hover {
   scale: 1.1;
 }
 

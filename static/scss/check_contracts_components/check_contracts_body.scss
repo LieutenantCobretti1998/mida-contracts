@@ -43,8 +43,6 @@
     &:nth-child(even) {
       background-image: linear-gradient(to right, $color-table-background, darken($color-table-background, 10%)); // Gradient adjustment
   }
-
-
   }
 
   &__header {
@@ -89,4 +87,19 @@
 }
 .focused {
   scale: (1.1);
+}
+
+.check {
+  text-decoration: none;
+  color: $color-button-check;
+}
+
+.check_option {
+  cursor: pointer;
+  scale: 0.9;
+  transition: scale .7s linear;
+
+  &:hover {
+    scale: 1.1;
+  }
 }

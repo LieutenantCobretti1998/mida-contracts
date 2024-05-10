@@ -16,8 +16,10 @@ caption {
 
 .success-adding {
   padding-left: 1rem;
-  align-self: end;
-  width: auto;
+  transform: translateX(25%);
+  position: absolute;
+  z-index: 5000;
+  width: 70%;
   height: 5em;
   display: flex;
   justify-content: center;
@@ -26,7 +28,7 @@ caption {
   border-radius: 10px;
   opacity: 1;
   gap: 1rem;
-  animation: FadeInOut 5s ease-in-out forwards;
+  animation: FadeInOut 7s ease-in-out forwards;
 
   & > svg {
     fill: green;
@@ -49,10 +51,9 @@ caption {
   transition: width 3s ease-in-out;
   border-radius: 3rem;
   width: 70%;
-  height: auto;
+  max-height: 1em;
   background-color: $color-table-background;
-  margin: 2vw;
-  margin-left: 7vw;
+  margin: 2vw 2vw 2vw 19vw ;
   padding: 2vw;
   box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.2);
 
@@ -128,9 +129,9 @@ caption {
   scale: (1.1);
 }
 
-.shrink {
-    width: 60%;
-  }
+//.shrink {
+//    width: 60%;
+//  }
 
 td {
   padding: $padding-small;

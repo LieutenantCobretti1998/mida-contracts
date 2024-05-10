@@ -7,10 +7,12 @@
     <title>{% block title %}{% endblock title %}</title>
     {% block style %}
     {% endblock style %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/loading.css') }}">
 {#{% endblock head %}#}
 </head>
 <body>
     <main class="main_container">
+        {% block loading %}{% endblock loading %}
         <aside class="main_container__nav">
             <img class="main_container__nav__logo" src="{{ url_for('static', filename='images/mida_logo.png') }}" alt="mida-logo">
             <ul class="main_container__nav__parameters">

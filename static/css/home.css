@@ -90,7 +90,7 @@ body {
   transition: color 0.2s ease-in-out;
 }
 .main_container .menu_text:hover {
-  color: #A3D8FF;
+  color: #36c7c7;
 }
 
 .toggle-menu-button {
@@ -105,7 +105,7 @@ body {
   transition: color 0.2s ease-in-out;
 }
 .toggle-menu-button__text:hover {
-  color: #A3D8FF;
+  color: #36c7c7;
 }
 
 .submenu-companies__sub-options,
@@ -123,7 +123,7 @@ body {
 }
 .submenu-companies__sub-options:hover,
 .submenu-contracts__sub-options:hover {
-  color: #A3D8FF;
+  color: #36c7c7;
 }
 
 .hidden {
@@ -166,7 +166,7 @@ body {
 .home:active:hover,
 .home:link:hover,
 .home:visited:hover {
-  color: #A3D8FF;
+  color: #36c7c7;
 }
 
 .remove-pointer {
@@ -192,8 +192,10 @@ caption {
 
 .success-adding {
   padding-left: 1rem;
-  align-self: end;
-  width: auto;
+  transform: translateX(25%);
+  position: absolute;
+  z-index: 5000;
+  width: 70%;
   height: 5em;
   display: flex;
   justify-content: center;
@@ -202,7 +204,7 @@ caption {
   border-radius: 10px;
   opacity: 1;
   gap: 1rem;
-  animation: FadeInOut 5s ease-in-out forwards;
+  animation: FadeInOut 7s ease-in-out forwards;
 }
 .success-adding > svg {
   fill: green;
@@ -221,10 +223,9 @@ caption {
   transition: width 3s ease-in-out;
   border-radius: 3rem;
   width: 70%;
-  height: auto;
+  max-height: 1em;
   background-color: #FEFAF6;
-  margin: 2vw;
-  margin-left: 7vw;
+  margin: 2vw 2vw 2vw 19vw;
   padding: 2vw;
   box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.2);
 }
@@ -288,10 +289,6 @@ caption {
 
 .focused {
   scale: 1.1;
-}
-
-.shrink {
-  width: 60%;
 }
 
 td {

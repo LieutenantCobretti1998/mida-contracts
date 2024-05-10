@@ -5,6 +5,13 @@
 {% endblock style %}
 {% block class_all_contracts %}active{% endblock class_all_contracts %}
 {% block class_check_contract_li %}remove-pointer{% endblock class_check_contract_li %}
+{% block loading %}
+    <div class="loader">
+        <div class="inner one"></div>
+        <div class="inner two"></div>
+        <div class="inner three"></div>
+    </div>
+{% endblock loading %}
 {% block content_part %}
     {% set counter = namespace(value=0) %}
     <table class="table">
@@ -42,6 +49,7 @@
                             <td>{{ contract.contract_number }}</td>
                             <td>{{ contract.date }}</td>
                             <td>{{ "%.2f"| format(contract.amount)  }}</td>
+                            <td class="check_option"><a class="check" href={{ url_for('all_contracts.get_contract', contract_id=contract.id) }}>Check</a></td>
                         </tr>
                     {% endfor %}
                 {% elif company.__class__.__name__ == 'Contract' %}
@@ -53,6 +61,7 @@
                             <td>{{ company.contract_number }}</td>
                             <td>{{ company.date }}</td>
                             <td>{{ "%.2f"| format(company.amount)  }}</td>
+                            <td><a class="check" href={{ url_for('all_contracts.get_contract', contract_id=company.id) }}>Check</a></td>
                         </tr>
                 {% endif %}
             {% endfor %}
@@ -60,5 +69,6 @@
     </table>
 {% endblock content_part %}
 {% block javascript %}
-<script src="{{ url_for('static', filename='js/all_contracts_search_bar.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/all_contracts_search_bar.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/loading_screen.js') }}"></script>
 {% endblock javascript %}
