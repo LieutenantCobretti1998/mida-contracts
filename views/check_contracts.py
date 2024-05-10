@@ -1,5 +1,5 @@
 import flask_wtf
-from flask import Blueprint, render_template, request, redirect, jsonify, flash, url_for
+from flask import Blueprint, render_template, request
 from forms.contract_search import SearchContract
 from database.models import *
 from database.db_init import db
@@ -32,7 +32,8 @@ def handle_all_contracts(form: flask_wtf.Form) -> render_template:
     return render_template("check_contracts.html",
                            amount_of_companies=total_contracts,
                            companies=companies,
-                           form=form
+                           form=form,
+                           action="all"
                            )
 
 
@@ -42,12 +43,21 @@ check_contracts_bp = Blueprint('all_contracts', __name__)
 @check_contracts_bp.route('/all_contracts', methods=['GET'])
 def get_all_contracts():
     form = SearchContract()
-    action = request.args.get("action", "all")
-    search_query = request.args.get("search", None)
+    action = request.args.get("action", None)
 
     match action:
         case "search":
+            search_query = request.args.get("search", None)
             return handle_search(search_query, form)
         case "all":
             return handle_all_contracts(form)
     return handle_all_contracts(form)
+
+
+@check_contracts_bp.route('/contract/<int:contract_id>', methods=['GET'])
+def get_contract(contract_id):
+    search_engine = SearchEngine(contract_id, db.session)
+    search_result = search_engine.search_company()
+    print(search_result)
+    return render_template("check_contract.html", search_result=search_result)
+

@@ -72,3 +72,8 @@ class SearchEngine:
                     filtered_results.append(contract) if contract.contract_number.find(self.search) != -1 else None
         print(filtered_results)
         return filtered_results
+
+    def search_company(self) -> Contract:
+        result = self.db_session.query(Contract).join(Companies).filter(Contract.id == self.search).first()
+
+        return result

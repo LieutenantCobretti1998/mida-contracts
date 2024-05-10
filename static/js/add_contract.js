@@ -9,11 +9,8 @@ document.addEventListener("DOMContentLoaded", function () {
         setTimeout(function () {
             successMessage.style.display = "none";  // Hide the success message after 4 seconds
             successMessage.parentNode.removeChild(successMessage);  // Remove it from the DOM
-        }, 6000);
+        }, 8000);
 
-        setTimeout(function () {
-            table.classList.remove("shrink");  // Restore the table size 4 seconds after the message is removed (8 seconds total)
-        }, 6500);
     }
 })
 
