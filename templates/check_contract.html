@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %} Contract's overview {% endblock title %}
+{% block style %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/check_contract.css') }}">
+{% endblock style %}
+{% block loading %}
+    <div class="loader">
+        <div class="inner one"></div>
+        <div class="inner two"></div>
+        <div class="inner three"></div>
+    </div>
+{% endblock loading %}
+{% block content_part %}
+    <table class="table">
+        <tbody>
+            <tr>
+                <td>Company</td>
+                <td>{{ search_result.company.company_name }}</td>
+            </tr>
+            <tr>
+                <td>VOEN</td>
+                <td>{{ search_result.company.voen }}</td>
+            </tr>
+            <tr>
+                <td>Contract number</td>
+                <td>{{ search_result.contract_number }}</td>
+            </tr>
+            <tr>
+                <td>date</td>
+                <td>{{ search_result.date }}</td>
+            </tr>
+            <tr>
+                <td>amount</td>
+                <td>{{ "%.2f" | format(search_result.amount) }}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock content_part %}
