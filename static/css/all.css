@@ -208,18 +208,19 @@ body {
 .table tbody > tr:hover {
   animation: SmoothColorChange 0.5s forwards;
 }
-.table tbody > tr:nth-child(odd) {
+.table tbody > tr:nth-child(odd):not(:last-child) {
   background-color: white;
 }
-.table tbody > tr:nth-child(odd) {
+.table tbody > tr:nth-child(odd):not(:last-child) {
   background-image: linear-gradient(to right, white, #e6e6e6);
 }
-.table tbody > tr:nth-child(even) {
+.table tbody > tr:nth-child(even):not(:last-child) {
   background-image: linear-gradient(to right, #FEFAF6, #f9e1c8);
 }
 .table__header {
   display: flex;
   justify-content: space-evenly;
+  align-items: center;
 }
 .table__header__search form {
   display: flex;
@@ -265,10 +266,30 @@ body {
 .check_option {
   cursor: pointer;
   scale: 0.9;
-  transition: scale 0.7s linear;
+  transition: scale 0.2s linear;
 }
 .check_option:hover {
   scale: 1.1;
+}
+
+.next, .prev {
+  font-size: 1.9rem;
+  width: 5em;
+  height: 5em;
+  border-radius: 1.2rem;
+  background-color: #FEFAF6;
+  cursor: pointer;
+  border-color: white;
+  transition: background-color 0.5s ease-in-out, transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.2);
+}
+.next:active, .prev:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+}
+
+#page_number {
+  font-size: 2.5rem;
 }
 
 /*# sourceMappingURL=all.css.map */

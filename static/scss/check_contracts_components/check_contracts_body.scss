@@ -34,13 +34,13 @@
     &:hover {
       animation: SmoothColorChange .5s forwards;
     }
-    &:nth-child(odd) {
+    &:nth-child(odd):not(:last-child) {
       background-color: $color-white;
     }
-    &:nth-child(odd) {
+    &:nth-child(odd):not(:last-child) {
       background-image: linear-gradient(to right, $color-white, darken($color-white, 10%));
     }
-    &:nth-child(even) {
+    &:nth-child(even):not(:last-child) {
       background-image: linear-gradient(to right, $color-table-background, darken($color-table-background, 10%)); // Gradient adjustment
   }
   }
@@ -48,6 +48,7 @@
   &__header {
     display: flex;
     justify-content: space-evenly;
+    align-items: center;
 
     &__search {
        form {
@@ -97,9 +98,31 @@
 .check_option {
   cursor: pointer;
   scale: 0.9;
-  transition: scale .7s linear;
+  transition: scale .2s linear;
 
   &:hover {
     scale: 1.1;
   }
 }
+
+.next, .prev {
+  font-size: $font-size-medium;
+  width: 5em;
+  height: 5em;
+  border-radius: 1.2rem;
+  background-color: $color-table-background;
+  cursor: pointer;
+  border-color: $color-white;
+  transition: background-color .5s ease-in-out, transform .3s ease-in-out, box-shadow .3s ease-in-out;
+  box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.2);
+
+  &:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+  }
+}
+
+#page_number {
+  font-size: $font-size-big;
+}
+

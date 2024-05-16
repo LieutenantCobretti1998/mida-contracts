@@ -24,7 +24,7 @@
                         <button class="table__header__search__button" type="submit" name="action" value="all">All Contracts</button>
                     </form>
                 </div>
-                Contracts -{% if amount_of_companies %} {{ amount_of_companies }} {% else %} 0 {% endif %}
+                All Contracts -{% if amount_of_companies %} {{ amount_of_companies }} {% else %} 0 {% endif %}
             </div>
         </caption>
         <thead>
@@ -43,7 +43,7 @@
                     {% for contract in company.contracts %}
                         {% set counter.value = counter.value + 1 %}
                         <tr>
-                            <td>{{ counter.value}}</td>
+                            <td>{{ contract.id }}</td>
                             <td>{{ company.company_name }}</td>
                             <td>{{ company.voen }}</td>
                             <td>{{ contract.contract_number }}</td>
@@ -55,7 +55,7 @@
                 {% elif company.__class__.__name__ == 'Contract' %}
                     {% set counter.value = counter.value + 1 %}
                     <tr>
-                            <td>{{ counter.value}}</td>
+                            <td>{{ company.id}}</td>
                             <td>{{ company.company.company_name }}</td>
                             <td>{{ company.company.voen }}</td>
                             <td>{{ company.contract_number }}</td>
@@ -65,10 +65,44 @@
                         </tr>
                 {% endif %}
             {% endfor %}
+            <tr class="pagination_buttons">
+                <td></td>
+                <td></td>
+                <td id="prev">
+                    <form action="{{ url_for('all_contracts.get_all_contracts') }}" method="get">
+                        <input type="hidden" name="action" value="{{ action }}">
+                        {% if action == 'search' %}
+                            <input type="hidden" name="search" value="{{ search_query }}">
+                        {% endif %}
+                        {% if page > 1  %}
+                            <button class="prev" type="submit" name="page" value="{{ page - 1 }}">Prev</button>
+                        {% else %}
+                            <button class="prev" disabled>Prev</button>
+                        {% endif %}
+                    </form>
+                </td>
+                <td id="page_number">
+                    Page: {{ page }}
+                </td>
+                <td id="next">
+                    <form action="{{ url_for('all_contracts.get_all_contracts') }}" method="get">
+                        <input type="hidden" name="action" value="{{ action }}">
+                        {% if action == 'search' %}
+                            <input type="hidden" name="search" value="{{ search_query }}">
+                        {% endif %}
+                        {%  if page < total_pages %}
+                            <button type="submit" class="next" name="page" value="{{ page + 1 }}">Next</button>
+                        {% else %}
+                            <button class="next" disabled>Next</button>
+                        {% endif %}
+                    </form>
+                </td>
+            </tr>
         </tbody>
     </table>
 {% endblock content_part %}
 {% block javascript %}
     <script src="{{ url_for('static', filename='js/all_contracts_search_bar.js') }}"></script>
     <script src="{{ url_for('static', filename='js/loading_screen.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/pagination.js') }}"></script>
 {% endblock javascript %}
