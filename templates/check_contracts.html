@@ -22,6 +22,22 @@
                         {{ form.search(class="table__header__search__label", placeholder="Search") }}
                         <button class="table__header__search__button" type="submit" name="action" value="search">Search</button>
                         <button class="table__header__search__button" type="submit" name="action" value="all">All Contracts</button>
+                        <label for="filter-selection"></label>
+                        <select name="filters" id="filter-selection" class="filter-button">
+                            <option value="" selected disabled hidden>Filters</option>
+                            <option value="company" {% if request.args.get("filters") == "company" and request.args.get("action") == "search" %}selected{% endif %}>Company</option>
+                            <option value="date" {% if request.args.get("filters") == "date" and request.args.get("action") == "search" %}selected{% endif %}>Date</option>
+                            <option value="amount" {% if request.args.get("filters") == "amount" and request.args.get("action") == "search" %}selected{% endif %}>Amount</option>
+                        </select>
+                        <fieldset class="fieldset">
+                            <legend>Order by:</legend>
+                            <div class="order">
+                                <input type="radio" id="ascending" name="order" value="ascending" {% if request.args.get("order") == "ascending" and request.args.get("action") == "search" %}checked{% endif %}>
+                                <label for="ascending">Ascending</label>
+                                <input type="radio" id="descending" name="order" value="descending" {% if request.args.get("order") == "descending" and request.args.get("action") == "search" %}checked{% endif %}>
+                                <label for="descending">Descending</label>
+                            </div>
+                        </fieldset>
                     </form>
                 </div>
                 All Contracts -{% if amount_of_companies %} {{ amount_of_companies }} {% else %} 0 {% endif %}
@@ -73,6 +89,8 @@
                         <input type="hidden" name="action" value="{{ action }}">
                         {% if action == 'search' %}
                             <input type="hidden" name="search" value="{{ search_query }}">
+                            <input type="hidden" name="filters" value="{{ request.args.get("filters") }}">
+                            <input type="hidden" name="order" value="{{ request.args.get("order") }}">
                         {% endif %}
                         {% if page > 1  %}
                             <button class="prev" type="submit" name="page" value="{{ page - 1 }}">Prev</button>
@@ -89,6 +107,8 @@
                         <input type="hidden" name="action" value="{{ action }}">
                         {% if action == 'search' %}
                             <input type="hidden" name="search" value="{{ search_query }}">
+                            <input type="hidden" name="filters" value="{{ request.args.get("filters") }}">
+                            <input type="hidden" name="order" value="{{ request.args.get("order") }}">
                         {% endif %}
                         {%  if page < total_pages %}
                             <button type="submit" class="next" name="page" value="{{ page + 1 }}">Next</button>

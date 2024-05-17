@@ -238,6 +238,7 @@ body {
   padding-left: 1vw;
 }
 .table__header__search__button {
+  align-self: end;
   width: 8em;
   height: 2em;
   border-radius: 1.2rem;
@@ -290,6 +291,39 @@ body {
 
 #page_number {
   font-size: 2.5rem;
+}
+
+.filter-button {
+  align-self: end;
+  width: 8em;
+  height: 2em;
+  border-radius: 1.2rem;
+  background-color: #FEFAF6;
+  cursor: pointer;
+  border-color: white;
+  margin-top: 1vw;
+  font-size: 2.5rem;
+  box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.2);
+}
+
+.fieldset {
+  width: 8em;
+  height: 4em;
+  border-radius: 1.2rem;
+  border-color: white;
+  margin-top: 1vw;
+  font-size: 2.5rem;
+  box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.2);
+  background-color: #FEFAF6;
+}
+.fieldset legend {
+  text-align: center;
+}
+
+.order {
+  display: flex;
+  flex-direction: column;
+  font-size: 1.5rem;
 }
 
 /*# sourceMappingURL=all.css.map */

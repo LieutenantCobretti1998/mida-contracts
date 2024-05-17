@@ -67,6 +67,7 @@
         }
       }
       &__button {
+        align-self: end;
         width: 8em;
         height: 2em;
         border-radius: 1.2rem;
@@ -126,3 +127,37 @@
   font-size: $font-size-big;
 }
 
+
+.filter-button {
+  align-self: end;
+  width: 8em;
+  height: 2em;
+  border-radius: 1.2rem;
+  background-color: $color-table-background;
+  cursor: pointer;
+  border-color: $color-white;
+  margin-top: $margin-small;
+  font-size: $font-size-big;
+  box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.2);
+}
+
+.fieldset {
+  width: 8em;
+  height: 4em;
+  border-radius: 1.2rem;
+  border-color: $color-white;
+  margin-top: $margin-small;
+  font-size: $font-size-big;
+  box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.2);
+  background-color: $color-table-background;
+
+  legend {
+    text-align: center;
+  }
+}
+
+.order {
+  display: flex;
+  flex-direction: column;
+  font-size: $font-size-small;
+}
