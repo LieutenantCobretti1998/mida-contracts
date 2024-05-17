@@ -6,27 +6,23 @@ from database.validators import SearchEngine
 from configuration import POSTS_PER_PAGE
 
 
-def handle_search(search_query: str, form: flask_wtf.Form, page: int) -> render_template:
+def handle_search(search_query: str, form: flask_wtf.Form, page: int, filters: str, order: str) -> render_template:
     search_engine = SearchEngine(db.session, search_query)
-    search_results = search_engine.search_query()
-    flattened_results = search_engine.flat_results(search_results)
-    # total_contracts = search_results["total_results"]
-    # companies = search_results["results"]
-    # total_pages = (total_contracts // POSTS_PER_PAGE) + (1 if total_contracts % POSTS_PER_PAGE != 0 else 0)
-    total_contracts = len(flattened_results)
-    print(total_contracts)
+    search_results = search_engine.search_query(page, POSTS_PER_PAGE, filters, order)
+    total_contracts = search_results["total_contracts"]
+    total_results = search_results["results_per_page"]
+    print(len(total_results))
     total_pages = (total_contracts // POSTS_PER_PAGE) + (1 if total_contracts % POSTS_PER_PAGE != 0 else 0)
-    start = (page - 1) * POSTS_PER_PAGE
-    end = start + POSTS_PER_PAGE
-    paginated_results = [item for item in flattened_results][start:end]
     return render_template("check_contracts.html",
                            amount_of_companies=total_contracts,
-                           companies=paginated_results,
+                           companies=total_results,
                            form=form,
                            page=page,
                            total_pages=total_pages,
                            action="search",
-                           search_query=search_query
+                           search_query=search_query,
+                           filters=filters,
+                           order=order
                            )
 
 
@@ -35,6 +31,7 @@ def handle_all_contracts(form: flask_wtf.Form, page: int) -> render_template:
     search_results = search_engine.get_all_results(db, page, POSTS_PER_PAGE)
     total_contracts = search_results["total_contracts"]
     companies = search_results["results_per_page"]
+    print(len(companies))
     total_pages = (total_contracts // POSTS_PER_PAGE) + (1 if total_contracts % POSTS_PER_PAGE != 0 else 0)
     return render_template("check_contracts.html",
                            amount_of_companies=total_contracts,
@@ -57,8 +54,10 @@ def get_all_contracts():
 
     match action:
         case "search":
+            filters = request.args.get("filters", None)
+            order = request.args.get("order", None)
             search_query = request.args.get("search", None)
-            return handle_search(search_query, form, page)
+            return handle_search(search_query, form, page, filters, order)
         case "all":
             return handle_all_contracts(form, page)
     return handle_all_contracts(form, page)
@@ -68,6 +67,4 @@ def get_all_contracts():
 def get_contract(contract_id):
     search_engine = SearchEngine(db.session, contract_id)
     search_result = search_engine.search_company()
-    print(search_result)
     return render_template("check_contract.html", search_result=search_result)
-
