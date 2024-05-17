@@ -18,7 +18,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Focus on input field when press the enter button
 document.addEventListener("keypress", function (e) {
-    console.log(e);
     if (e.key === "Enter") {
         document.getElementById("default_input").focus();
     }

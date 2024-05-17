@@ -13,3 +13,9 @@ function toggleFocus(event) {
         search_label.classList.remove("focused");
     }
 }
+
+document.addEventListener("keypress", function (e) {
+    if (e.key === "Enter") {
+        document.getElementById("search").focus()
+    }
+})
