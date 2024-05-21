@@ -15,22 +15,38 @@
 
   tbody > tr {
     text-transform: uppercase;
-    font-size: 2em;
+    font-size: $font-size-medium;
     background-size: 200% 100%;
     max-width: 100%;
-    height: 10vh;
+    height: 5vh;
     &:hover {
-      cursor: pointer;
+      cursor: default;
       animation: SmoothColorChange .5s forwards;
     }
-    &:nth-child(odd) {
+    &:nth-child(odd):not(:first-child) {
       background-color: $color-white;
     }
-    &:nth-child(odd) {
+    &:nth-child(odd):not(:first-child) {
       background-image: linear-gradient(to right, $color-white, darken($color-white, 10%));
     }
     &:nth-child(even) {
       background-image: linear-gradient(to right, $color-table-background, darken($color-table-background, 10%)); // Gradient adjustment
   }
+  }
+}
+
+.back {
+  font-size: $font-size-medium;
+  width: 7em;
+  border-radius: 1.2rem;
+  background-color: $color-table-background;
+  cursor: pointer;
+  border-color: rgba(0, 0, 0, 0.3);
+  transition: background-color .5s ease-in-out, transform .3s ease-in-out, box-shadow .3s ease-in-out;
+  box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.2);
+
+  &:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
   }
 }

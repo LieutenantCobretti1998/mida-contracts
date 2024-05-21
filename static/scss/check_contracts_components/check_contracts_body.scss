@@ -26,7 +26,7 @@
   }
 
    tbody > tr {
-    font-size: 2rem;
+    font-size: $font-size-medium;
     text-align: center;
     background-size: 200% 100%;
     max-width: 100%;
@@ -68,16 +68,19 @@
       }
       &__button {
         align-self: end;
-        width: 8em;
-        height: 2em;
+        width: 7em;
         border-radius: 1.2rem;
         background-color: $color-table-background;
         cursor: pointer;
-        border-color: $color-white;
+        border-color: rgba(0, 0, 0, 0.3);
         margin-top: $margin-small;
         font-size: $font-size-big;
         transition: background-color .5s ease-in-out, transform .3s ease-in-out, box-shadow .3s ease-in-out;
         box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.2);
+
+        &:hover {
+          background-color: darken($color-table-background, 10%);
+        }
 
         &:active {
         transform: scale(0.95);
@@ -108,14 +111,17 @@
 
 .next, .prev {
   font-size: $font-size-medium;
-  width: 5em;
-  height: 5em;
+  width: 7em;
   border-radius: 1.2rem;
   background-color: $color-table-background;
   cursor: pointer;
-  border-color: $color-white;
+  border-color: rgba(0, 0, 0, 0.3);
   transition: background-color .5s ease-in-out, transform .3s ease-in-out, box-shadow .3s ease-in-out;
   box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.2);
+
+  &:hover {
+        background-color: darken($color-table-background, 10%);
+      }
 
   &:active {
     transform: scale(0.95);
@@ -130,8 +136,7 @@
 
 .filter-button {
   align-self: end;
-  width: 8em;
-  height: 2em;
+  width: 7em;
   border-radius: 1.2rem;
   background-color: $color-table-background;
   cursor: pointer;
@@ -141,9 +146,8 @@
   box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.2);
 }
 
-.fieldset {
-  width: 8em;
-  height: 4em;
+.order-button {
+  width: 7em;
   border-radius: 1.2rem;
   border-color: $color-white;
   margin-top: $margin-small;
@@ -160,4 +164,8 @@
   display: flex;
   flex-direction: column;
   font-size: $font-size-small;
+}
+
+#label-filter {
+  display: none;
 }
