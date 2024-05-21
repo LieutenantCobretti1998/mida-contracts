@@ -14,6 +14,30 @@
     <table class="table">
         <tbody>
             <tr>
+                <td>
+                    <form action="{{ url_for("all_contracts.get_all_contracts") }}" method="get">
+                        {% if session.get("action") == "all" %}
+                            <input type="hidden" name="search" value="{{ session.get("search_query") }}">
+                            <input type="hidden" name="action" value="{{ session.get("action") }}">
+                        {% endif %}
+                        {% if session.get("action") == "search" %}
+                            <input type="hidden" name="search" value="{{ session.get("search_query") }}">
+                            <input type="hidden" name="action" value="{{ session.get("action") }}">
+
+                             {% if session.get("filters") != "" %}
+                                <input type="hidden" name="filters" value="{{ session.get("filters") }}">
+                             {% endif %}
+                            {% if session.get("order") != "" %}
+                                <input type="hidden" name="orders" value="{{ session.get("order") }}">
+                            {% endif %}
+                        {% endif %}
+                       <input type="hidden" name="page" value="{{ session.get("page") }}">
+                        <button type="submit" class="back">Back</button>
+                    </form>
+
+                </td>
+            </tr>
+            <tr>
                 <td>Company</td>
                 <td>{{ search_result.company.company_name }}</td>
             </tr>
