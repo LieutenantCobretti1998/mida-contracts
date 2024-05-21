@@ -106,7 +106,7 @@ caption {
       background-color: $color-table-background;
       cursor: pointer;
       border-radius: 3rem;
-      border-color: $color-white;
+      border-color: rgba(0, 0, 0, 0.3);
       width: 10rem;
       margin-top: $margin-small;
       font-size: $font-size-big;
@@ -120,7 +120,7 @@ caption {
 
       &:active {
         transform: scale(0.95);
-        box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
       }
     }
   }

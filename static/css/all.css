@@ -199,7 +199,7 @@ body {
   padding-bottom: 2rem;
 }
 .table tbody > tr {
-  font-size: 2rem;
+  font-size: 1.9rem;
   text-align: center;
   background-size: 200% 100%;
   max-width: 100%;
@@ -239,16 +239,18 @@ body {
 }
 .table__header__search__button {
   align-self: end;
-  width: 8em;
-  height: 2em;
+  width: 7em;
   border-radius: 1.2rem;
   background-color: #FEFAF6;
   cursor: pointer;
-  border-color: white;
+  border-color: rgba(0, 0, 0, 0.3);
   margin-top: 1vw;
   font-size: 2.5rem;
   transition: background-color 0.5s ease-in-out, transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
   box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.2);
+}
+.table__header__search__button:hover {
+  background-color: #f9e1c8;
 }
 .table__header__search__button:active {
   transform: scale(0.95);
@@ -275,14 +277,16 @@ body {
 
 .next, .prev {
   font-size: 1.9rem;
-  width: 5em;
-  height: 5em;
+  width: 7em;
   border-radius: 1.2rem;
   background-color: #FEFAF6;
   cursor: pointer;
-  border-color: white;
+  border-color: rgba(0, 0, 0, 0.3);
   transition: background-color 0.5s ease-in-out, transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
   box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.2);
+}
+.next:hover, .prev:hover {
+  background-color: #f9e1c8;
 }
 .next:active, .prev:active {
   transform: scale(0.95);
@@ -295,8 +299,7 @@ body {
 
 .filter-button {
   align-self: end;
-  width: 8em;
-  height: 2em;
+  width: 7em;
   border-radius: 1.2rem;
   background-color: #FEFAF6;
   cursor: pointer;
@@ -306,9 +309,8 @@ body {
   box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.2);
 }
 
-.fieldset {
-  width: 8em;
-  height: 4em;
+.order-button {
+  width: 7em;
   border-radius: 1.2rem;
   border-color: white;
   margin-top: 1vw;
@@ -316,7 +318,7 @@ body {
   box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.2);
   background-color: #FEFAF6;
 }
-.fieldset legend {
+.order-button legend {
   text-align: center;
 }
 
@@ -324,6 +326,10 @@ body {
   display: flex;
   flex-direction: column;
   font-size: 1.5rem;
+}
+
+#label-filter {
+  display: none;
 }
 
 /*# sourceMappingURL=all.css.map */

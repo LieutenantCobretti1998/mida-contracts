@@ -272,7 +272,7 @@ caption {
   background-color: #FEFAF6;
   cursor: pointer;
   border-radius: 3rem;
-  border-color: white;
+  border-color: rgba(0, 0, 0, 0.3);
   width: 10rem;
   margin-top: 1vw;
   font-size: 2.5rem;
@@ -284,7 +284,7 @@ caption {
 }
 .table__save__button:active {
   transform: scale(0.95);
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
 }
 
 .focused {
