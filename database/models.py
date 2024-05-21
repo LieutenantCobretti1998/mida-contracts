@@ -19,4 +19,3 @@ class Contract(Base):
     company_id = Column(Integer, ForeignKey('companies.id'), nullable=False)
     amount = Column(DECIMAL(), nullable=False)
     company = relationship("Companies", back_populates="contracts")
-    category = Column(VARCHAR(), nullable=True)
