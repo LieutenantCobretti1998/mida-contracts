@@ -189,6 +189,13 @@ body {
   padding: 2vw;
   box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.2);
 }
+.table__input {
+  width: 98%;
+  transition: scale 0.2s ease-in-out;
+}
+.table__input::placeholder {
+  padding-left: 1vw;
+}
 .table tbody > tr {
   text-transform: uppercase;
   font-size: 1.9rem;
@@ -210,7 +217,10 @@ body {
   background-image: linear-gradient(to right, #FEFAF6, #f9e1c8);
 }
 
-.back {
+.back,
+.edit,
+.cancel,
+.save_button {
   font-size: 1.9rem;
   width: 7em;
   border-radius: 1.2rem;
@@ -220,9 +230,38 @@ body {
   transition: background-color 0.5s ease-in-out, transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
   box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.2);
 }
-.back:active {
+.back:active,
+.edit:active,
+.cancel:active,
+.save_button:active {
   transform: scale(0.95);
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 1000;
+}
+
+.rounded {
+  height: 3.5rem;
+  border-radius: 0.35rem;
+}
+
+.focused {
+  scale: 1.1;
 }
 
 /*# sourceMappingURL=check_contract.css.map */

@@ -13,6 +13,15 @@
   padding: 2vw;
   box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.2);
 
+  &__input {
+    width: 98%;
+    transition: scale .2s ease-in-out;
+
+    &::placeholder {
+      padding-left: $margin-small;
+    }
+  }
+
   tbody > tr {
     text-transform: uppercase;
     font-size: $font-size-medium;
@@ -35,7 +44,10 @@
   }
 }
 
-.back {
+.back,
+.edit,
+.cancel,
+.save_button{
   font-size: $font-size-medium;
   width: 7em;
   border-radius: 1.2rem;
@@ -49,4 +61,30 @@
     transform: scale(0.95);
     box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
   }
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 1000;
+}
+
+.rounded {
+  height: 3.5rem;
+  border-radius: .35rem;
+}
+
+.focused {
+  scale: (1.1);
 }
