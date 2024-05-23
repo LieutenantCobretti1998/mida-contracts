@@ -1,5 +1,4 @@
 "use strict"
-// Dom Content loaded and success message flashing
 
 document.addEventListener("DOMContentLoaded", function () {
     let successMessage = document.querySelector(".success-adding");
