@@ -11,52 +11,71 @@
     </div>
 {% endblock loading %}
 {% block content_part %}
-    <table class="table">
-        <tbody>
-            <tr>
-                <td>
-                    <form action="{{ url_for("all_contracts.get_all_contracts") }}" method="get">
-                        {% if session.get("action") == "all" %}
-                            <input type="hidden" name="search" value="{{ session.get("search_query") }}">
-                            <input type="hidden" name="action" value="{{ session.get("action") }}">
-                        {% endif %}
-                        {% if session.get("action") == "search" %}
-                            <input type="hidden" name="search" value="{{ session.get("search_query") }}">
-                            <input type="hidden" name="action" value="{{ session.get("action") }}">
-
-                             {% if session.get("filters") != "" %}
-                                <input type="hidden" name="filters" value="{{ session.get("filters") }}">
-                             {% endif %}
-                            {% if session.get("order") != "" %}
-                                <input type="hidden" name="orders" value="{{ session.get("order") }}">
+        <table class="table">
+            <tbody>
+                <tr>
+                    <td id="form">
+                        <form action="{{ url_for("all_contracts.get_all_contracts") }}" method="get">
+                            {% if session.get("action") == "all" %}
+                                <input type="hidden" name="search" value="{{ session.get("search_query") }}">
+                                <input type="hidden" name="action" value="{{ session.get("action") }}">
                             {% endif %}
-                        {% endif %}
-                       <input type="hidden" name="page" value="{{ session.get("page") }}">
-                        <button type="submit" class="back">Back</button>
-                    </form>
+                            {% if session.get("action") == "search" %}
+                                <input type="hidden" name="search" value="{{ session.get("search_query") }}">
+                                <input type="hidden" name="action" value="{{ session.get("action") }}">
 
-                </td>
-            </tr>
-            <tr>
-                <td>Company</td>
-                <td>{{ search_result.company.company_name }}</td>
-            </tr>
-            <tr>
-                <td>VOEN</td>
-                <td>{{ search_result.company.voen }}</td>
-            </tr>
-            <tr>
-                <td>Contract number</td>
-                <td>{{ search_result.contract_number }}</td>
-            </tr>
-            <tr>
-                <td>date</td>
-                <td>{{ search_result.date }}</td>
-            </tr>
-            <tr>
-                <td>amount</td>
-                <td>{{ "%.2f" | format(search_result.amount) }}</td>
-            </tr>
-        </tbody>
-    </table>
+                                 {% if session.get("filters") != "" %}
+                                    <input type="hidden" name="filters" value="{{ session.get("filters") }}">
+                                 {% endif %}
+                                {% if session.get("order") != "" %}
+                                    <input type="hidden" name="orders" value="{{ session.get("order") }}">
+                                {% endif %}
+                            {% endif %}
+                           <input type="hidden" name="page" value="{{ session.get("page") }}">
+                            <div class="buttons">
+                                <button type="submit" class="back">Back</button>
+                                <button type="button" class="edit" onclick="EditContract()">Edit</button>
+                            </div>
+                        </form>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Company</td>
+                    <td id="company">{{ search_result.company.company_name }}</td>
+                </tr>
+                <tr>
+                    <td>VOEN</td>
+                    <td id="voen">{{ search_result.company.voen }}</td>
+                </tr>
+                <tr>
+                    <td>Contract number</td>
+                    <td id="contract">{{ search_result.contract_number }}</td>
+                </tr>
+                <tr>
+                    <td>date</td>
+                    <td id="date">{{ search_result.date }}</td>
+                </tr>
+                <tr>
+                    <td>amount</td>
+                    <td id="amount">{{ "%.2f" | format(search_result.amount) }}</td>
+                </tr>
+            </tbody>
+        </table>
 {% endblock content_part %}
+{% block javascript %}
+    <script type="text/javascript">
+        const form_data = {
+            "company": `{{ form.company(placeholder=search_result.company.company_name.upper(), class="table__input rounded", id="default_input") }}`,
+            "voen": '{{ form.voen(placeholder= search_result.company.voen.upper(), class="table__input rounded")}}',
+            "contract": '{{ form.contract_number(placeholder=search_result.contract_number.upper(), class="table__input rounded") }}',
+            "date": '{{ form.date(placeholder=search_result.date, class="table__input rounded") }}',
+            "amount": '{{ form.amount(placeholder="%.2f"|format(search_result.amount), class="table__input rounded") }}',
+            "save_button": '{{ form.save(class="save_button") }}'
+        }
+        // my global vars
+        window.url = '{{ url_for('all_contracts.update_contract', contract_id=search_result.id) }}';
+        window.token = '{{ form.csrf_token() }}';
+    </script>
+    <script src="{{ url_for('static', filename='js/edit_form.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/form_focus.js') }}"></script>
+{% endblock javascript %}

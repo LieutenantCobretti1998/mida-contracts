@@ -1,6 +1,7 @@
 import flask_wtf
 from flask import Blueprint, render_template, request, session, redirect, url_for
 from forms.contract_search import SearchContract
+from forms.create_contract_form import CreateContractForm
 from database.db_init import db
 from database.validators import SearchEngine
 from configuration import POSTS_PER_PAGE
@@ -76,6 +77,15 @@ def get_all_contracts():
 
 @check_contracts_bp.route('/contract/<int:contract_id>', methods=['GET'])
 def get_contract(contract_id):
+    form = CreateContractForm()
     search_engine = SearchEngine(db.session, contract_id)
     search_result = search_engine.search_company()
-    return render_template("check_contract.html", search_result=search_result)
+    return render_template("check_contract.html",
+                           search_result=search_result,
+                           contract_id=contract_id,
+                           form=form)
+
+
+@check_contracts_bp.route('/update_contract/<int:contract_id>', methods=['POST'])
+def update_contract(contract_id):
+    form = CreateContractForm()
