@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Type
 from flask_sqlalchemy.session import Session
 from sqlalchemy import or_, desc, asc
 from sqlalchemy.exc import NoResultFound, IntegrityError, ArgumentError
@@ -10,7 +10,7 @@ class ContractManager:
     def __init__(self, db_session: Session):
         self.db_session = db_session
 
-    def get_or_create_company(self, company_name: str, voen: str) -> Companies:
+    def get_or_create_company(self, company_name: str, voen: str) -> None | Type[Companies] | Companies:
         if not company_name:
             return None
 
@@ -109,7 +109,7 @@ class SearchEngine:
     #     return flat_results
 
     def search_company(self) -> Contract:
-        result = self.db_session.query(Contract).join(Companies).filter(Contract.id == self.search).first()
+        result = self.db_session.query(Contract).join(Companies).filter(Contract.id == int(self.search)).first()
         return result
 
     def get_all_results(self, db, page: int, per_page: int) -> dict[str, int | Any]:
@@ -119,3 +119,32 @@ class SearchEngine:
         return {"results_per_page": limited_results,
                 "total_contracts": total_contracts
                 }
+
+    def update_data(self, changes: dict) -> None:
+        result = self.db_session.query(Contract).join(Contract.company).filter(Contract.id == int(self.search)).first()
+        print(changes)
+        print(result)
+        if result:
+            for key, value in changes.items():
+                if hasattr(result, key):
+                    current_value = getattr(result, key)
+                    if current_value != value and value is not None:
+                        setattr(result, key, value)
+                        print(f"Updated {key} from {current_value} to {value}")
+                    self.db_session.flush()
+                elif hasattr(result.company, key):
+                    current_value = getattr(result.company, key)
+                    print(f"Updated {key} from {current_value}")
+                    if current_value != value and value is not None:
+                        setattr(result.company, key, value)
+                        print(f"Updated {key} from {current_value} to {value}")
+                    self.db_session.flush()
+            self.db_session.commit()
+
+    def is_company_exists(self, company_name: str, voen: str) -> bool:
+        result = self.db_session.query(Companies).filter(or_(Companies.company_name == company_name,
+                                                             Companies.voen == voen)).first()
+        if result is not None:
+            return True
+        return False
+

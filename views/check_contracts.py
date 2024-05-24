@@ -1,7 +1,8 @@
 import flask_wtf
 from flask import Blueprint, render_template, request, session, redirect, url_for
 from forms.contract_search import SearchContract
-from forms.create_contract_form import CreateContractForm
+from forms.filters import *
+from forms.edit_contract_form import EditContractForm
 from database.db_init import db
 from database.validators import SearchEngine
 from configuration import POSTS_PER_PAGE
@@ -77,7 +78,7 @@ def get_all_contracts():
 
 @check_contracts_bp.route('/contract/<int:contract_id>', methods=['GET'])
 def get_contract(contract_id):
-    form = CreateContractForm()
+    form = EditContractForm()
     search_engine = SearchEngine(db.session, contract_id)
     search_result = search_engine.search_company()
     return render_template("check_contract.html",
@@ -86,6 +87,20 @@ def get_contract(contract_id):
                            form=form)
 
 
-@check_contracts_bp.route('/update_contract/<int:contract_id>', methods=['POST'])
+@check_contracts_bp.route('/update_contract/<int:contract_id>', methods=['GET', 'POST'])
 def update_contract(contract_id):
-    form = CreateContractForm()
+    search_engine = SearchEngine(db.session, contract_id)
+    form = EditContractForm(request.form)
+    print(form.amount.data)
+    data_dict = dict(company_name=filter_string_fields(form.company.data) if form.company.data else None,
+                     voen=filter_voen(form.voen.data) if form.voen.data else None,
+                     contract_number=filter_contract_number(form.contract_number.data) if form.contract_number.data else None,
+                     date=form.date.data if form.date.data else None,
+                     amount=float(form.amount.data) if form.amount.data else None,
+                    )
+    search_engine.update_data(data_dict)
+    search_result = search_engine.search_company()
+    return render_template("check_contract.html",
+                           search_result=search_result,
+                           contract_id=contract_id,
+                           form=form)
