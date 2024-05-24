@@ -239,6 +239,7 @@ body {
 }
 
 .buttons {
+  margin-left: 15rem;
   display: flex;
   justify-content: space-between;
 }
@@ -262,6 +263,10 @@ body {
 
 .focused {
   scale: 1.1;
+}
+
+#edit-form {
+  width: 100%;
 }
 
 /*# sourceMappingURL=check_contract.css.map */

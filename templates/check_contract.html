@@ -14,7 +14,7 @@
         <table class="table">
             <tbody>
                 <tr>
-                    <td id="form">
+                    <td>
                         <form action="{{ url_for("all_contracts.get_all_contracts") }}" method="get">
                             {% if session.get("action") == "all" %}
                                 <input type="hidden" name="search" value="{{ session.get("search_query") }}">
@@ -65,17 +65,17 @@
 {% block javascript %}
     <script type="text/javascript">
         const form_data = {
-            "company": `{{ form.company(placeholder=search_result.company.company_name.upper(), class="table__input rounded", id="default_input") }}`,
-            "voen": '{{ form.voen(placeholder= search_result.company.voen.upper(), class="table__input rounded")}}',
-            "contract": '{{ form.contract_number(placeholder=search_result.contract_number.upper(), class="table__input rounded") }}',
-            "date": '{{ form.date(placeholder=search_result.date, class="table__input rounded") }}',
-            "amount": '{{ form.amount(placeholder="%.2f"|format(search_result.amount), class="table__input rounded") }}',
-            "save_button": '{{ form.save(class="save_button") }}'
+            "company": `{{ form.company(placeholder=search_result.company.company_name.upper(), class="table__input rounded", id="default_input") | safe }}`,
+            "voen": '{{ form.voen(placeholder= search_result.company.voen.upper(), class="table__input rounded") | safe}}',
+            "contract": '{{ form.contract_number(placeholder=search_result.contract_number.upper(), class="table__input rounded") | safe }}',
+            "date": '{{ form.date(placeholder=search_result.date, class="table__input rounded") | safe }}',
+            "amount": '{{ form.amount(placeholder="%.2f"|format(search_result.amount), class="table__input rounded") | safe }}',
+            "save_button": '{{ form.save(class="save_button") | safe }}'
         }
         // my global vars
-        window.url = '{{ url_for('all_contracts.update_contract', contract_id=search_result.id) }}';
-        window.token = '{{ form.csrf_token() }}';
+        window.url = '{{ url_for('all_contracts.update_contract', contract_id=search_result.id) | safe}}';
+        window.token = '{{ form.csrf_token() | safe }}';
     </script>
-    <script src="{{ url_for('static', filename='js/edit_form.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/edit_form.js')  }}"></script>
     <script src="{{ url_for('static', filename='js/form_focus.js') }}"></script>
 {% endblock javascript %}
