@@ -190,7 +190,7 @@ caption {
   font-size: 4rem !important;
 }
 
-.success-adding {
+.error {
   padding-left: 1rem;
   transform: translateX(25%);
   position: absolute;
@@ -206,15 +206,15 @@ caption {
   gap: 1rem;
   animation: FadeInOut 7s ease-in-out forwards;
 }
-.success-adding > svg {
+.error > svg {
   fill: green;
   width: 5em;
 }
-.success-adding__text {
+.error__text {
   font-size: 1.5rem;
   color: #222f3e;
 }
-.success-adding__description > strong {
+.error__description > strong {
   font-size: 2.5rem;
   font-weight: 700;
 }
@@ -299,6 +299,10 @@ td {
 .rounded {
   height: 3.5rem;
   border-radius: 0.35rem;
+}
+
+.error-message {
+  position: absolute;
 }
 
 /*# sourceMappingURL=home.css.map */

@@ -13,11 +13,12 @@ create_contract_bp = Blueprint('create_contract', __name__)
 @create_contract_bp.route('/create_contract', methods=["GET", 'POST'])
 def create_contract():
     form = CreateContractForm()
-    return render_template("add_contract.html",
-                           form=form,
-                           new_contract=False,
-                           all_contracts=True,
-                           dashboard=True)
+
+    if request.method == 'POST' and form.validate_on_submit():
+        # Redirect to the save_contract route to handle form submission
+        return redirect(url_for('create_contract.save_contract'))
+
+    return render_template("add_contract.html", form=form)
 
 
 @create_contract_bp.route('/save_contract', methods=["POST"])
@@ -27,7 +28,7 @@ def save_contract():
     filtered_voen = filter_voen(form.voen.data)
     filtered_contract = filter_contract_number(form.contract_number.data)
     contract_manager = ContractManager(db.session)
-    if request.method == "POST" and form.validate_on_submit():
+    if form.validate():
         try:
             company = contract_manager.get_or_create_company(filtered_company_name, filtered_voen)
             contract = Contract(contract_number=filtered_contract,
@@ -42,14 +43,10 @@ def save_contract():
 
         except ValueError as e:
             flash(str(e), "warning")
-            return render_template('add_contract.html', form=form, new_contract=False, all_contracts=True,
-                                   dashboard=True)
-        except OperationalError as e:
+        except OperationalError:
             flash("Something went wrong. transaction was restored", "error")
             db.session.rollback()
-            return render_template('add_contract.html', form=form, new_contract=False, all_contracts=True,
-                                   dashboard=True)
     else:
-        flash("Something went wrong", "error")
-        return render_template('add_contract.html', form=form, new_contract=False, all_contracts=True,
-                               dashboard=True)
+        print("Jopa")
+        flash("Validation Error. Please check all fields", "error")
+    return render_template('add_contract.html', form=form)

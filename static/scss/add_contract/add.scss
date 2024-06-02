@@ -14,7 +14,7 @@ caption {
   font-size: $font-size-big-2 !important;
 }
 
-.success-adding {
+.error {
   padding-left: 1rem;
   transform: translateX(25%);
   position: absolute;
@@ -129,10 +129,6 @@ caption {
   scale: (1.1);
 }
 
-//.shrink {
-//    width: 60%;
-//  }
-
 td {
   padding: $padding-small;
   display: table-cell;
@@ -141,6 +137,10 @@ td {
 .rounded {
   height: 3.5rem;
   border-radius: .35rem;
+}
+
+.error-message {
+  position: absolute;
 }
 
 
