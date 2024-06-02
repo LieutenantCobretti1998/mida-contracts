@@ -47,7 +47,8 @@ def save_contract():
         except OperationalError as e:
             flash("Something went wrong. transaction was restored", "error")
             db.session.rollback()
-            return render_template('add_contract.html', form=form, new_contract=False, all_contracts=True, dashboard=True)
+            return render_template('add_contract.html', form=form, new_contract=False, all_contracts=True,
+                                   dashboard=True)
     else:
         flash("Something went wrong", "error")
         return render_template('add_contract.html', form=form, new_contract=False, all_contracts=True,

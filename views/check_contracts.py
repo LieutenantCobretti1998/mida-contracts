@@ -100,7 +100,4 @@ def update_contract(contract_id):
                     )
     search_engine.update_data(data_dict)
     search_result = search_engine.search_company()
-    return render_template("check_contract.html",
-                           search_result=search_result,
-                           contract_id=contract_id,
-                           form=form)
+    return redirect(url_for('all_contracts.get_contract', contract_id=contract_id))
