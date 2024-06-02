@@ -1,10 +1,10 @@
 "use strict";
 
 const table = document.querySelector(".table");
-const tbody = document.querySelector("tbody");
+const tbody = document.querySelector(".main-table-part");
 const aside = document.querySelector(".main_container__nav");
-let original_html = tbody.outerHTML;
-console.log(original_html);
+const original_html = table.cloneNode(true);
+console.log(table);
 let new_form;
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -41,7 +41,8 @@ function EditContract() {
     // Add edit-mode slug in url
     history.pushState({}, "", window.location.pathname + "?edit-mode");
     document.querySelector(".table").setAttribute("data-edit-mode", "true");
-    console.log(original_html);
+    console.log(table);
+    console.log(original_html)
     FocusInput();
 }
 
@@ -52,10 +53,7 @@ function CancelEdit() {
     if (edit_form_element) {
         edit_form_element.remove();
     }
-    console.log(original_html);
-    tbody.innerHTML = original_html;
-    aside.insertAdjacentElement("afterend", table);
-    table.removeAttribute("data-edit-mode");
+    aside.insertAdjacentElement("afterend", original_html);
     history.pushState({}, "", window.location.pathname);
 }
 
