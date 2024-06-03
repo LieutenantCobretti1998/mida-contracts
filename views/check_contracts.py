@@ -1,5 +1,5 @@
 import flask_wtf
-from flask import Blueprint, render_template, request, session, redirect, url_for
+from flask import Blueprint, render_template, request, session, redirect, url_for, jsonify, flash
 from forms.contract_search import SearchContract
 from forms.filters import *
 from forms.edit_contract_form import EditContractForm
@@ -91,13 +91,18 @@ def get_contract(contract_id):
 def update_contract(contract_id):
     search_engine = SearchEngine(db.session, contract_id)
     form = EditContractForm(request.form)
-    print(form.amount.data)
-    data_dict = dict(company_name=filter_string_fields(form.company.data) if form.company.data else None,
-                     voen=filter_voen(form.voen.data) if form.voen.data else None,
-                     contract_number=filter_contract_number(form.contract_number.data) if form.contract_number.data else None,
-                     date=form.date.data if form.date.data else None,
-                     amount=float(form.amount.data) if form.amount.data else None,
-                    )
-    search_engine.update_data(data_dict)
-    search_result = search_engine.search_company()
-    return redirect(url_for('all_contracts.get_contract', contract_id=contract_id))
+    if form.validate_on_submit():
+        data_dict = dict(company_name=filter_string_fields(form.company.data) if form.company.data else None,
+                         voen=filter_voen(form.voen.data) if form.voen.data else None,
+                         contract_number=filter_contract_number(
+                             form.contract_number.data) if form.contract_number.data else None,
+                         date=form.date.data if form.date.data else None,
+                         amount=float(form.amount.data) if form.amount.data else None,
+                         )
+        search_engine.update_data(data_dict)
+        flash('Contract updated successfully', 'success')
+        return jsonify(success=True, redirect_url=url_for('all_contracts.get_contract', contract_id=contract_id))
+        # return redirect(url_for('all_contracts.get_contract', contract_id=contract_id))
+    else:
+        errors = {field.name: field.errors for field in form}
+        return jsonify(errors=errors, success=False)
