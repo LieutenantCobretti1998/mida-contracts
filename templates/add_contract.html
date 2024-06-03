@@ -45,14 +45,13 @@
                 <tr>
                     <td class="table__text">
                         {{ form.contract_number.label() }}
-
                     </td>
 
                     <td>
                         {{ form.contract_number(class="table__input rounded", placeholder="CONTRACT'S NUMBER") }}
                         {% for error in form.contract_number.errors %}
-                                <div class="error-message">{{ error }}</div>
-                            {% endfor %}
+                            <div class="error-message">{{ error }}</div>
+                        {% endfor %}
                     </td>
                 </tr>
 
@@ -64,8 +63,8 @@
                     <td>
                         {{ form.date(class="table__input date rounded", value="2016-11-24") }}
                         {% for error in form.date.errors %}
-                                <div class="error-message">{{ error }}</div>
-                            {% endfor %}
+                            <div class="error-message">{{ error }}</div>
+                        {% endfor %}
                     </td>
                 </tr>
 
@@ -77,8 +76,8 @@
                     <td>
                         {{ form.amount(class="table__input rounded", placeholder="AMOUNT") }}
                         {% for error in form.amount.errors %}
-                                <div class="error-message">{{ error }}</div>
-                            {% endfor %}
+                            <div class="error-message">{{ error }}</div>
+                        {% endfor %}
                     </td>
                 </tr>
 
