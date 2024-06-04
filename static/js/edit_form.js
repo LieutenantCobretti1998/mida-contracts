@@ -23,10 +23,11 @@ function EditContract() {
     const form_elements = {
         company: form_data.company,
         voen: form_data.voen,
-        contract: form_data.contract,
+        contract_number: form_data.contract,
         date: form_data.date,
         amount: form_data.amount,
     };
+
     const save_button = form_data.save_button;
 
     // Create the new form
@@ -58,6 +59,22 @@ function EditContract() {
     for (const [id, html] of Object.entries(form_elements)) {
         document.getElementById(id).innerHTML = html;
     }
+       // Make save_button disabled unitl the first input
+    const save_button_element = document.querySelector("#save");
+    save_button_element.disabled = true;
+    save_button_element.style.pointerEvents =  save_button_element.hasAttribute("disabled") ? "none": "pointer";
+
+    // Now choose all inout fields
+    const input_fields = document.querySelectorAll("#edit-form input");
+    const filtered_fields = Array.from(input_fields).slice(2);
+    // Add event listeners to each input
+    filtered_fields.forEach((field) => {
+        field.addEventListener("input", () => {
+            const all_fields_empty = filtered_fields.every((input) => input.value === "");
+            save_button_element.disabled = all_fields_empty;
+            save_button_element.style.pointerEvents = all_fields_empty ? "none": "auto";
+        })
+    })
 
     // Add edit-mode slug in URL
     history.pushState({}, "", window.location.pathname + "?edit-mode");
@@ -118,17 +135,20 @@ function fetchSubmission(form) {
                 data => {
                     if (data.errors) {
                         // Clear previous error messages
-                        document.querySelectorAll('.error-message').forEach(e => e.remove());
+                        document.querySelectorAll('.error-list').forEach(e => e.remove());
 
                         // Display new error messages
                         for(const [field, errors] of Object.entries(data.errors)) {
                             const field_element = document.querySelector(`#${field}`);
+                            const unordered_list = document.createElement("ul");
+                            unordered_list.className = "error-list";
                             errors.forEach(error => {
-                                const error_message = document.createElement("div");
-                                error_message.classList.add("error-message");
-                                error_message.innerText = error;
-                                field_element.appendChild(error_message);
+                                const list_element = document.createElement("li");
+                                list_element.classname = "error-list__message";
+                                list_element.innerText = error;
+                                unordered_list.appendChild(list_element)
                             })
+                            field_element.appendChild(unordered_list);
                         }
                     }
                     else {

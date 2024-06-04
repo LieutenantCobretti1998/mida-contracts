@@ -12,3 +12,8 @@ amount_error_message = "The max sum is 1.000.000.000 "
 def check_voen(form, field) -> None:
     if not field.data.isdigit():
         raise ValidationError(voen_only_number_error)
+
+
+def whitespace_check(form, field) -> None:
+    if field.data.replace(" ", "") == "":
+        raise ValidationError(empty_space_message)

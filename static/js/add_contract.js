@@ -1,12 +1,11 @@
 "use strict"
 
 document.addEventListener("DOMContentLoaded", function () {
-    let successMessage = document.querySelector(".success-adding");
-    let table = document.querySelector(".table");
+    let successMessage = document.querySelector(".error");
+
     if (successMessage) {
-        table.classList.add("shrink");
         setTimeout(function () {
-            successMessage.style.display = "none";  // Hide the success message after 4 seconds
+            // successMessage.style.display = "none";  // Hide the success message after 4 seconds
             successMessage.parentNode.removeChild(successMessage);  // Remove it from the DOM
         }, 8000);
 
