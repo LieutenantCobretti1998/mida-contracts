@@ -1,9 +1,8 @@
-from typing import Any, Type
+from typing import Any, Type, Tuple
 from flask_sqlalchemy.session import Session
 from sqlalchemy import or_, desc, asc
-from sqlalchemy.exc import NoResultFound, IntegrityError, ArgumentError
+from sqlalchemy.exc import NoResultFound, IntegrityError, ArgumentError, SQLAlchemyError
 from database.models import *
-from database.models import Companies
 
 
 class ContractManager:
@@ -80,10 +79,10 @@ class SearchEngine:
                 "total_contracts": total_results
                 }
 
-    def search_voen(self) -> list:
-        searched_voen = (self.db_session.query(Companies).join(Contract, Companies.id == Contract.company_id)
-                         .filter(Companies.voen == self.search))
-        return searched_voen
+    # def search_voen(self) -> list:
+    #     searched_voen = (self.db_session.query(Companies).join(Contract, Companies.id == Contract.company_id)
+    #                      .filter(Companies.voen == self.search))
+    #     return searched_voen
 
     # def filter_results(self, results: list) -> list:
     #     filtered_results = []
@@ -120,31 +119,82 @@ class SearchEngine:
                 "total_contracts": total_contracts
                 }
 
-    def update_data(self, changes: dict) -> None:
-        result = self.db_session.query(Contract).join(Contract.company).filter(Contract.id == int(self.search)).first()
-        print(changes)
-        print(result)
-        if result:
+    def update_data(self, changes: dict) -> tuple[bool, str]:
+        """
+            The main update logic after contract's edit. it will check all the possibilities of updating or refuse the
+            contract to update based on different situations
+        """
+        contract_to_update = self.db_session.query(Contract).join(Contract.company).filter(
+            Contract.id == int(self.search)).first()
+        if not contract_to_update:
+            return False, f"Contract was not found in database"
+        try:
+            company_name = changes.get("company_name")
+            voen = changes.get("voen")
+            update_status = {'company_and_voen_updated': False}
+            if voen != contract_to_update.company.voen and company_name != contract_to_update.company.company_name:
+                existed_company_id = self.voen_and_company_matched(company_name, voen)
+                if existed_company_id:
+                    contract_to_update.company_id = existed_company_id
+                    update_status["company_and_voen_updated"] = True
+                else:
+                    return False, ("The provided company name or VOEN do not match any existing company. "
+                                   "Please check your information or create a new company record.")
+
             for key, value in changes.items():
-                if hasattr(result, key):
-                    current_value = getattr(result, key)
+                if hasattr(contract_to_update, key):
+                    current_value = getattr(contract_to_update, key)
                     if current_value != value and value is not None:
-                        setattr(result, key, value)
+                        setattr(contract_to_update, key, value)
                         print(f"Updated {key} from {current_value} to {value}")
-                    self.db_session.flush()
-                elif hasattr(result.company, key):
-                    current_value = getattr(result.company, key)
-                    print(f"Updated {key} from {current_value}")
-                    if current_value != value and value is not None:
-                        setattr(result.company, key, value)
-                        print(f"Updated {key} from {current_value} to {value}")
-                    self.db_session.flush()
+                elif hasattr(contract_to_update.company, key) and not update_status["company_and_voen_updated"]:
+                    print("AHAHAHAHAHAHAHAHAHA")
+                    current_value = getattr(contract_to_update.company, key)
+                    if current_value != value:
+                        match key:
+                            case "company_name":
+                                existed_company_id = self.is_company_exists(value)
+                                if existed_company_id:
+                                    # If company exists, change the company association
+                                    contract_to_update.company_id = existed_company_id
+                                else:
+                                    return False, (f"There is no such company in the database: {value}.Please go to the"
+                                                   f" create contract form page")
+                            case "voen":
+                                existed_voen_id = self.is_voen_exists(value)
+                                if existed_voen_id:
+                                    contract_to_update.company_id = existed_voen_id
+                                else:
+                                    return False, (f"There is no such voen related to any company in the database: "
+                                                   f"{value}.Please go to the"
+                                                   f"create contract form page")
             self.db_session.commit()
+            return True, f"Contract updated successfully"
+        except SQLAlchemyError as e:
+            print("An error occurred:", e)
+            self.db_session.rollback()
+            return False, f"An error occurred in the server"
 
-    def is_company_exists(self, company_name: str, voen: str) -> bool:
-        result = self.db_session.query(Companies).filter(or_(Companies.company_name == company_name,
-                                                             Companies.voen == voen)).first()
-        if result is not None:
-            return True
-        return False
+    def is_company_exists(self, company_name: str) -> int | None:
+        """
+            Checks if the company exists in the database. If it exists then update the contract foreign key to the other
+            company and voen else flash error
+        """
+        result = self.db_session.query(Companies).filter(Companies.company_name == company_name).first()
+        return result.id if result else None
 
+    def is_voen_exists(self, voen_result: str) -> int | None:
+        """
+               Checks if the voen exists in the database. If it exists then update the contract foreign key to the other
+               company and voen else flash error
+               """
+        result = self.db_session.query(Companies).filter_by(voen=voen_result).first()
+        return result.id if result else None
+
+    def voen_and_company_matched(self, company_name: str, voen_result: str) -> int | None:
+        """
+            Check if there is an existing company with the given name and VOEN.
+            Returns the company's ID if found, None otherwise.
+        """
+        result = self.db_session.query(Companies).filter_by(company_name=company_name, voen=voen_result).first()
+        return result.id if result else None
