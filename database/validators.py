@@ -138,7 +138,7 @@ class SearchEngine:
                     contract_to_update.company_id = existed_company_id
                     update_status["company_and_voen_updated"] = True
                 else:
-                    return False, ("The provided company name or VOEN do not match any existing company. "
+                    return False, ("The provided company name and VOEN do not match any existing company. "
                                    "Please check your information or create a new company record.")
 
             for key, value in changes.items():
