@@ -14,6 +14,14 @@ caption {
   font-size: $font-size-big-2 !important;
 }
 
+.error-list {
+  list-style: none;
+  color: red;
+  position: absolute;
+  font-size: 1.6rem;
+  text-transform: none;
+}
+
 .error {
   padding-left: 1rem;
   transform: translateX(25%);
@@ -139,8 +147,5 @@ td {
   border-radius: .35rem;
 }
 
-.error-message {
-  position: absolute;
-}
 
 

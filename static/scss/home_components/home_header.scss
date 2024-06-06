@@ -30,8 +30,9 @@
         justify-content: center;
 
         &__container {
+          align-items: center;
           display: flex;
-          gap: 2rem;
+          gap: 1.5rem;
           pointer-events: none;
         }
 
@@ -80,6 +81,22 @@
       color: $color-light-blue;
     }
   }
+}
+
+.submenu-icon {
+  & svg {
+    transition: transform .5s linear;
+    width: 1.5rem;
+    color: $color-alice-blue;
+  }
+}
+
+.rotated-down {
+  animation: rotateArrowDown .5s linear forwards;
+}
+
+.rotated-up {
+  animation: rotateArrowUp .5s linear forwards;
 }
 
 .submenu-companies,
