@@ -9,7 +9,7 @@
 {% block class_create_contract %}active{% endblock class_create_contract %}
 {% block class_create_contract_li %}remove-pointer{% endblock class_create_contract_li %}
 {% block content_part %}
-    <form action="{{ url_for('create_contract.save_contract') }}" method="post">
+    <form action="{{ url_for('create_contract.save_contract') }}" method="post" enctype="multipart/form-data">
         {{ form.csrf_token() }}
         <table class="table">
             <caption>Add a new contract</caption>
@@ -92,12 +92,32 @@
                 </tr>
 
                 <tr>
+                    <td class="table__text">
+                        {{ form.pdf_file.label() }}
+                    </td>
+                    <td>
+                        <div class="upload-container">
+                            {{ form.pdf_file(class="table__pdf-upload") }}
+                            <div class="progress-bar">
+                                <div id="progress"></div>
+                            </div>
+                        </div>
+                         <ul class="error-list">
+                            {% for error in form.pdf_file.errors %}
+                                <li class="error-list__message">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
                     <td class="table__save">
                         {{ form.save(class="table__save__button") }}
                     </td>
                 </tr>
             </tbody>
         </table>
+    </form>
         {% block pop_up_message %}
             {% with messages = get_flashed_messages(with_categories=True) %}
                     {% if messages %}
@@ -146,6 +166,9 @@
                     {% endif %}
             {% endwith %}
         {% endblock pop_up_message %}
-    </form>
 {% endblock content_part %}
-{% block javascript %} <script src={{ url_for('static', filename='js/add_contract.js') }}></script> {% endblock javascript %}
+{% block javascript %}
+    <script src={{ url_for('static', filename='js/add_contract.js') }}></script>
+    <script src={{ url_for('static', filename='js/file_loader.js') }}></script>
+{% endblock javascript %}
+
