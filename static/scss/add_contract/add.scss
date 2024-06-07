@@ -84,14 +84,14 @@ caption {
     animation: SmoothColorChange .5s forwards;
   }
 
-  tr:nth-child(odd) {
+  tr:nth-child(odd):not(:nth-last-child(-n+2)) {
     background-color: $color-white;
   }
-  tr:nth-child(odd) {
+  tr:nth-child(odd):not(:nth-last-child(-n+2)) {
     background-image: linear-gradient(to right, $color-white, darken($color-white, 10%));
   }
 
-  tr:nth-child(even):not(:last-child) {
+  tr:nth-child(even):not(:nth-last-child(-n+2)) {
     background-image: linear-gradient(to right, $color-table-background, darken($color-table-background, 10%)); // Gradient adjustment
   }
 
@@ -147,5 +147,21 @@ td {
   border-radius: .35rem;
 }
 
+.upload-container {
+    display: flex;
+    align-items: center;
+}
 
+.progress-bar {
+    width: 200px; /* Fixed width or max width for the outer progress bar */
+    height: 20px;
+    background-color: lightgrey;
+    margin-left: 10px; /* Space between the file input and progress bar */
+}
+
+#progress {
+    height: 100%;
+    background-color: green;
+    width: 0; /* Start with no fill */
+}
 
