@@ -71,6 +71,7 @@ function EditContract() {
     filtered_fields.forEach((field) => {
         field.addEventListener("input", () => {
             const all_fields_empty = filtered_fields.every((input) => input.value === "");
+            console.log(all_fields_empty)
             save_button_element.disabled = all_fields_empty;
             save_button_element.style.pointerEvents = all_fields_empty ? "none": "auto";
         })
@@ -115,17 +116,17 @@ function FocusInput() {
 }
 
 function fetchSubmission(form) {
-    console.log(form);
     form.addEventListener("submit", (event) => {
         event.preventDefault();
         const submitter = event.submitter;
         const form_data = new FormData(form, submitter);
+        console.log(form_data.get("csrf_token"))
 
         fetch(form.action, {
             method: "POST",
             body: form_data,
             headers: {
-                "X-CSRFToken": form_data.get("csrf_token")
+                "X-CSRFToken": "pizda"
             }
         })
             .then(
