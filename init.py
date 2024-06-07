@@ -1,5 +1,5 @@
 from flask import Flask
-from configuration import WTF_CSRF_SECRET_KEY, APP_SECRET_KEY, TEST_DB_URI
+from configuration import *
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from database.db_init import db
@@ -13,6 +13,7 @@ def create_app() -> Flask:
     app.config["WTF_CSRF_SECRET_KEY"] = WTF_CSRF_SECRET_KEY
     app.config["SECRET_KEY"] = APP_SECRET_KEY
     app.config["SQLALCHEMY_DATABASE_URI"] = TEST_DB_URI
+    app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
     from views.create_contract import create_contract_bp
     app.register_blueprint(create_contract_bp)
     from views.check_contracts import check_contracts_bp

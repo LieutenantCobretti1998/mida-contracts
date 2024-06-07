@@ -1,8 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, SubmitField, DateField, DecimalField
+from wtforms import StringField, SubmitField, DateField, DecimalField
+from flask_wtf.file import FileRequired, FileAllowed, FileField
 from wtforms.validators import DataRequired, NumberRange, Length
-from forms.custom_validators import check_voen, voen_number_enough_error, \
-    symbol_error_message, empty_field, amount_error_message
+from forms.custom_validators import *
 
 
 # Form installation
@@ -20,5 +20,9 @@ class CreateContractForm(FlaskForm):
                                                      message=symbol_error_message)])
     date = DateField("date", validators=[DataRequired(message=empty_field)])
     amount = DecimalField("amount", validators=[DataRequired(message=empty_field),
-                                                NumberRange(min=1, max=1000000000, message=amount_error_message)])
+                                                NumberRange(min=1, max=1000000000, message=amount_error_message)]
+                          )
+    pdf_file = FileField("Upload pdf", validators=[FileRequired(message=empty_field),
+                                                   FileAllowed(["pdf"], pdf_files_only)]
+                         )
     save = SubmitField('save')
