@@ -2,7 +2,6 @@
 
 document.addEventListener("DOMContentLoaded", function () {
     let successMessage = document.querySelector(".error");
-
     if (successMessage) {
         setTimeout(function () {
             // successMessage.style.display = "none";  // Hide the success message after 4 seconds
