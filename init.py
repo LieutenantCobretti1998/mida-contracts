@@ -20,7 +20,8 @@ def create_app() -> Flask:
     app.register_blueprint(check_contracts_bp)
     # initialize of flask app and db
     db.init_app(app)
-    migrate = Migrate(app, db, render_as_batch=True)
+    migrate = Migrate()
+    migrate.init_app(app, db, render_as_batch=True)
     with app.app_context():
         db.create_all()
     return app

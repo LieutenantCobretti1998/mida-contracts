@@ -1,3 +1,5 @@
+import os
+
 from wtforms.validators import ValidationError
 
 symbol_error_message = "Please enter an input between 1 and 16 characters."
@@ -18,3 +20,12 @@ def check_voen(form, field) -> None:
 def whitespace_check(form, field) -> None:
     if field.data.replace(" ", "") == "":
         raise ValidationError(empty_space_message)
+
+
+def add_contract_pdf(dir: str, company_name: str, pdf_filename: str) -> str:
+    company_folder = os.path.join(dir, company_name)
+    if not os.path.exists(company_folder):
+        os.mkdir(company_folder)
+    file_path = os.path.join(company_folder, pdf_filename)
+    return file_path
+
