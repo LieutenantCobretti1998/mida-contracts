@@ -67,11 +67,14 @@ function EditContract() {
     // Now choose all inout fields
     const input_fields = document.querySelectorAll("#edit-form input");
     const filtered_fields = Array.from(input_fields).slice(2);
+    const fields_to_check = filtered_fields.filter((field) => field.id !== "date");
     // Add event listeners to each input
     filtered_fields.forEach((field) => {
         field.addEventListener("input", () => {
-            const all_fields_empty = filtered_fields.every((input) => input.value === "");
-            console.log(all_fields_empty)
+            const all_fields_empty = filtered_fields.every((input) => input.value.trim() === "");
+            // Check separately the date input
+            const date_field = document.querySelector("[name=date]");
+            console.log(date_field.value);
             save_button_element.disabled = all_fields_empty;
             save_button_element.style.pointerEvents = all_fields_empty ? "none": "auto";
         })
@@ -120,14 +123,10 @@ function fetchSubmission(form) {
         event.preventDefault();
         const submitter = event.submitter;
         const form_data = new FormData(form, submitter);
-        console.log(form_data.get("csrf_token"))
 
         fetch(form.action, {
             method: "POST",
             body: form_data,
-            headers: {
-                "X-CSRFToken": "pizda"
-            }
         })
             .then(
                 response => response.json()
