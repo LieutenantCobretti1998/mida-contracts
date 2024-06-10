@@ -130,7 +130,7 @@
             "company": `{{ form.company(placeholder=search_result.company.company_name.upper(), class="table__input rounded", id="default_input") | safe }}`,
             "voen": '{{ form.voen(placeholder= search_result.company.voen.upper(), class="table__input rounded") | safe}}',
             "contract": '{{ form.contract_number(placeholder=search_result.contract_number.upper(), class="table__input rounded") | safe }}',
-            "date": '{{ form.date(placeholder=search_result.date, class="table__input rounded", value=search_result.date ) | safe }}',
+            "date": '{{ form.date(placeholder=search_result.date, class="table__input rounded") | safe }}',
             "amount": '{{ form.amount(placeholder="%.2f"|format(search_result.amount), class="table__input rounded") | safe }}',
             "save_button": '{{ form.save(class="save_button") | safe }}'
         }
