@@ -18,7 +18,8 @@ class CreateContractForm(FlaskForm):
                                   validators=[DataRequired(message=empty_field),
                                               Length(min=1, max=16,
                                                      message=symbol_error_message)])
-    date = DateField("date", validators=[DataRequired(message=empty_field)])
+    date = DateField("date", validators=[DataRequired(message=empty_field),
+                                         is_date_valid])
     amount = DecimalField("amount", validators=[DataRequired(message=empty_field),
                                                 NumberRange(min=1, max=1000000000, message=amount_error_message)]
                           )

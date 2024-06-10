@@ -1,8 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, DateField, DecimalField
 from wtforms.validators import DataRequired, NumberRange, Length, Optional
-from forms.custom_validators import empty_field, symbol_error_message, check_voen, voen_number_enough_error, \
-    amount_error_message, whitespace_check
+from forms.custom_validators import *
 
 
 class EditContractForm(FlaskForm):
@@ -17,7 +16,7 @@ class EditContractForm(FlaskForm):
     contract_number = StringField("contract number", validators=[Length(min=1, max=16, message=symbol_error_message),
                                                                  Optional(strip_whitespace=False),
                                                                  whitespace_check])
-    date = DateField("date", validators=[Optional(strip_whitespace=False)])
+    date = DateField("date", validators=[Optional(strip_whitespace=False), is_date_valid])
     amount = DecimalField("amount", validators=[NumberRange(min=1, max=1000000000, message=amount_error_message),
                                                 Optional(strip_whitespace=False),
                                                 ])

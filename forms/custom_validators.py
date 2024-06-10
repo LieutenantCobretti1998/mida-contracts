@@ -17,11 +17,13 @@ def check_voen(form, field) -> None:
         raise ValidationError(voen_only_number_error)
 
 
+# White space check
 def whitespace_check(form, field) -> None:
     if field.data.replace(" ", "") == "":
         raise ValidationError(empty_space_message)
 
 
+# Create a folder for newly added pdf
 def add_contract_pdf(dir: str, company_name: str, pdf_filename: str) -> str:
     company_folder = os.path.join(dir, company_name)
     if not os.path.exists(company_folder):
@@ -29,3 +31,8 @@ def add_contract_pdf(dir: str, company_name: str, pdf_filename: str) -> str:
     file_path = os.path.join(company_folder, pdf_filename)
     return file_path
 
+
+# Check if the date is not actually just an empty date
+def is_date_valid(form, field) -> None:
+    if not field:
+        raise ValidationError(empty_field)
