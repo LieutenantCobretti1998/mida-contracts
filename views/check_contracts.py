@@ -4,7 +4,7 @@ from forms.contract_search import SearchContract
 from forms.filters import *
 from forms.edit_contract_form import EditContractForm
 from database.db_init import db
-from database.validators import SearchEngine
+from database.validators import SearchEngine, Edit
 from configuration import POSTS_PER_PAGE
 
 
@@ -90,6 +90,7 @@ def get_contract(contract_id):
 @check_contracts_bp.route('/update_contract/<int:contract_id>', methods=['GET', 'POST'])
 def update_contract(contract_id):
     search_engine = SearchEngine(db.session, contract_id)
+    edit_engine = Edit(db.session, contract_id)
     original_data = search_engine.search_company()
     form = EditContractForm(request.form)
 
@@ -101,7 +102,7 @@ def update_contract(contract_id):
                          date=form.date.data if form.date.data else original_data.date,
                          amount=float(form.amount.data) if form.amount.data else original_data.amount,
                          )
-        success, message = search_engine.update_data(data_dict)
+        success, message = edit_engine.update_data(data_dict)
         if success:
             flash(message, "success")
             return jsonify(redirect_url=url_for('all_contracts.get_contract', contract_id=contract_id))
