@@ -3,11 +3,17 @@ from flask_sqlalchemy.session import Session
 from sqlalchemy import or_, desc, asc
 from sqlalchemy.exc import NoResultFound, IntegrityError, ArgumentError, SQLAlchemyError
 from database.models import *
+from abc import ABC
 
 
-class ContractManager:
+class ValidatorWrapper(ABC):
     def __init__(self, db_session: Session):
         self.db_session = db_session
+
+
+class ContractManager(ValidatorWrapper):
+    def __init__(self, db_session: Session):
+        super().__init__(db_session)
 
     def get_or_create_company(self, company_name: str, voen: str) -> None | Type[Companies] | Companies:
         if not company_name:
@@ -42,10 +48,10 @@ class ContractManager:
             return False
 
 
-class SearchEngine:
+class SearchEngine(ValidatorWrapper):
     def __init__(self, db_session: Session, search: str = None):
+        super().__init__(db_session)
         self.search = search
-        self.db_session = db_session
 
     def search_query(self, page: int, per_page: int, filters: str, order: str) -> dict:
         # results = self.db_session.query(Companies).join(Contract).filter(or_(
@@ -119,13 +125,47 @@ class SearchEngine:
                 "total_contracts": total_contracts
                 }
 
+
+class Edit(ValidatorWrapper):
+    def __init__(self, db_session: Session, contract_id: int):
+        super().__init__(db_session)
+        self.id = contract_id
+
+    # Helpers methods for update logic
+    def is_company_exists(self, company_name: str) -> int | None:
+        """
+            Checks if the company exists in the database. If it exists then update the contract foreign key to the other
+            company and voen else flash error
+        """
+        result = self.db_session.query(Companies).filter(Companies.company_name == company_name).first()
+        return result.id if result else None
+
+    def is_voen_exists(self, voen_result: str) -> int | None:
+        """
+               Checks if the voen exists in the database. If it exists then update the contract foreign key to the other
+               company and voen else flash error
+               """
+        result = self.db_session.query(Companies).filter_by(voen=voen_result).first()
+        return result.id if result else None
+
+    def voen_and_company_matched(self, company_name: str, voen_result: str) -> int | None:
+        """
+            Check if there is an existing company with the given name and VOEN.
+            Returns the company's ID if found, None otherwise.
+        """
+        result = self.db_session.query(Companies).filter_by(company_name=company_name, voen=voen_result).first()
+        return result.id if result else None
+
+    # Helpers methods for update logic
+
+    #  Main update logic is here
     def update_data(self, changes: dict) -> tuple[bool, str]:
         """
             The main update logic after contract's edit. it will check all the possibilities of updating or refuse the
             contract to update based on different situations
         """
         contract_to_update = self.db_session.query(Contract).join(Contract.company).filter(
-            Contract.id == int(self.search)).first()
+            Contract.id == int(self.id)).first()
         if not contract_to_update:
             return False, f"Contract was not found in database"
         try:
@@ -148,7 +188,6 @@ class SearchEngine:
                         setattr(contract_to_update, key, value)
                         print(f"Updated {key} from {current_value} to {value}")
                 elif hasattr(contract_to_update.company, key) and not update_status["company_and_voen_updated"]:
-                    print("AHAHAHAHAHAHAHAHAHA")
                     current_value = getattr(contract_to_update.company, key)
                     if current_value != value:
                         match key:
@@ -174,27 +213,3 @@ class SearchEngine:
             print("An error occurred:", e)
             self.db_session.rollback()
             return False, f"An error occurred in the server"
-
-    def is_company_exists(self, company_name: str) -> int | None:
-        """
-            Checks if the company exists in the database. If it exists then update the contract foreign key to the other
-            company and voen else flash error
-        """
-        result = self.db_session.query(Companies).filter(Companies.company_name == company_name).first()
-        return result.id if result else None
-
-    def is_voen_exists(self, voen_result: str) -> int | None:
-        """
-               Checks if the voen exists in the database. If it exists then update the contract foreign key to the other
-               company and voen else flash error
-               """
-        result = self.db_session.query(Companies).filter_by(voen=voen_result).first()
-        return result.id if result else None
-
-    def voen_and_company_matched(self, company_name: str, voen_result: str) -> int | None:
-        """
-            Check if there is an existing company with the given name and VOEN.
-            Returns the company's ID if found, None otherwise.
-        """
-        result = self.db_session.query(Companies).filter_by(company_name=company_name, voen=voen_result).first()
-        return result.id if result else None
