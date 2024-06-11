@@ -59,6 +59,21 @@ function EditContract() {
     for (const [id, html] of Object.entries(form_elements)) {
         document.getElementById(id).innerHTML = html;
     }
+
+    // Pdf container will be uploaded separately
+    document.getElementById("pdf_file").parentElement.innerHTML = `
+            <div class="upload-container">
+                ${form_data.pdf_file}
+                <div class="progress-bar">
+                    <div id="progress"></div>
+                </div>    
+            </div>
+        `;
+    const pdf_label =
+        `
+            <td>PDF</td>
+        `
+    document.querySelector(".upload-container").insertAdjacentHTML("beforebegin", pdf_label)
        // Make save_button disabled unitl the first input
     const save_button_element = document.querySelector("#save");
     save_button_element.disabled = true;
@@ -74,7 +89,6 @@ function EditContract() {
             const all_fields_empty = filtered_fields.every((input) => input.value.trim() === "");
             // Check separately the date input
             const date_field = document.querySelector("[name=date]");
-            console.log(date_field.value);
             save_button_element.disabled = all_fields_empty;
             save_button_element.style.pointerEvents = all_fields_empty ? "none": "auto";
         })
