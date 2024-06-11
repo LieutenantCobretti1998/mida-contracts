@@ -239,17 +239,23 @@ body {
   cursor: default;
   animation: SmoothColorChange 0.5s forwards;
 }
-.table tbody > tr:nth-child(odd):not(:first-child) {
+.table tbody > tr:nth-child(odd):not(:first-child):not(:last-child) {
   background-color: white;
 }
-.table tbody > tr:nth-child(odd):not(:first-child) {
+.table tbody > tr:nth-child(odd):not(:first-child):not(:last-child) {
   background-image: linear-gradient(to right, white, #e6e6e6);
 }
 .table tbody > tr:nth-child(even) {
   background-image: linear-gradient(to right, #FEFAF6, #f9e1c8);
 }
 
+.preview-pdf a {
+  text-decoration: none;
+  color: #222f3e;
+}
+
 .back,
+.preview-pdf,
 .edit,
 .cancel,
 .save_button {
@@ -263,11 +269,19 @@ body {
   box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.2);
 }
 .back:active,
+.preview-pdf:active,
 .edit:active,
 .cancel:active,
 .save_button:active {
   transform: scale(0.95);
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+}
+.back:hover,
+.preview-pdf:hover,
+.edit:hover,
+.cancel:hover,
+.save_button:hover {
+  background-color: #f9e1c8;
 }
 
 .buttons {

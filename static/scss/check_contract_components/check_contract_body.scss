@@ -33,10 +33,10 @@
       cursor: default;
       animation: SmoothColorChange .5s forwards;
     }
-    &:nth-child(odd):not(:first-child) {
+    &:nth-child(odd):not(:first-child):not(:last-child) {
       background-color: $color-white;
     }
-    &:nth-child(odd):not(:first-child) {
+    &:nth-child(odd):not(:first-child):not(:last-child) {
       background-image: linear-gradient(to right, $color-white, darken($color-white, 10%));
     }
     &:nth-child(even) {
@@ -44,8 +44,15 @@
   }
   }
 }
+.preview-pdf {
+  & a {
+    text-decoration: none;
+    color: $color-black;
+  }
+}
 
 .back,
+.preview-pdf,
 .edit,
 .cancel,
 .save_button{
@@ -61,6 +68,10 @@
   &:active {
     transform: scale(0.95);
     box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  &:hover {
+      background-color: darken($color-table-background, 10%);
   }
 }
 
