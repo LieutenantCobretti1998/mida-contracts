@@ -1,5 +1,5 @@
 import flask_wtf
-from flask import Blueprint, render_template, request, session, redirect, url_for, jsonify, flash
+from flask import Blueprint, render_template, request, session, redirect, url_for, jsonify, flash, send_file
 from forms.contract_search import SearchContract
 from forms.filters import *
 from forms.edit_contract_form import EditContractForm
@@ -114,3 +114,13 @@ def update_contract(contract_id):
         errors = {field.name: field.errors for field in form}
         print(errors)
         return jsonify(errors=errors, success=False)
+
+
+@check_contracts_bp.route('/preview_pdf/<int:contract_id>', methods=['GET'])
+def preview_pdf(contract_id):
+    search_engine = SearchEngine(db.session, contract_id)
+    contract_result = search_engine.search_company()
+    if contract_result and contract_result.pdf_file_path:
+        return send_file(contract_result.pdf_file_path)
+    else:
+        return jsonify({"error": "Company not found"}), 404

@@ -156,6 +156,9 @@ class Edit(ValidatorWrapper):
         result = self.db_session.query(Companies).filter_by(company_name=company_name, voen=voen_result).first()
         return result.id if result else None
 
+    # def is_company_has_contracts(self, company_name: str) ->bool:
+    #     result = self.db_session.query(C)
+
     # Helpers methods for update logic
 
     #  Main update logic is here

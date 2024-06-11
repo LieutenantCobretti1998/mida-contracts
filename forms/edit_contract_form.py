@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms import StringField, IntegerField, SubmitField, DateField, DecimalField
 from wtforms.validators import DataRequired, NumberRange, Length, Optional
 from forms.custom_validators import *
@@ -20,4 +21,7 @@ class EditContractForm(FlaskForm):
     amount = DecimalField("amount", validators=[NumberRange(min=1, max=1000000000, message=amount_error_message),
                                                 Optional(strip_whitespace=False),
                                                 ])
+    pdf_file = FileField("Upload pdf", validators=[Optional(strip_whitespace=False),
+                                                   FileAllowed(["pdf"], pdf_files_only)]
+                         )
     save = SubmitField('Save')
