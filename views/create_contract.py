@@ -1,5 +1,3 @@
-import os
-
 from flask import Blueprint, render_template, request, redirect, jsonify, flash, url_for, current_app
 from werkzeug.utils import secure_filename
 from sqlalchemy.exc import OperationalError, IntegrityError
@@ -30,8 +28,11 @@ def save_contract():
     if form.validate():
         try:
             file = form.pdf_file.data
+            voen = form.voen.data
             filename = secure_filename(file.filename)
-            file_path = add_contract_pdf(current_app.config['UPLOAD_FOLDER'], filtered_company_name, filename)
+            print(filename)
+            file_path = add_contract_pdf(current_app.config['UPLOAD_FOLDER'], filtered_company_name, filename, voen)
+            print(file_path)
             file.save(file_path)
             company = contract_manager.get_or_create_company(filtered_company_name, filtered_voen)
             contract = Contract(contract_number=filtered_contract,

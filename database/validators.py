@@ -1,7 +1,11 @@
-from typing import Any, Type, Tuple
+import shutil
+from typing import Any, Type
+import os
+from flask import current_app
+from werkzeug.utils import secure_filename
 from flask_sqlalchemy.session import Session
 from sqlalchemy import or_, desc, asc
-from sqlalchemy.exc import NoResultFound, IntegrityError, ArgumentError, SQLAlchemyError
+from sqlalchemy.exc import NoResultFound, SQLAlchemyError
 from database.models import *
 from abc import ABC
 
@@ -43,7 +47,8 @@ class ContractManager(ValidatorWrapper):
         except NoResultFound:
             return False
 
-    def one_voen_one_company(self, voen: str) -> bool:
+    @staticmethod
+    def one_voen_one_company(voen: str) -> bool:
         if not voen:
             return False
 
@@ -156,8 +161,21 @@ class Edit(ValidatorWrapper):
         result = self.db_session.query(Companies).filter_by(company_name=company_name, voen=voen_result).first()
         return result.id if result else None
 
-    # def is_company_has_contracts(self, company_name: str) ->bool:
-    #     result = self.db_session.query(C)
+    def change_pdf_file_path(self, company_id: int, old_file_path: str, contract_id: int) -> None:
+        new_company_name = self.db_session.query(Companies).where(Companies.id == company_id).first().company_name
+        print(new_company_name)
+        company_upload_path = os.path.join(current_app.config['UPLOAD_FOLDER'], new_company_name)
+        company_upload_path = os.path.normpath(company_upload_path)
+        print(company_upload_path)
+        old_file_path = os.path.normpath(old_file_path)
+        new_file_path = os.path.join(str(company_upload_path), os.path.basename(old_file_path))
+        print(f"Old File Path: {old_file_path}")
+        print(f"New File Path: {new_file_path}")
+
+        os.rename(old_file_path, new_file_path)
+        save_in_db = self.db_session.query(Contract).where(Contract.id == contract_id).first()
+        new_file_path = new_file_path.replace("\\", "/")
+        save_in_db.pdf_file_path = new_file_path
 
     # Helpers methods for update logic
 
@@ -198,6 +216,9 @@ class Edit(ValidatorWrapper):
                                 existed_company_id = self.is_company_exists(value)
                                 if existed_company_id:
                                     # If company exists, change the company association
+                                    self.change_pdf_file_path(existed_company_id,
+                                                              contract_to_update.pdf_file_path,
+                                                              contract_to_update.id)
                                     contract_to_update.company_id = existed_company_id
                                 else:
                                     return False, (f"There is no such company in the database: {value}.Please go to the"
@@ -205,6 +226,9 @@ class Edit(ValidatorWrapper):
                             case "voen":
                                 existed_voen_id = self.is_voen_exists(value)
                                 if existed_voen_id:
+                                    self.change_pdf_file_path(existed_voen_id,
+                                                              contract_to_update.pdf_file_path,
+                                                              contract_to_update.id)
                                     contract_to_update.company_id = existed_voen_id
                                 else:
                                     return False, (f"There is no such voen related to any company in the database: "
