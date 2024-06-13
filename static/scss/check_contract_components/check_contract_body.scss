@@ -150,3 +150,23 @@
   }
 }
 
+.upload-container {
+    display: flex;
+    align-items: center;
+}
+
+.progress-bar {
+    width: 200px; /* Fixed width or max width for the outer progress bar */
+    height: 20px;
+    background-color: lightgrey;
+    margin-left: 10px; /* Space between the file input and progress bar */
+}
+
+#progress {
+    height: 100%;
+    background-color: green;
+    width: 0; /* Start with no fill */
+}
+
+
+
