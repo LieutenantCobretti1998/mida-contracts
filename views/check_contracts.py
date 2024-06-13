@@ -1,7 +1,6 @@
 import flask_wtf
 from flask import Blueprint, render_template, request, session, redirect, url_for, jsonify, flash, send_file
 from werkzeug.utils import secure_filename
-
 from forms.contract_search import SearchContract
 from forms.filters import *
 from forms.edit_contract_form import EditContractForm
@@ -94,7 +93,7 @@ def update_contract(contract_id):
     search_engine = SearchEngine(db.session, contract_id)
     edit_engine = Edit(db.session, contract_id)
     original_data = search_engine.search_company()
-    form = EditContractForm(request.form)
+    form = EditContractForm()
     print(form.contract_number.data)
     print(form.pdf_file.data)
     if form.validate_on_submit():

@@ -141,7 +141,7 @@
             "contract": '{{ form.contract_number(placeholder=search_result.contract_number.upper(), class="table__input rounded") | safe }}',
             "date": '{{ form.date(placeholder=search_result.date, class="table__input rounded") | safe }}',
             "amount": '{{ form.amount(placeholder="%.2f"|format(search_result.amount), class="table__input rounded") | safe }}',
-            "pdf_file": '{{ form.pdf_file }}',
+            "pdf_file": '{{ form.pdf_file | safe }}',
             "save_button": '{{ form.save(class="save_button table__save__button") | safe }}'
         }
         // my global vars

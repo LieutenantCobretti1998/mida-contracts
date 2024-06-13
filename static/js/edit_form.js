@@ -65,8 +65,10 @@ function EditContract() {
     const pdfContainer = form_edit.querySelector("#pdf_file_label");
     pdfContainer.innerHTML = `
         <td>
+            <div class="upload-container">
                 ${form_data.pdf_file}
                 <div class="progress-bar"><div id="progress"></div></div>
+            </div>
         </td>
     `;
        // Make save_button disabled unitl the first input
