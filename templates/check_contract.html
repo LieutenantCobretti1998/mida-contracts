@@ -34,14 +34,14 @@
                            <input type="hidden" name="page" value="{{ session.get("page") }}">
                             <div class="buttons">
                                 <button type="submit" class="back">Back</button>
-                                <button type="button" class="edit" onclick="EditContract()">Edit</button>
+                                <button type="button" class="edit" onclick="EditContract(); fileLoader()">Edit</button>
                             </div>
                         </form>
                     </td>
                 </tr>
                 <tr>
                     <td>Company</td>
-                    <td id="company">
+                    <td id="company_label">
                         <div>
                             {{ search_result.company.company_name }}
                         </div>
@@ -49,7 +49,7 @@
                 </tr>
                 <tr>
                     <td>VOEN</td>
-                    <td id="voen">
+                    <td id="voen_label">
                     <div>
                         {{ search_result.company.voen }}
                     </div>
@@ -57,27 +57,27 @@
                 </tr>
                 <tr>
                     <td>Contract number</td>
-                    <td id="contract_number">
+                    <td id="contract_number_label">
                         {{ search_result.contract_number }}
                     </td>
                 </tr>
                 <tr>
                     <td>date</td>
-                    <td id="date">
+                    <td id="date_label">
                         {{ search_result.date }}
                     </td>
                 </tr>
                 <tr>
                     <td>amount</td>
-                    <td id="amount">
+                    <td id="amount_label">
                         {{ "%.2f" | format(search_result.amount) }}
                     </td>
                 </tr>
 
                 <tr>
                     <td>PDF</td>
-                    <td id="pdf_file">
-                        <button class="preview-pdf">
+                    <td id="pdf_file_label">
+                        <button class="preview-pdf" id="pdf_file">
                             <a href="{{ url_for("all_contracts.preview_pdf", contract_id=search_result.id) }}">Preview PDF</a>
                         </button>
                     </td>
@@ -151,5 +151,12 @@
     <script src="{{ url_for('static', filename='js/edit_form.js')  }}"></script>
     <script src="{{ url_for('static', filename='js/form_focus.js') }}"></script>
     <script src={{ url_for('static', filename='js/add_contract.js') }}></script>
-    <script src="{{ url_for('static', filename='js/file_loader.js') }}"></script>
+    <script>
+        function fileLoader() {
+            const script = document.createElement("script");
+            script.id = "dynamic_script";
+            script.src = "{{ url_for('static', filename='js/file_loader.js') }}";
+            document.body.appendChild(script);
+        }
+    </script>
 {% endblock javascript %}
