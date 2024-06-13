@@ -1,6 +1,6 @@
 import os
-from uuid import uuid4
 from wtforms.validators import ValidationError
+from forms.filters import *
 
 symbol_error_message = "Please enter an input between 1 and 16 characters."
 empty_field = "This field is required"
@@ -29,11 +29,6 @@ def is_date_valid(form, field) -> None:
         raise ValidationError(empty_field)
 
     # Make the file name unique
-
-
-def make_unique(filename: str) -> str:
-    ident = str(uuid4())
-    return f"{ident}_{filename}"
 
 
 # Create a folder for newly added pdf

@@ -1,5 +1,7 @@
 import flask_wtf
 from flask import Blueprint, render_template, request, session, redirect, url_for, jsonify, flash, send_file
+from werkzeug.utils import secure_filename
+
 from forms.contract_search import SearchContract
 from forms.filters import *
 from forms.edit_contract_form import EditContractForm
@@ -87,13 +89,14 @@ def get_contract(contract_id):
                            form=form)
 
 
-@check_contracts_bp.route('/update_contract/<int:contract_id>', methods=['GET', 'POST'])
+@check_contracts_bp.route('/update_contract/<int:contract_id>', methods=['POST'])
 def update_contract(contract_id):
     search_engine = SearchEngine(db.session, contract_id)
     edit_engine = Edit(db.session, contract_id)
     original_data = search_engine.search_company()
     form = EditContractForm(request.form)
-
+    print(form.contract_number.data)
+    print(form.pdf_file.data)
     if form.validate_on_submit():
         data_dict = dict(company_name=filter_string_fields(form.company.data) if form.company.data else original_data.company.company_name,
                          voen=filter_voen(form.voen.data) if form.voen.data else original_data.company.voen,
@@ -101,8 +104,9 @@ def update_contract(contract_id):
                              form.contract_number.data) if form.contract_number.data else original_data.contract_number,
                          date=form.date.data if form.date.data else original_data.date,
                          amount=float(form.amount.data) if form.amount.data else original_data.amount,
+                         pdf_file_path=secure_filename(form.pdf_file.data.filename) if form.pdf_file.data else original_data.pdf_file_path,
                          )
-        success, message = edit_engine.update_data(data_dict)
+        success, message = edit_engine.update_data(data_dict, form.pdf_file.data)
         if success:
             flash(message, "success")
             return jsonify(redirect_url=url_for('all_contracts.get_contract', contract_id=contract_id))
@@ -112,7 +116,6 @@ def update_contract(contract_id):
         # return redirect(url_for('all_contracts.get_contract', contract_id=contract_id))
     else:
         errors = {field.name: field.errors for field in form}
-        print(errors)
         return jsonify(errors=errors, success=False)
 
 

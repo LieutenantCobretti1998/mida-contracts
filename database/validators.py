@@ -1,6 +1,8 @@
 import shutil
 from typing import Any, Type
 import os
+
+import flask
 from flask import current_app
 from werkzeug.utils import secure_filename
 from flask_sqlalchemy.session import Session
@@ -177,10 +179,20 @@ class Edit(ValidatorWrapper):
         new_file_path = new_file_path.replace("\\", "/")
         save_in_db.pdf_file_path = new_file_path
 
+    def change_pdf_itself(self, contract_id: int, new_pdf_file_name: str, pdf_file_data: flask) -> None:
+        contract = self.db_session.query(Contract).where(Contract.id == contract_id).first()
+        contract_pdf = contract.pdf_file_path
+        new_pdf_path = os.path.join(os.path.dirname(contract_pdf), new_pdf_file_name)
+        new_pdf_path = os.path.normpath(new_pdf_path)
+        os.remove(contract_pdf)
+        pdf_file_data.save(new_pdf_path)
+        contract.pdf_file_path = new_pdf_path
+        self.db_session.commit()
+
     # Helpers methods for update logic
 
     #  Main update logic is here
-    def update_data(self, changes: dict) -> tuple[bool, str]:
+    def update_data(self, changes: dict, pdf_file: flask) -> tuple[bool, str]:
         """
             The main update logic after contract's edit. it will check all the possibilities of updating or refuse the
             contract to update based on different situations
@@ -207,7 +219,10 @@ class Edit(ValidatorWrapper):
                     current_value = getattr(contract_to_update, key)
                     if current_value != value and value is not None:
                         setattr(contract_to_update, key, value)
-                        print(f"Updated {key} from {current_value} to {value}")
+                    elif key == "pdf_file_path":
+                        print("The provided PDF file path is Pizda")
+                        # self.change_pdf_itself(contract_to_update.id, current_value, pdf_file)
+
                 elif hasattr(contract_to_update.company, key) and not update_status["company_and_voen_updated"]:
                     current_value = getattr(contract_to_update.company, key)
                     if current_value != value:
