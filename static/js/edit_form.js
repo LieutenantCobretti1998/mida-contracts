@@ -32,7 +32,7 @@ function EditContract() {
 
     // Create the new form
     new_form = `
-    <form action="${window.url}" method="post" id="edit-form">
+    <form action="${window.url}" method="post" id="edit-form" enctype="multipart/form-data">
         ${window.token}       
     </form>
    `;
@@ -57,23 +57,18 @@ function EditContract() {
 
     // Replace the table cells with input elements
     for (const [id, html] of Object.entries(form_elements)) {
-        document.getElementById(id).innerHTML = html;
+        document.getElementById(`${id}_label`).innerHTML = html;
     }
 
     // Pdf container will be uploaded separately
-    document.getElementById("pdf_file").parentElement.innerHTML = `
-            <div class="upload-container">
+    // Setup PDF container
+    const pdfContainer = form_edit.querySelector("#pdf_file_label");
+    pdfContainer.innerHTML = `
+        <td>
                 ${form_data.pdf_file}
-                <div class="progress-bar">
-                    <div id="progress"></div>
-                </div>    
-            </div>
-        `;
-    const pdf_label =
-        `
-            <td>PDF</td>
-        `
-    document.querySelector(".upload-container").insertAdjacentHTML("beforebegin", pdf_label)
+                <div class="progress-bar"><div id="progress"></div></div>
+        </td>
+    `;
        // Make save_button disabled unitl the first input
     const save_button_element = document.querySelector("#save");
     save_button_element.disabled = true;
@@ -82,7 +77,6 @@ function EditContract() {
     // Now choose all inout fields
     const input_fields = document.querySelectorAll("#edit-form input");
     const filtered_fields = Array.from(input_fields).slice(2);
-    const fields_to_check = filtered_fields.filter((field) => field.id !== "date");
     // Add event listeners to each input
     filtered_fields.forEach((field) => {
         field.addEventListener("input", () => {
@@ -122,6 +116,8 @@ function CancelEdit() {
 
     // Remove edit-mode slug in URL
     history.pushState({}, "", window.location.pathname);
+    const dynamic_script = document.getElementById("dynamic_script");
+    document.body.removeChild(dynamic_script);
 }
 
 // Helper function to focus on the first input element in the form
