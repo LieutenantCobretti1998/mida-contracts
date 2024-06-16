@@ -33,7 +33,6 @@ def save_contract():
             print(filename)
             file_path = add_contract_pdf(current_app.config['UPLOAD_FOLDER'], filtered_company_name, filename, voen)
             print(file_path)
-            file.save(file_path)
             company = contract_manager.get_or_create_company(filtered_company_name, filtered_voen)
             contract = Contract(contract_number=filtered_contract,
                                 date=form.date.data,
@@ -41,6 +40,7 @@ def save_contract():
                                 company_id=company.id,
                                 pdf_file_path=file_path
                                 )
+            file.save(file_path)
             db.session.add(contract)
             db.session.commit()
             flash("The contract is saved successfully!", "success")

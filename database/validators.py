@@ -1,3 +1,4 @@
+import re
 import shutil
 from typing import Any, Type
 import os
@@ -163,31 +164,33 @@ class Edit(ValidatorWrapper):
         result = self.db_session.query(Companies).filter_by(company_name=company_name, voen=voen_result).first()
         return result.id if result else None
 
-    def change_pdf_file_path(self, company_id: int, old_file_path: str, contract_id: int) -> None:
+    def change_pdf_file_path(self, company_id: int, old_file_path: str, contract_id: int) -> str:
         new_company_name = self.db_session.query(Companies).where(Companies.id == company_id).first().company_name
-        print(new_company_name)
+        new_company_voen = self.db_session.query(Companies).where(Companies.id == company_id).first().voen
+        print(f"New company voen: {new_company_voen}")
+        print(os.path.basename(old_file_path))
         company_upload_path = os.path.join(current_app.config['UPLOAD_FOLDER'], new_company_name)
         company_upload_path = os.path.normpath(company_upload_path)
         print(company_upload_path)
         old_file_path = os.path.normpath(old_file_path)
-        new_file_path = os.path.join(str(company_upload_path), os.path.basename(old_file_path))
+        new_file_path = os.path.join(str(company_upload_path), os.path.basename(re.sub(r"_\d{10}_",
+                                                                                       f"_{new_company_voen}_",
+                                                                                       old_file_path)))
         print(f"Old File Path: {old_file_path}")
         print(f"New File Path: {new_file_path}")
 
         os.rename(old_file_path, new_file_path)
-        save_in_db = self.db_session.query(Contract).where(Contract.id == contract_id).first()
-        new_file_path = new_file_path.replace("\\", "/")
-        save_in_db.pdf_file_path = new_file_path
+        new_file_path = os.path.normpath(new_file_path)
+        return new_file_path
 
-    def change_pdf_itself(self, contract_id: int, new_pdf_file_name: str, pdf_file_data: flask) -> None:
-        contract = self.db_session.query(Contract).where(Contract.id == contract_id).first()
-        contract_pdf = contract.pdf_file_path
-        new_pdf_path = os.path.join(os.path.dirname(contract_pdf), new_pdf_file_name)
+    @staticmethod
+    def change_pdf_itself(previous_pdf_file_path: str, new_pdf_file_name: str) -> str:
+        print(f"{new_pdf_file_name}: {previous_pdf_file_path}")
+        new_pdf_path = os.path.join(os.path.dirname(previous_pdf_file_path), new_pdf_file_name)
         new_pdf_path = os.path.normpath(new_pdf_path)
-        os.remove(contract_pdf)
-        pdf_file_data.save(new_pdf_path)
-        contract.pdf_file_path = new_pdf_path
-        self.db_session.commit()
+        print(f"New File Path: {new_pdf_path}")
+        os.remove(previous_pdf_file_path)
+        return new_pdf_path
 
     # Helpers methods for update logic
 
@@ -217,12 +220,16 @@ class Edit(ValidatorWrapper):
             for key, value in changes.items():
                 if hasattr(contract_to_update, key):
                     current_value = getattr(contract_to_update, key)
-                    if current_value != value and value is not None:
-                        setattr(contract_to_update, key, value)
-                    elif key == "pdf_file_path":
-                        print("The provided PDF file path is Pizda")
-                        # self.change_pdf_itself(contract_to_update.id, current_value, pdf_file)
+                    if key == "pdf_file_path" and current_value != value:
+                        try:
+                            new_pdf_path = self.change_pdf_itself(current_value, value)
+                            setattr(contract_to_update, key, new_pdf_path)
+                            pdf_file.save(new_pdf_path)
+                        except FileNotFoundError:
+                            print("There is the file path problem. It was corrupted or not existed")
 
+                    elif current_value != value:
+                        setattr(contract_to_update, key, value)
                 elif hasattr(contract_to_update.company, key) and not update_status["company_and_voen_updated"]:
                     current_value = getattr(contract_to_update.company, key)
                     if current_value != value:
@@ -230,21 +237,22 @@ class Edit(ValidatorWrapper):
                             case "company_name":
                                 existed_company_id = self.is_company_exists(value)
                                 if existed_company_id:
-                                    # If company exists, change the company association
-                                    self.change_pdf_file_path(existed_company_id,
-                                                              contract_to_update.pdf_file_path,
-                                                              contract_to_update.id)
+                                    new_pdf_file_path = self.change_pdf_file_path(existed_company_id,
+                                                                                  contract_to_update.pdf_file_path,
+                                                                                  contract_to_update.id)
                                     contract_to_update.company_id = existed_company_id
+                                    contract_to_update.pdf_file_path = new_pdf_file_path
                                 else:
                                     return False, (f"There is no such company in the database: {value}.Please go to the"
                                                    f" create contract form page")
                             case "voen":
                                 existed_voen_id = self.is_voen_exists(value)
                                 if existed_voen_id:
-                                    self.change_pdf_file_path(existed_voen_id,
-                                                              contract_to_update.pdf_file_path,
-                                                              contract_to_update.id)
+                                    new_pdf_file_path = self.change_pdf_file_path(existed_voen_id,
+                                                                                  contract_to_update.pdf_file_path,
+                                                                                  contract_to_update.id)
                                     contract_to_update.company_id = existed_voen_id
+                                    contract_to_update.pdf_file_path = new_pdf_file_path
                                 else:
                                     return False, (f"There is no such voen related to any company in the database: "
                                                    f"{value}.Please go to the"

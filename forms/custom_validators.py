@@ -37,6 +37,6 @@ def add_contract_pdf(directory: str, company_name: str, pdf_filename: str, voen:
     company_folder = os.path.normpath(company_folder)
     if not os.path.exists(company_folder):
         os.mkdir(company_folder)
-    unique_filename = make_unique(f"{pdf_filename}_{voen}.pdf")
-    file_path = os.path.join(company_folder, unique_filename).replace("\\", "/")
+    unique_filename = make_unique(f"{voen}_{pdf_filename}")
+    file_path = os.path.join(company_folder, unique_filename)
     return file_path
