@@ -69,8 +69,8 @@ class SearchEngine(ValidatorWrapper):
         # )).all()
         results = self.db_session.query(Contract).join(Contract.company).filter(or_(
             Companies.company_name.ilike(f"%{self.search}%"),
-            Companies.voen.ilike(f"%{self.search}"),
-            Contract.contract_number.ilike(f"%{self.search}")
+            Companies.voen.ilike(f"%{self.search}%"),
+            Contract.contract_number.ilike(f"%{self.search}%"),
         ))
 
         # Filters

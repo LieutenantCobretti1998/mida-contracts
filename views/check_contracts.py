@@ -29,7 +29,8 @@ def handle_search(search_query: str, form: flask_wtf.Form, page: int, filters: s
                            action=session["action"],
                            search_query=search_query,
                            filters=filters,
-                           order=order
+                           order=order,
+                           posts_per_page=POSTS_PER_PAGE
                            )
 
 
@@ -48,6 +49,7 @@ def handle_all_contracts(form: flask_wtf.Form, page: int) -> render_template:
                            page=page,
                            total_pages=total_pages,
                            action=session["action"],
+                           posts_per_page=POSTS_PER_PAGE
                            )
 
 

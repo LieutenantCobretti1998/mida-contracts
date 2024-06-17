@@ -141,17 +141,28 @@ function fetchSubmission(form) {
             body: form_data,
         })
             .then(
-                response => response.json()
+                response => {
+                    const content_type = response.headers.get("content-type");
+                    if(content_type.includes("application/json")) {
+                        return response.json();
+                    } else {
+                        return response.text().then(text => {
+                            throw new Error("Expected json, got html" + text)
+                        })
+                    }
+                }
             )
             .then(
                 data => {
                     if (data.errors) {
                         // Clear previous error messages
-                        document.querySelectorAll('.error-list').forEach(e => e.remove());
-
+                        document.querySelectorAll('.error-list').forEach(e => e.remove())
                         // Display new error messages
                         for(const [field, errors] of Object.entries(data.errors)) {
-                            const field_element = document.querySelector(`#${field}`);
+                            if (field === "save") {
+                                continue;
+                            }
+                            const field_element = document.getElementById(`${field}_label`);
                             const unordered_list = document.createElement("ul");
                             unordered_list.className = "error-list";
                             errors.forEach(error => {

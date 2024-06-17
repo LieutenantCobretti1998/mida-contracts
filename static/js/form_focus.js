@@ -19,4 +19,5 @@ function FocusInput() {
             });
      }
 }
+FocusInput();
 

@@ -13,7 +13,7 @@
     </div>
 {% endblock loading %}
 {% block content_part %}
-    {% set counter = namespace(value=0) %}
+    {% set counter = namespace(value=(page - 1) * posts_per_page) %}
     <table class="table">
         <caption>
             <div class="table__header">
@@ -56,7 +56,7 @@
                     {% for contract in company.contracts %}
                         {% set counter.value = counter.value + 1 %}
                         <tr>
-                            <td>{{ contract.id }}</td>
+                            <td>{{ counter.value }}</td>
                             <td>{{ company.company_name }}</td>
                             <td>{{ company.voen }}</td>
                             <td>{{ contract.contract_number }}</td>
@@ -68,7 +68,7 @@
                 {% elif company.__class__.__name__ == 'Contract' %}
                     {% set counter.value = counter.value + 1 %}
                     <tr>
-                            <td>{{ company.id}}</td>
+                            <td>{{ counter.value }}</td>
                             <td>{{ company.company.company_name }}</td>
                             <td>{{ company.company.voen }}</td>
                             <td>{{ company.contract_number }}</td>
