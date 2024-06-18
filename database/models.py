@@ -8,6 +8,10 @@ class Companies(Base):
     id = Column(Integer, primary_key=True)
     company_name = Column(VARCHAR(16), nullable=False)
     voen = Column(CHAR(10), nullable=False, unique=True)
+    email = Column(VARCHAR())
+    telephone_number = Column(VARCHAR())
+    address = Column(VARCHAR())
+    website = Column(VARCHAR())
     contracts = relationship('Contract', back_populates='company', cascade='all, delete, delete-orphan')
 
 

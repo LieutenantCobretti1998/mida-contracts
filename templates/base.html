@@ -50,7 +50,7 @@
                                 </li>
 
                                 <li class="{% block class_check_contract_li %}{% endblock class_check_contract_li %}">
-                                    <a class="submenu-contracts__sub-options {% block class_all_contracts %}{% endblock class_all_contracts %} " href="{{ url_for('all_contracts.get_all_contracts') }}">All Contracts</a>
+                                    <a class="submenu-contracts__sub-options {% block class_all_contracts %}{% endblock class_all_contracts %}" href="{{ url_for('all_contracts.get_all_contracts') }}">All Contracts</a>
                                 </li>
                             </ul>
                     </li>
@@ -72,7 +72,7 @@
                         </div>
                             <ul class="submenu-companies__sub-options submenu hidden">
                                     <li>
-                                        <a class="submenu-companies__sub-options {% block class_add_comp_requisites %}{% endblock class_add_comp_requisites %}" href="{{ url_for('create_contract.create_contract') }}">Company requisites</a>
+                                        <a class="submenu-companies__sub-options {% block class_add_comp_requisites %}{% endblock class_add_comp_requisites %}" href="{{ url_for('create_company.create_company') }}">Create Company</a>
                                     </li>
 
                                     <li>
