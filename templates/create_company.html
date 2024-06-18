@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %} Create contract's form {% endblock title %}
+{% block style %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/create_company.css') }}">
+{% endblock style %}
+{% block content_part %}
+    <form action="{{ url_for('create_company.create_company') }}">
+        {{ form.csrf_token() }}
+    </form>
+    <table class="table">
+            <caption>Add a new contract</caption>
+            <thead></thead>
+    </table>
+{% endblock content_part %}
+
+{% block javascript %}
+{% endblock javascript %}
