@@ -1,11 +1,8 @@
 import re
-import shutil
 from typing import Any, Type
 import os
-
 import flask
 from flask import current_app
-from werkzeug.utils import secure_filename
 from flask_sqlalchemy.session import Session
 from sqlalchemy import or_, desc, asc
 from sqlalchemy.exc import NoResultFound, SQLAlchemyError
@@ -263,3 +260,8 @@ class Edit(ValidatorWrapper):
             print("An error occurred:", e)
             self.db_session.rollback()
             return False, f"An error occurred in the server"
+
+
+class CompanyManager(ContractManager):
+    def __init__(self, db_session: Session):
+        super().__init__(db_session)
