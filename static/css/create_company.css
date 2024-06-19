@@ -290,7 +290,7 @@ caption {
 .table tr:nth-child(odd):not(:nth-last-child(-n+2)) {
   background-image: linear-gradient(to right, white, #e6e6e6);
 }
-.table tr:nth-child(even):not(:nth-last-child(-n+2)) {
+.table tr:nth-child(even):not(:last-child) {
   background-image: linear-gradient(to right, #FEFAF6, #f9e1c8);
 }
 .table__input {
@@ -299,10 +299,6 @@ caption {
 }
 .table__input::placeholder {
   padding-left: 1vw;
-}
-.table__save {
-  width: 100%;
-  height: 100%;
 }
 .table__save__button {
   background-color: #FEFAF6;

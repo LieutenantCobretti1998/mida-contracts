@@ -4,13 +4,166 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/create_company.css') }}">
 {% endblock style %}
 {% block content_part %}
-    <form action="{{ url_for('create_company.create_company') }}">
+    <form action="{{ url_for('create_company.save_company') }}" method="POST">
         {{ form.csrf_token() }}
+        <table class="table">
+                <caption>Add a new company</caption>
+                <thead></thead>
+                <tbody class="table__body">
+                <tr>
+                    <td class="table__text">
+                        {{ form.company.label() }}
+                    </td>
+                    <td>
+                        <div>
+                            {{ form.company(id="default_input", class="table__input rounded", placeholder="COMPANY") }}
+                            <ul class="error-list">
+                                {% for error in form.company.errors %}
+                                    <li class="error-list__message">{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                        <td class="table__text">
+                            {{ form.voen.label() }}
+                        </td>
+                        <td>
+                            <div>
+                                {{ form.voen(class="table__input rounded", placeholder="VOEN")  }}
+                                <ul class="error-list">
+                                {% for error in form.voen.errors %}
+                                    <li class="error-list__message">{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                            </div>
+                        </td>
+                </tr>
+
+                 <tr>
+                        <td class="table__text">
+                            {{ form.email.label() }}
+                        </td>
+                        <td>
+                            <div>
+                                {{ form.email(class="table__input rounded", placeholder="EMAIL")  }}
+                                <ul class="error-list">
+                                {% for error in form.email.errors %}
+                                    <li class="error-list__message">{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                            </div>
+                        </td>
+                 </tr>
+
+                 <tr>
+                        <td class="table__text">
+                            {{ form.telephone_number.label() }}
+                        </td>
+                        <td>
+                            <div>
+                                {{ form.telephone_number(class="table__input rounded", placeholder="TELEPHONE NUMBER")  }}
+                                <ul class="error-list">
+                                {% for error in form.telephone_number.errors %}
+                                    <li class="error-list__message">{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                            </div>
+                        </td>
+                 </tr>
+
+                 <tr>
+                        <td class="table__text">
+                            {{ form.address.label() }}
+                        </td>
+                        <td>
+                            <div>
+                                {{ form.address(class="table__input rounded", placeholder="ADDRESS")  }}
+                                <ul class="error-list">
+                                {% for error in form.address.errors %}
+                                    <li class="error-list__message">{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                            </div>
+                        </td>
+                 </tr>
+
+
+                  <tr>
+                        <td class="table__text">
+                            {{ form.website.label() }}
+                        </td>
+                        <td>
+                            <div>
+                                {{ form.website(class="table__input rounded", placeholder="WEBSITE")  }}
+                                <ul class="error-list">
+                                {% for error in form.website.errors %}
+                                    <li class="error-list__message">{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                            </div>
+                        </td>
+                 </tr>
+
+                 <tr>
+                     <td class="table__save">
+                         {{ form.save(class="table__save__button") }}
+                     </td>
+                 </tr>
+
+                </tbody>
+        </table>
     </form>
-    <table class="table">
-            <caption>Add a new contract</caption>
-            <thead></thead>
-    </table>
+    {% block pop_up_message %}
+            {% with messages = get_flashed_messages(with_categories=True) %}
+                    {% if messages %}
+                        <div class="error">
+                        {% for category, message in messages %}
+                            {% if category == 'success' %}
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                    <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-1.25 16.518l-4.5-4.319 1.396-1.435 3.078 2.937 6.105-6.218 1.421 1.409-7.5 7.626z">
+                                    </path>
+                                </svg>
+                                <div class="error__description">
+                                    <strong>Success</strong>
+                                    <p class="error__text">{{ message }}</p>
+                                </div>
+                            {% elif category == "warning" %}
+                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="256" height="256" viewBox="0 0 256 256" xml:space="preserve">
+                                    <defs>
+                                    </defs>
+                                    <g style="stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;" transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)" >
+                                        <path d="M 45 90 C 20.187 90 0 69.813 0 45 C 0 20.187 20.187 0 45 0 c 24.813 0 45 20.187 45 45 C 90 69.813 69.813 90 45 90 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(255,170,0); fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
+                                        <path d="M 45 57.469 L 45 57.469 c -1.821 0 -3.319 -1.434 -3.399 -3.252 L 38.465 23.95 c -0.285 -3.802 2.722 -7.044 6.535 -7.044 h 0 c 3.813 0 6.82 3.242 6.535 7.044 l -3.137 30.267 C 48.319 56.036 46.821 57.469 45 57.469 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(255,255,255); fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
+                                        <circle cx="45" cy="67.67" r="5.42" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(255,255,255); fill-rule: nonzero; opacity: 1;" transform="  matrix(1 0 0 1 0 0) "/>
+                                    </g>
+                                </svg>
+                                <div class="error__description">
+                                    <strong>Warning</strong>
+                                    <p class="success-adding__text">{{ message }}</p>
+                                </div>
+                            {% elif category == "error" %}
+                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="256" height="256" viewBox="0 0 256 256" xml:space="preserve">
+                                <defs>
+                                </defs>
+                                <g style="stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;" transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)" >
+                                    <path d="M 45 90 C 20.187 90 0 69.813 0 45 C 0 20.187 20.187 0 45 0 c 24.813 0 45 20.187 45 45 C 90 69.813 69.813 90 45 90 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(229,0,0); fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
+                                    <path d="M 45 57.469 L 45 57.469 c -1.821 0 -3.319 -1.434 -3.399 -3.252 L 38.465 23.95 c -0.285 -3.802 2.722 -7.044 6.535 -7.044 h 0 c 3.813 0 6.82 3.242 6.535 7.044 l -3.137 30.267 C 48.319 56.036 46.821 57.469 45 57.469 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(255,255,255); fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
+                                    <circle cx="45" cy="67.67" r="5.42" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(255,255,255); fill-rule: nonzero; opacity: 1;" transform="  matrix(1 0 0 1 0 0) "/>
+                                </g>
+                                </svg>
+                                 <div class="error__description">
+                                    <strong>Error</strong>
+                                    <p class="error__text">{{ message }}</p>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        </div>
+                    {% endif %}
+            {% endwith %}
+        {% endblock pop_up_message %}
 {% endblock content_part %}
 
 {% block javascript %}

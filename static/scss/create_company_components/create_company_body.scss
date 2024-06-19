@@ -91,7 +91,7 @@ caption {
     background-image: linear-gradient(to right, $color-white, darken($color-white, 10%));
   }
 
-  tr:nth-child(even):not(:nth-last-child(-n+2)) {
+  tr:nth-child(even):not(:last-child) {
     background-image: linear-gradient(to right, $color-table-background, darken($color-table-background, 10%)); // Gradient adjustment
   }
 
@@ -104,8 +104,6 @@ caption {
     }
   }
   &__save {
-    width: 100%;
-    height: 100%;
 
     &__button {
       background-color: $color-table-background;
