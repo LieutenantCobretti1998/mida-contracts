@@ -1,6 +1,6 @@
-from flask import Blueprint, render_template, request, redirect, jsonify, flash, url_for, current_app
+from flask import Blueprint, render_template, redirect, flash, url_for, current_app
 from werkzeug.utils import secure_filename
-from sqlalchemy.exc import OperationalError, IntegrityError
+from sqlalchemy.exc import OperationalError
 from forms.create_contract_form import CreateContractForm
 from database.models import *
 from database.db_init import db
@@ -34,12 +34,13 @@ def save_contract():
             file_path = add_contract_pdf(current_app.config['UPLOAD_FOLDER'], filtered_company_name, filename, voen)
             print(file_path)
             company = contract_manager.get_or_create_company(filtered_company_name, filtered_voen)
-            contract = Contract(contract_number=filtered_contract,
-                                date=form.date.data,
-                                amount=float(form.amount.data),
-                                company_id=company.id,
-                                pdf_file_path=file_path
-                                )
+            contract = Contract(
+                contract_number=filtered_contract,
+                date=form.date.data,
+                amount=float(form.amount.data),
+                company_id=company.id,
+                pdf_file_path=file_path
+            )
             file.save(file_path)
             db.session.add(contract)
             db.session.commit()
