@@ -42,6 +42,70 @@
                         </td>
                 </tr>
 
+                <tr>
+                        <td class="table__text">
+                            {{ form.bank_name.label() }}
+                        </td>
+                        <td>
+                            <div>
+                                {{ form.bank_name(class="table__input rounded", placeholder="BANK NAME")  }}
+                                <ul class="error-list">
+                                {% for error in form.bank_name.errors %}
+                                    <li class="error-list__message">{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                            </div>
+                        </td>
+                </tr>
+
+                <tr>
+                        <td class="table__text">
+                            {{ form.m_h.label() }}
+                        </td>
+                        <td>
+                            <div>
+                                {{ form.m_h(class="table__input rounded", placeholder="M/h")  }}
+                                <ul class="error-list">
+                                {% for error in form.m_h.errors %}
+                                    <li class="error-list__message">{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                            </div>
+                        </td>
+                </tr>
+
+                <tr>
+                        <td class="table__text">
+                            {{ form.h_h.label() }}
+                        </td>
+                        <td>
+                            <div>
+                                {{ form.h_h(class="table__input rounded", placeholder="H/h")  }}
+                                <ul class="error-list">
+                                {% for error in form.h_h.errors %}
+                                    <li class="error-list__message">{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                            </div>
+                        </td>
+                </tr>
+
+                <tr>
+                        <td class="table__text">
+                            {{ form.swift.label() }}
+                        </td>
+                        <td>
+                            <div>
+                                {{ form.swift(class="table__input rounded", placeholder="SWIFT")  }}
+                                <ul class="error-list">
+                                {% for error in form.swift.errors %}
+                                    <li class="error-list__message">{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                            </div>
+                        </td>
+                </tr>
+
                  <tr>
                         <td class="table__text">
                             {{ form.email.label() }}

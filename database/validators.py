@@ -265,3 +265,15 @@ class Edit(ValidatorWrapper):
 class CompanyManager(ContractManager):
     def __init__(self, db_session: Session):
         super().__init__(db_session)
+
+    def check_swift(self, swift_code: str) -> bool | ValueError:
+        if not swift_code:
+            return False
+
+        swift_code_query = self.db_session.query(Companies).filter_by(swift=swift_code).first()
+        if swift_code_query:
+            return True
+        else:
+            return ValueError(
+                f"Invalid swift code: {swift_code}. It is already linked to a {swift_code_query.company_name} company") \
+                if swift_code_query is not None else False

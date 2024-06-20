@@ -26,7 +26,20 @@ def save_company():
 
         try:
             company = company_manager.get_or_create_company(filtered_company_name, filtered_voen)
-            db.session.add(company)
+            company_manager.check_swift(form.company.data)
+            company_row = Companies(
+                company_name=company.company_name,
+                voen=company.voen,
+                bank_name=form.bank_name.data,
+                m_h=form.m_h.data,
+                h_h=form.h_h.data,
+                swift=form.swift.data,
+                email=form.email.data,
+                telephone_number=form.telephone_number.data,
+                address=form.address.data,
+                website=form.website.data
+            )
+            db.session.add(company_row)
             db.session.commit()
             flash("The contract is saved successfully!", "success")
             return redirect(url_for("create_company.create_company"))
