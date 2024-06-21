@@ -15,7 +15,9 @@
   box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.2);
 
   &__input {
-    width: 98%;
+    box-sizing: border-box;
+    padding-left: 10px;
+    width: 100%;
     transition: scale .2s ease-in-out;
 
     &::placeholder {

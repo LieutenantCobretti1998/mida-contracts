@@ -96,6 +96,8 @@ caption {
   }
 
   &__input {
+    box-sizing: border-box;
+    padding-left: 10px;
     width: 100%;
     transition: scale .2s ease-in-out;
 

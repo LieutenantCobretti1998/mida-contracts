@@ -294,6 +294,8 @@ caption {
   background-image: linear-gradient(to right, #FEFAF6, #f9e1c8);
 }
 .table__input {
+  box-sizing: border-box;
+  padding-left: 10px;
   width: 100%;
   transition: scale 0.2s ease-in-out;
 }
