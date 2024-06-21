@@ -19,7 +19,7 @@ class ContractManager(ValidatorWrapper):
     def __init__(self, db_session: Session):
         super().__init__(db_session)
 
-    def get_or_create_company(self, company_name: str, voen: str) -> None | Type[Companies] | Companies:
+    def get_or_create_company(self, company_name: str, voen: str, *args, **kwargs) -> None | Type[Companies] | Companies:
         if not company_name:
             return None
 
@@ -32,10 +32,8 @@ class ContractManager(ValidatorWrapper):
             if self.check_voen(voen):
                 raise ValueError(
                     f"VOEN is already linked to {self.db_session.query(Companies).filter_by(voen=voen).one().company_name} company")
-
             company = Companies(company_name=company_name, voen=voen)
             self.db_session.add(company)
-            self.db_session.flush()
             return company
 
     def check_voen(self, voen: str) -> bool:
@@ -269,11 +267,23 @@ class CompanyManager(ContractManager):
     def check_swift(self, swift_code: str) -> bool | ValueError:
         if not swift_code:
             return False
-
         swift_code_query = self.db_session.query(Companies).filter_by(swift=swift_code).first()
         if swift_code_query:
-            return True
-        else:
-            return ValueError(
-                f"Invalid swift code: {swift_code}. It is already linked to a {swift_code_query.company_name} company") \
+            raise ValueError(f"Invalid swift code: {swift_code}. It is already linked to a {swift_code_query.company_name} company") \
                 if swift_code_query is not None else False
+        return False
+
+    def get_or_create_company(self, company_name: str, voen: str, company_data=None, *args, **kwargs) -> None:
+        try:
+            company = self.db_session.query(Companies).filter_by(company_name=company_name).one()
+            if company.voen != voen:
+                raise ValueError(f"The {company_name} company already has a voen {company.voen}")
+
+            for key, value in company_data.items():
+                if value is not None:
+                    print(f"{key}: {value}")
+                    setattr(company, key, value)
+        except NoResultFound:
+            if self.check_voen(voen):
+                raise ValueError(
+                    f"VOEN is already linked to {self.db_session.query(Companies).filter_by(voen=voen).one().company_name} company")

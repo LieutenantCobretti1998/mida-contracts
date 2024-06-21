@@ -3,6 +3,8 @@
 {% block style %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/create_company.css') }}">
 {% endblock style %}
+{% block class_create_company_li %}remove-pointer{% endblock class_create_company_li %}
+{% block class_add_comp_requisites %}active{% endblock class_add_comp_requisites %}
 {% block content_part %}
     <form action="{{ url_for('create_company.save_company') }}" method="POST">
         {{ form.csrf_token() }}
@@ -229,6 +231,6 @@
             {% endwith %}
         {% endblock pop_up_message %}
 {% endblock content_part %}
-
 {% block javascript %}
+    <script src="{{ url_for('static', filename='js/add_contract.js') }}"></script>
 {% endblock javascript %}

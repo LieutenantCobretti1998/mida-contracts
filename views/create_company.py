@@ -1,8 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, jsonify, flash
 from sqlalchemy.exc import OperationalError
-
 from database.db_init import db
-from database.models import Companies
 from database.validators import CompanyManager
 from forms.create_company import CompanyForm
 from forms.filters import filter_string_fields, filter_voen
@@ -22,26 +20,22 @@ def save_company():
     company_manager = CompanyManager(db.session)
     filtered_company_name = filter_string_fields(form.company.data)
     filtered_voen = filter_voen(form.voen.data)
+    company_data = dict(
+        bank_name=form.bank_name.data if form.bank_name.data else None,
+        m_h=form.m_h.data if form.m_h.data else None,
+        h_h=form.h_h.data if form.h_h.data else None,
+        swift=form.swift.data if form.swift.data else None,
+        email=form.email.data if form.email.data else None,
+        telephone_number=form.telephone_number.data if form.telephone_number.data else None,
+        address=form.address.data if form.address.data else None,
+        website=form.website.data if form.website.data else None
+    )
     if form.validate():
-
         try:
-            company = company_manager.get_or_create_company(filtered_company_name, filtered_voen)
-            company_manager.check_swift(form.company.data)
-            company_row = Companies(
-                company_name=company.company_name,
-                voen=company.voen,
-                bank_name=form.bank_name.data,
-                m_h=form.m_h.data,
-                h_h=form.h_h.data,
-                swift=form.swift.data,
-                email=form.email.data,
-                telephone_number=form.telephone_number.data,
-                address=form.address.data,
-                website=form.website.data
-            )
-            db.session.add(company_row)
+            company_manager.check_swift(form.swift.data, filtered_voen)
+            company_manager.get_or_create_company(filtered_company_name, filtered_voen, company_data)
             db.session.commit()
-            flash("The contract is saved successfully!", "success")
+            flash("The company requisites is saved successfully!", "success")
             return redirect(url_for("create_company.create_company"))
         except ValueError as e:
             flash(str(e), "warning")
