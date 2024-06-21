@@ -32,7 +32,7 @@ def save_company():
     )
     if form.validate():
         try:
-            company_manager.check_swift(form.swift.data, filtered_voen)
+            company_manager.check_swift(form.swift.data)
             company_manager.get_or_create_company(filtered_company_name, filtered_voen, company_data)
             db.session.commit()
             flash("The company requisites is saved successfully!", "success")

@@ -287,3 +287,17 @@ class CompanyManager(ContractManager):
             if self.check_voen(voen):
                 raise ValueError(
                     f"VOEN is already linked to {self.db_session.query(Companies).filter_by(voen=voen).one().company_name} company")
+            else:
+                company = Companies(
+                    company_name=company_name,
+                    voen=voen,
+                    bank_name=company_data['bank_name'],
+                    m_h=company_data['m_h'],
+                    h_h=company_data['h_h'],
+                    swift=company_data['swift'],
+                    email=company_data['email'],
+                    telephone_number=company_data['telephone_number'],
+                    address=company_data['address'],
+                    website=company_data['website']
+                )
+                self.db_session.add(company)
