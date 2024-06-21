@@ -71,11 +71,11 @@
                             </div>
                         </div>
                             <ul class="submenu-companies__sub-options submenu hidden">
-                                    <li>
-                                        <a class="submenu-companies__sub-options {% block class_add_comp_requisites %}{% endblock class_add_comp_requisites %}" href="{{ url_for('create_company.create_company') }}">Create Company</a>
+                                    <li class="{% block class_create_company_li %}{% endblock class_create_company_li %}">
+                                        <a class="submenu-companies__sub-options {% block class_add_comp_requisites %}{% endblock class_add_comp_requisites %}" href="{{ url_for('create_company.create_company') }}">Add Requisites</a>
                                     </li>
 
-                                    <li>
+                                    <li class="{% block class_all_company_li %}{% endblock class_all_company_li %}">
                                         <a class="submenu-companies__sub-options {% block class_all_companies %}{% endblock class_all_companies %}" href="{{ url_for('all_contracts.get_all_contracts') }}">All Companies</a>
                                     </li>
                             </ul>
