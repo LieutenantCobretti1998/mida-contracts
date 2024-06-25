@@ -4,7 +4,7 @@ import os
 import flask
 from flask import current_app
 from flask_sqlalchemy.session import Session
-from sqlalchemy import or_, desc, asc
+from sqlalchemy import or_, desc, asc, func
 from sqlalchemy.exc import NoResultFound, SQLAlchemyError
 from database.models import *
 from abc import ABC
@@ -19,7 +19,8 @@ class ContractManager(ValidatorWrapper):
     def __init__(self, db_session: Session):
         super().__init__(db_session)
 
-    def get_or_create_company(self, company_name: str, voen: str, *args, **kwargs) -> None | Type[Companies] | Companies:
+    def get_or_create_company(self, company_name: str, voen: str, *args, **kwargs) -> None | Type[
+        Companies] | Companies:
         if not company_name:
             return None
 
@@ -269,7 +270,8 @@ class CompanyManager(ContractManager):
             return False
         swift_code_query = self.db_session.query(Companies).filter_by(swift=swift_code).first()
         if swift_code_query:
-            raise ValueError(f"Invalid swift code: {swift_code}. It is already linked to a {swift_code_query.company_name} company") \
+            raise ValueError(
+                f"Invalid swift code: {swift_code}. It is already linked to a {swift_code_query.company_name} company") \
                 if swift_code_query is not None else False
         return False
 
@@ -301,3 +303,28 @@ class CompanyManager(ContractManager):
                     website=company_data['website']
                 )
                 self.db_session.add(company)
+
+
+class CompanySearchEngine(SearchEngine):
+    def __init__(self, db_session: Session):
+        super().__init__(db_session)
+
+    def get_all_results(self, page: int, per_page: int, db=None, *args, **kwargs) -> dict[str, int | Any]:
+        # list_of_colmns = self.db_session.query(Companies)
+        stmt = self.db_session.query(
+            Companies.id,
+            Companies.company_name,
+            Companies.voen,
+            func.count(Contract.id).label('contract_count')).outerjoin(Contract, Companies.contracts).group_by(Companies.id)
+        total_companies = self.db_session.query(func.count(Companies.id)).scalar()
+        offset = (page - 1) * per_page
+        limited_results = stmt.offset(offset).limit(per_page).all()
+        results = [{
+            "company_id": company_id,
+            "company_name": company_name,
+            "voen": voen,
+            "contract_count": contract_count
+        } for company_id, company_name, voen, contract_count in limited_results]
+        return {"results_per_page": results,
+                "total_companies": total_companies,
+                }
