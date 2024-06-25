@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %} Check Companies {% endblock title %}
+{% block style %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/check_companies.css') }}"
+{% endblock style %}
+
+{% block class_all_companies %}active{% endblock class_all_companies %}
+{% block class_all_company_li %}remove-pointer{% endblock class_all_company_li %}
+
+{% block loading %}
+    <div class="loader">
+        <div class="inner one"></div>
+        <div class="inner two"></div>
+        <div class="inner three"></div>
+    </div>
+{% endblock loading %}
+
+{% block content_part %}
+    {% set counter = namespace(value=(page-1) * posts_per_page) %}
+    <table class="table">
+        <caption>
+            <div class="table__header">
+                <div class="table__header__search">
+                     <form action="{{ url_for('all_contracts.get_all_contracts') }}" method="get">
+                        {{ form.search(class="table__header__search__label", placeholder="Search") }}
+                        <button class="table__header__search__button" type="submit" name="action" value="search">Search</button>
+                        <button class="table__header__search__button" type="submit" name="action" value="all">All Companies</button>
+                     </form>
+                </div>
+                All Companies -{% if amount_of_companies %} {{ amount_of_companies }} {% else %} 0 {% endif %}
+            </div>
+        </caption>
+        <thead>
+            <tr>
+                <th><strong>No</strong></th>
+                <th>COMPANY</th>
+                <th>Voen</th>
+                <th>Number of Contracts</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for company in companies %}
+                {% set counter.value = counter.value + 1 %}
+                <tr>
+                    <td>{{ counter.value }}</td>
+                    <td>{{ company.company_name }}</td>
+                    <td>{{ company.voen }}</td>
+                    <td>{{ company.contract_count }}</td>
+                    <td>
+                        <a href="#" class="check">Check</a>
+                    </td>
+                </tr>
+            {% endfor %}
+
+        <tr class="pagination_buttons">
+                <td></td>
+{#                <td></td>#}
+                <td id="prev">
+                    <form action="{{ url_for('all_companies.get_all_companies') }}" method="get">
+                        {% if action == 'search' %}
+                            <input type="hidden" name="search" value="{{ search_query }}">
+                            <input type="hidden" name="action" value="{{ action }}">
+
+                            {% if filters != "" %}
+                                <input type="hidden" name="filters" value="{{ filters }}">
+                            {% endif %}
+                            {% if order != "" %}
+                                <input type="hidden" name="orders" value="{{ order }}">
+                            {% endif %}
+                        {% elif  action == 'all' %}
+                            <input type="hidden" name="search" value="{{ search_query }}">
+                            <input type="hidden" name="action" value="{{ action }}">
+                        {% endif %}
+
+                        {% if page > 1  %}
+                            <button class="prev" type="submit" name="page" value="{{ page - 1 }}">Prev</button>
+                        {% else %}
+                            <button class="prev" disabled>Prev</button>
+                        {% endif %}
+                    </form>
+                </td>
+                <td id="page_number">
+                    Page: {{ page }}
+                </td>
+                <td id="next">
+                    <form action="{{ url_for('all_companies.get_all_companies') }}" method="get">
+                        {% if action == 'search'%}
+                            <input type="hidden" name="search" value="{{ search_query }}">
+                            <input type="hidden" name="action" value="{{ action }}">
+                            {% if filters != "" %}
+                                <input type="hidden" name="filters" value="{{ filters }}">
+                            {% endif %}
+
+                            {% if order != "" %}
+                                <input type="hidden" name="orders" value="{{ order }}">
+                            {% endif %}
+                        {% elif  action == 'all' %}
+                            <input type="hidden" name="search" value="{{ search_query }}">
+                            <input type="hidden" name="action" value="{{ action }}">
+                        {% endif %}
+                        {%  if page < total_pages %}
+                            <button type="submit" class="next" name="page" value="{{ page + 1 }}">Next</button>
+                        {% else %}
+                            <button class="next" disabled>Next</button>
+                        {% endif %}
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock content_part %}
+{% block javascript %}
+    <script src="{{ url_for('static', filename='js/pagination.js') }}"></script>
+     <script src="{{ url_for('static', filename='js/all_contracts_search_bar.js') }}"></script>
+{% endblock javascript %}

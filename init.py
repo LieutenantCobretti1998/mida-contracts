@@ -20,6 +20,8 @@ def create_app() -> Flask:
     app.register_blueprint(check_contracts_bp)
     from views.create_company import create_company_bp
     app.register_blueprint(create_company_bp)
+    from views.check_companies import check_companies_bp
+    app.register_blueprint(check_companies_bp)
     # initialize of flask app and db
     db.init_app(app)
     migrate = Migrate()
