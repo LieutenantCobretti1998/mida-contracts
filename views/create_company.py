@@ -39,9 +39,11 @@ def save_company():
             return redirect(url_for("create_company.create_company"))
         except ValueError as e:
             flash(str(e), "warning")
+            db.session.rollback()
         except OperationalError:
             flash("Something went wrong. transaction was restored", "error")
             db.session.rollback()
     else:
         flash("Validation Error. Please check all fields", "error")
+        db.session.rollback()
     return render_template("create_company.html", form=form)

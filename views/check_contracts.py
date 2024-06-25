@@ -65,14 +65,14 @@ def get_all_contracts():
     session["page"] = page
     match action:
         case "search":
-            print(request.args.get("filters"))
+            # print(request.args.get("filters"))
             filters = request.args.get("filters", "")
             orders = request.args.get("orders", "")
             session["filters"] = filters
             session["order"] = orders
             search_query = request.args.get("search", "").strip()
             session["search_query"] = search_query
-            print(type(search_query))
+            # print(type(search_query))
             return handle_search(search_query, form, page, filters, orders)
         case "all":
             return handle_all_contracts(form, page)
@@ -116,6 +116,7 @@ def update_contract(contract_id):
             flash(message, "success")
             return jsonify(redirect_url=url_for('all_contracts.get_contract', contract_id=contract_id))
         else:
+            db.session.rollback()
             flash(message, "warning")
             return jsonify(redirect_url=url_for('all_contracts.get_contract', contract_id=contract_id))
         # return redirect(url_for('all_contracts.get_contract', contract_id=contract_id))
