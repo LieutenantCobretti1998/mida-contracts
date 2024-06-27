@@ -10,6 +10,30 @@ from configuration import POSTS_PER_PAGE
 from forms.company_search import CompanySearchForm
 
 
+def handle_search(search_query: str, form: flask_wtf.Form, page: int, filters: str, order: str) -> render_template:
+    search_engine = CompanySearchEngine(db.session, search_query)
+    search_results = search_engine.search_query(page, POSTS_PER_PAGE, filters, order)
+    total_companies = search_results["total_companies"]
+    total_results = search_results["results_per_page"]
+    total_pages = (total_companies // POSTS_PER_PAGE) + (1 if total_companies % POSTS_PER_PAGE != 0 else 0)
+    if page > total_pages:
+        return redirect(
+            url_for('all_companies.get_all_companies', action="search", page=total_pages, filters=filters, orders=order,
+                    search=search_query))
+    return render_template("check_companies.html",
+                           amount_of_companies=total_companies,
+                           companies=total_results,
+                           form=form,
+                           page=page,
+                           total_pages=total_pages,
+                           action=session["action"],
+                           search_query=search_query,
+                           filters=filters,
+                           order=order,
+                           posts_per_page=POSTS_PER_PAGE
+                           )
+
+
 def handle_all_companies(form: flask_wtf.Form, page: int) -> render_template:
     search_engine = CompanySearchEngine(db.session)
     search_results = search_engine.get_all_results(page, POSTS_PER_PAGE)
@@ -41,7 +65,6 @@ def get_all_companies():
     session["page"] = page
     match action:
         case "search":
-            # print(request.args.get("filters"))
             filters = request.args.get("filters", "")
             orders = request.args.get("orders", "")
             session["filters"] = filters
@@ -49,8 +72,7 @@ def get_all_companies():
             search_query = request.args.get("search", "").strip()
             session["search_query"] = search_query
             # print(type(search_query))
-            # return handle_search(search_query, form, page, filters, orders)
+            return handle_search(search_query, form, page, filters, orders)
         case "all":
-            pass
-            # return handle_all_contracts(form, page)
+            return handle_all_companies(form, page)
     return handle_all_companies(form, page)
