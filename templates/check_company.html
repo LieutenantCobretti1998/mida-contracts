@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% block title %} Contract's overview {% endblock title %}
+{% block style %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/check_company.css') }}">
+{% endblock style %}
+{% block content_part %}
+    <table class="table">
+        <tbody class="main-table-part">
+            <tbody class="main-table-part">
+                <tr>
+                    <td>
+                        <form action="{{ url_for("all_companies.get_all_companies") }}" method="get">
+                            {% if session.get("action") == "all" %}
+                                <input type="hidden" name="search" value="{{ session.get("search_query") }}">
+                                <input type="hidden" name="action" value="{{ session.get("action") }}">
+                            {% endif %}
+                            {% if session.get("action") == "search" %}
+                                <input type="hidden" name="search" value="{{ session.get("search_query") }}">
+                                <input type="hidden" name="action" value="{{ session.get("action") }}">
+
+                                 {% if session.get("filters") != "" %}
+                                    <input type="hidden" name="filters" value="{{ session.get("filters") }}">
+                                 {% endif %}
+                                {% if session.get("order") != "" %}
+                                    <input type="hidden" name="orders" value="{{ session.get("order") }}">
+                                {% endif %}
+                            {% endif %}
+                           <input type="hidden" name="page" value="{{ session.get("page") }}">
+                            <div class="buttons">
+                                <button type="submit" class="back">Back</button>
+                                <button type="button" class="edit" onclick="EditContract(); fileLoader()">Edit</button>
+                            </div>
+                        </form>
+                    </td>
+                </tr>
+                <tr>
+                    <td>company</td>
+                    <td id="company_label">
+                        <div>
+                            {{ search_result.company_name }}
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>voen</td>
+                    <td id="voen_label">
+                    <div>
+                        {{ search_result.voen }}
+                    </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>bank name</td>
+                    <td id="bank_name_label">
+                    {% if search_result.bank_name %} {{ search_result.bank_name }} {% else %} no information {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>m_h</td>
+                    <td id="m_h_label">
+                    {% if search_result.m_h %} {{ search_result.m_h }} {% else %} no information {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>swift</td>
+                    <td id="swift_label">
+                    {% if search_result.swift %} {{ search_result.swift }} {% else %} no information {% endif %}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>email</td>
+                    <td id="email_label">
+                    {% if search_result.email %} {{ search_result.email }} {% else %} no information {% endif %}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>telephone_number</td>
+                    <td id="telephone_number_label">
+                    {% if search_result.address %} {{ search_result.address }} {% else %} no information {% endif %}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>address</td>
+                    <td id="address_label">
+                    {% if search_result.address %} {{ search_result.address }} {% else %} no information {% endif %}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>website</td>
+                    <td id="website_label">
+                    {% if search_result.website %} {{ search_result.website }} {% else %} no information {% endif %}
+                    </td>
+                </tr>
+        </tbody>
+    </table>
+{% endblock content_part %}

@@ -9,6 +9,8 @@ from sqlalchemy.exc import NoResultFound, SQLAlchemyError
 from database.models import *
 from abc import ABC
 
+from database.models import Companies
+
 
 class ValidatorWrapper(ABC):
     def __init__(self, db_session: Session):
@@ -85,7 +87,7 @@ class SearchEngine(ValidatorWrapper):
         total_results = results.count()
         paginated_results = results.offset((page - 1) * per_page).limit(per_page).all()
         return {"results_per_page": paginated_results,
-                "total_contracts":  total_results + 1 if total_results == 0 else total_results
+                "total_contracts": total_results + 1 if total_results == 0 else total_results
                 }
 
     # def search_voen(self) -> list:
@@ -320,21 +322,16 @@ class CompanySearchEngine(SearchEngine):
         offset = (page - 1) * per_page
         limited_results = stmt.offset(offset).limit(per_page).all()
         results = [{
-            "company_id": company_id,
+            "id": id,
             "company_name": company_name,
             "voen": voen,
             "contract_count": contract_count
-        } for company_id, company_name, voen, contract_count in limited_results]
+        } for id, company_name, voen, contract_count in limited_results]
         return {"results_per_page": results,
                 "total_companies": total_companies,
                 }
 
     def search_query(self, page: int, per_page: int, filters: str, order: str) -> dict:
-        # results = self.db_session.query(Companies).join(Contract).filter(or_(
-        #     Companies.company_name.ilike(f"%{self.search}%"),
-        #     Companies.voen.ilike(f"%{self.search}%"),
-        #     Contract.contract_number.ilike(f"%{self.search}%")
-        # )).all()
         results = (self.db_session.query(
             Companies.id,
             Companies.company_name,
@@ -342,11 +339,12 @@ class CompanySearchEngine(SearchEngine):
             func.count(Contract.id).label("contract_count")
         )
                    .filter(or_(
-                        Companies.company_name.ilike(f"%{self.search}%"),
-                        Companies.voen.ilike(f"%{self.search}%")
-                    ))
+            Companies.company_name.ilike(f"%{self.search}%"),
+            Companies.voen.ilike(f"%{self.search}%")
+        ))
                    .outerjoin(Contract, Companies.contracts)
                    .group_by(Companies.id))
+        print(results)
         # Filters
         match filters:
             case "company":
@@ -362,3 +360,7 @@ class CompanySearchEngine(SearchEngine):
         return {"results_per_page": paginated_results,
                 "total_companies": total_results + 1 if total_results == 0 else total_results,
                 }
+
+    def search_company(self) -> Type[Companies] | None:
+        result = self.db_session.query(Companies).filter_by(id=self.search).first()
+        return result

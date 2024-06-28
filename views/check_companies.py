@@ -37,6 +37,7 @@ def handle_search(search_query: str, form: flask_wtf.Form, page: int, filters: s
 def handle_all_companies(form: flask_wtf.Form, page: int) -> render_template:
     search_engine = CompanySearchEngine(db.session)
     search_results = search_engine.get_all_results(page, POSTS_PER_PAGE)
+    print(search_results)
     total_companies = search_results["total_companies"]
     companies = search_results["results_per_page"]
     total_pages = (total_companies // POSTS_PER_PAGE) + (1 if total_companies % POSTS_PER_PAGE != 0 else 0)
@@ -71,8 +72,16 @@ def get_all_companies():
             session["order"] = orders
             search_query = request.args.get("search", "").strip()
             session["search_query"] = search_query
-            # print(type(search_query))
             return handle_search(search_query, form, page, filters, orders)
         case "all":
             return handle_all_companies(form, page)
     return handle_all_companies(form, page)
+
+
+@check_companies_bp.route('/company/<int:company_id>', methods=['GET', 'POST'])
+def get_company(company_id):
+    search_engine = CompanySearchEngine(db.session, company_id)
+    search_result = search_engine.search_company()
+    return render_template("check_company.html",
+                           search_result=search_result
+                           )

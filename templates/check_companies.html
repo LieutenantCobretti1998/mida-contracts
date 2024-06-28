@@ -59,7 +59,7 @@
                     <td>{{ company.voen }}</td>
                     <td>{{ company.contract_count }}</td>
                     <td>
-                        <a href="#" class="check">Check</a>
+                        <a class="check" href={{ url_for('all_companies.get_company', company_id=company.id ) }}>Check</a>
                     </td>
                 </tr>
             {% endfor %}
@@ -123,4 +123,6 @@
 {% block javascript %}
     <script src="{{ url_for('static', filename='js/pagination.js') }}"></script>
      <script src="{{ url_for('static', filename='js/all_contracts_search_bar.js') }}"></script>
+     <script src="{{ url_for('static', filename='js/loading_screen.js') }}"></script>
+     <script src="{{ url_for('static', filename='js/clear_url.js') }}"></script>
 {% endblock javascript %}
