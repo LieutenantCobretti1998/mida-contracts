@@ -223,7 +223,7 @@ class Edit(ValidatorWrapper):
                             setattr(contract_to_update, key, new_pdf_path)
                             pdf_file.save(new_pdf_path)
                         except FileNotFoundError:
-                            print("There is the file path problem. It was corrupted or not existed")
+                            return False, "There is the file path problem. It was corrupted or not existed."
 
                     elif current_value != value:
                         setattr(contract_to_update, key, value)
@@ -234,22 +234,30 @@ class Edit(ValidatorWrapper):
                             case "company_name":
                                 existed_company_id = self.is_company_exists(value)
                                 if existed_company_id:
-                                    new_pdf_file_path = self.change_pdf_file_path(existed_company_id,
-                                                                                  contract_to_update.pdf_file_path,
-                                                                                  contract_to_update.id)
-                                    contract_to_update.company_id = existed_company_id
-                                    contract_to_update.pdf_file_path = new_pdf_file_path
+                                    try:
+                                        new_pdf_file_path = self.change_pdf_file_path(existed_company_id,
+                                                                                      contract_to_update.pdf_file_path,
+                                                                                      contract_to_update.id)
+                                        contract_to_update.company_id = existed_company_id
+                                        contract_to_update.pdf_file_path = new_pdf_file_path
+                                    except FileNotFoundError:
+                                        return False, ("There is the file path problem. It was corrupted or not existed."
+                                                       "Please, load a new pdf first")
                                 else:
                                     return False, (f"There is no such company in the database: {value}.Please go to the"
                                                    f" create contract form page")
                             case "voen":
                                 existed_voen_id = self.is_voen_exists(value)
                                 if existed_voen_id:
-                                    new_pdf_file_path = self.change_pdf_file_path(existed_voen_id,
-                                                                                  contract_to_update.pdf_file_path,
-                                                                                  contract_to_update.id)
-                                    contract_to_update.company_id = existed_voen_id
-                                    contract_to_update.pdf_file_path = new_pdf_file_path
+                                    try:
+                                        new_pdf_file_path = self.change_pdf_file_path(existed_voen_id,
+                                                                                      contract_to_update.pdf_file_path,
+                                                                                      contract_to_update.id)
+                                        contract_to_update.company_id = existed_voen_id
+                                        contract_to_update.pdf_file_path = new_pdf_file_path
+                                    except FileNotFoundError:
+                                        return False, ("There is the file path problem. It was corrupted or not existed."
+                                                       "Please, load a new pdf first")
                                 else:
                                     return False, (f"There is no such voen related to any company in the database: "
                                                    f"{value}.Please go to the"

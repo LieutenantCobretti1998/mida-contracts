@@ -257,6 +257,7 @@ body {
 }
 
 .back,
+.check_contracts,
 .preview-pdf,
 .edit,
 .cancel,
@@ -271,6 +272,7 @@ body {
   box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.2);
 }
 .back:active,
+.check_contracts:active,
 .preview-pdf:active,
 .edit:active,
 .cancel:active,
@@ -279,11 +281,20 @@ body {
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
 }
 .back:hover,
+.check_contracts:hover,
 .preview-pdf:hover,
 .edit:hover,
 .cancel:hover,
 .save_button:hover {
   background-color: #f9e1c8;
+}
+
+.check_contracts {
+  text-decoration: none;
+  color: #222f3e;
+  font-weight: 500;
+  font-size: 1.6rem;
+  text-align: center;
 }
 
 .buttons {

@@ -26,7 +26,7 @@ def handle_search(search_query: str, form: flask_wtf.Form, page: int, filters: s
                            form=form,
                            page=page,
                            total_pages=total_pages,
-                           action=session["action"],
+                           action=session["company_action"],
                            search_query=search_query,
                            filters=filters,
                            order=order,
@@ -49,7 +49,7 @@ def handle_all_companies(form: flask_wtf.Form, page: int) -> render_template:
                            form=form,
                            page=page,
                            total_pages=total_pages,
-                           action=session["action"],
+                           action=session["company_action"],
                            posts_per_page=POSTS_PER_PAGE
                            )
 
@@ -61,17 +61,17 @@ check_companies_bp = Blueprint('all_companies', __name__)
 def get_all_companies():
     form = CompanySearchForm()
     action = request.args.get('action', None, type=str)
-    session["action"] = action
+    session["company_action"] = action
     page = request.args.get("page", 1, type=int)
-    session["page"] = page
+    session["company_page"] = page
     match action:
         case "search":
             filters = request.args.get("filters", "")
             orders = request.args.get("orders", "")
-            session["filters"] = filters
-            session["order"] = orders
+            session["company_filters"] = filters
+            session["company_order"] = orders
             search_query = request.args.get("search", "").strip()
-            session["search_query"] = search_query
+            session["company_search_query"] = search_query
             return handle_search(search_query, form, page, filters, orders)
         case "all":
             return handle_all_companies(form, page)

@@ -54,6 +54,7 @@
 }
 
 .back,
+.check_contracts,
 .preview-pdf,
 .edit,
 .cancel,
@@ -75,6 +76,14 @@
   &:hover {
       background-color: darken($color-table-background, 10%);
   }
+}
+
+.check_contracts {
+  text-decoration: none;
+  color: $color-black;
+  font-weight: 500;
+  font-size: 1.6rem;
+  text-align: center;
 }
 
 .buttons {

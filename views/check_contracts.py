@@ -9,7 +9,7 @@ from database.validators import SearchEngine, Edit
 from configuration import POSTS_PER_PAGE
 
 
-def handle_search(search_query: str, form: flask_wtf.Form, page: int, filters: str, order: str) -> render_template:
+def handle_search(search_query: str, form: flask_wtf.Form, page: int = None, filters: str = None, order: str = None) -> render_template:
     search_engine = SearchEngine(db.session, search_query)
     search_results = search_engine.search_query(page, POSTS_PER_PAGE, filters, order)
     total_contracts = search_results["total_contracts"]
@@ -26,7 +26,7 @@ def handle_search(search_query: str, form: flask_wtf.Form, page: int, filters: s
                            form=form,
                            page=page,
                            total_pages=total_pages,
-                           action=session["action"],
+                           action=session["contract_action"],
                            search_query=search_query,
                            filters=filters,
                            order=order,
@@ -48,7 +48,7 @@ def handle_all_contracts(form: flask_wtf.Form, page: int) -> render_template:
                            form=form,
                            page=page,
                            total_pages=total_pages,
-                           action=session["action"],
+                           action=session["contract_action"],
                            posts_per_page=POSTS_PER_PAGE
                            )
 
@@ -60,18 +60,19 @@ check_contracts_bp = Blueprint('all_contracts', __name__)
 def get_all_contracts():
     form = SearchContract()
     action = request.args.get("action")
-    session["action"] = action
+    session["contract_action"] = action
+    session["which_page"] = "contracts"
     page = request.args.get("page", 1, type=int)
-    session["page"] = page
+    session["contract_page"] = page
     match action:
         case "search":
             # print(request.args.get("filters"))
             filters = request.args.get("filters", "")
             orders = request.args.get("orders", "")
-            session["filters"] = filters
-            session["order"] = orders
+            session["contract_filters"] = filters
+            session["contract_order"] = orders
             search_query = request.args.get("search", "").strip()
-            session["search_query"] = search_query
+            session["contract_search_query"] = search_query
             # print(type(search_query))
             return handle_search(search_query, form, page, filters, orders)
         case "all":
@@ -113,6 +114,7 @@ def update_contract(contract_id):
         )
         success, message = edit_engine.update_data(data_dict, form.pdf_file.data)
         if success:
+            db.session.commit()
             flash(message, "success")
             return jsonify(redirect_url=url_for('all_contracts.get_contract', contract_id=contract_id))
         else:
@@ -133,3 +135,15 @@ def preview_pdf(contract_id):
         return send_file(contract_result.pdf_file_path)
     else:
         return jsonify({"error": "Company not found"}), 404
+
+
+@check_contracts_bp.route('/related_contracts/<string:voen>', methods=['GET'])
+def related_contracts(voen):
+    form = SearchContract()
+    session["which_page"] = "companies"
+    action = "search"
+    page = request.args.get("page", 1, type=int)
+    session["contract_action"] = action
+    session["contract_search_query"] = voen
+    search_query = voen
+    return handle_search(search_query, form, page=page)
