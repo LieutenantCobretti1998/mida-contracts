@@ -18,16 +18,9 @@ function EditContract() {
     }
 
     // Remove the second table if it exists
-
     // Prepare the form elements
-    const form_elements = {
-        company: form_data.company,
-        voen: form_data.voen,
-        contract_number: form_data.contract,
-        date: form_data.date,
-        amount: form_data.amount,
-    };
-
+    const form_data_keys = Object.keys(form_data);
+    const form_elements = createFormElements(form_data, form_data_keys);
     const save_button = form_data.save_button;
 
     // Create the new form
@@ -45,12 +38,11 @@ function EditContract() {
 
     // Append the original table to the new form
     form_edit.appendChild(table);
-
     // Update the first row of the table with the form buttons
-    const first_tr = tbody.querySelector("tr:first-child td");
+    const first_tr = tbody.querySelector(".control");
     first_tr.innerHTML = `
         <div class="buttons">
-               <button type="button" class="cancel" onclick="CancelEdit()">Cancel</button>
+               <button type="button" class="cancel" onclick="CancelEdit(${[...form_data_keys]})">Cancel</button>
                ${save_button}
         </div>
     `;
@@ -62,15 +54,18 @@ function EditContract() {
 
     // Pdf container will be uploaded separately
     // Setup PDF container
-    const pdfContainer = form_edit.querySelector("#pdf_file_label");
-    pdfContainer.innerHTML = `
-        <td>
-            <div class="upload-container">
-                ${form_data.pdf_file}
-                <div class="progress-bar"><div id="progress"></div></div>
-            </div>
-        </td>
-    `;
+    if(form_data_keys.includes("pdf_file")) {
+
+        const pdfContainer = form_edit.querySelector("#pdf_file_label");
+        pdfContainer.innerHTML = `
+            <td>
+                <div class="upload-container">
+                    ${form_data.pdf_file}
+                    <div class="progress-bar"><div id="progress"></div></div>
+                </div>
+            </td>
+        `;
+    }
        // Make save_button disabled unitl the first input
     const save_button_element = document.querySelector("#save");
     save_button_element.disabled = true;
@@ -84,7 +79,6 @@ function EditContract() {
         field.addEventListener("input", () => {
             const all_fields_empty = filtered_fields.every((input) => input.value.trim() === "");
             // Check separately the date input
-            const date_field = document.querySelector("[name=date]");
             save_button_element.disabled = all_fields_empty;
             save_button_element.style.pointerEvents = all_fields_empty ? "none": "auto";
         })
@@ -106,7 +100,8 @@ function EditContract() {
 }
 
 // cancel logic
-function CancelEdit() {
+function CancelEdit(form_data) {
+    const keys = JSON.parse(form_data);
     // Remove the edit form
     const edit_form_element = document.querySelector("#edit-form");
     if (edit_form_element) {
@@ -118,8 +113,21 @@ function CancelEdit() {
 
     // Remove edit-mode slug in URL
     history.pushState({}, "", window.location.pathname);
-    const dynamic_script = document.getElementById("dynamic_script");
-    document.body.removeChild(dynamic_script);
+    if(keys.includes("pdf_file")) {
+        const dynamic_script = document.getElementById("dynamic_script");
+        document.body.removeChild(dynamic_script);
+    }
+}
+
+// Helper function for creating form_elements objects
+function createFormElements(form_data, keys) {
+    const form_elements = {};
+    keys.forEach(key => {
+        if (key !== "pdf_file" && key !== "save_button") {
+            form_elements[key] = form_data[key];
+        }
+    })
+    return form_elements;
 }
 
 // Helper function to focus on the first input element in the form

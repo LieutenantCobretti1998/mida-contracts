@@ -83,7 +83,8 @@
                 <td></td>
                 <td></td>
                 <td id="prev">
-                    <form action="{{ url_for('all_contracts.get_all_contracts') }}" method="get">
+                    <form {% if action == "company_search" %} action="{{ url_for("all_contracts.related_contracts", voen=session.get("company_voen")) }}"
+                                {% else %} action="{{ url_for("all_contracts.get_all_contracts") }}" {% endif %} method="get">
                         {% if action == 'search' %}
                             <input type="hidden" name="search" value="{{ search_query }}">
                             <input type="hidden" name="action" value="{{ action }}">
@@ -110,7 +111,8 @@
                     Page: {{ page }}
                 </td>
                 <td id="next">
-                    <form action="{{ url_for('all_contracts.get_all_contracts') }}" method="get">
+                    <form {% if action == "company_search" %} action="{{ url_for("all_contracts.related_contracts", voen=session.get("company_voen")) }}"
+                                {% else %} action="{{ url_for("all_contracts.get_all_contracts") }}" {% endif %} method="get">
                         {% if action == 'search'%}
                             <input type="hidden" name="search" value="{{ search_query }}">
                             <input type="hidden" name="action" value="{{ action }}">
@@ -124,6 +126,7 @@
                         {% elif  action == 'all' %}
                             <input type="hidden" name="search" value="{{ search_query }}">
                             <input type="hidden" name="action" value="{{ action }}">
+                        {% elif action == 'company_search' %}
                         {% endif %}
                         {%  if page < total_pages %}
                             <button type="submit" class="next" name="page" value="{{ page + 1 }}">Next</button>

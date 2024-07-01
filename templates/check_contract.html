@@ -7,24 +7,25 @@
         <table class="table">
             <tbody class="main-table-part">
                 <tr>
-                    <td>
-                        <form {% if session.get("which_page" == "contracts") %} action="{{ url_for("all_contracts.get_all_contracts") }}" {% else %}  action="{{ url_for("all_contracts.get_all_contracts") }}" method="get">
-                            {% if session.get("action") == "all" %}
-                                <input type="hidden" name="search" value="{{ session.get("search_query") }}">
-                                <input type="hidden" name="action" value="{{ session.get("action") }}">
+                    <td class="control">
+                        <form {% if session.get("contract_action") == "company_search" %} action="{{ url_for("all_contracts.related_contracts", voen=session.get("company_voen")) }}"
+                                {% else %} action="{{ url_for("all_contracts.get_all_contracts") }}" {% endif %} method="get">
+                            {% if session.get("contract_action") == "all" %}
+                                <input type="hidden" name="search" value="{{ session.get("contract_search_query") }}">
+                                <input type="hidden" name="action" value="{{ session.get("contract_action") }}">
                             {% endif %}
-                            {% if session.get("action") == "search" %}
-                                <input type="hidden" name="search" value="{{ session.get("search_query") }}">
-                                <input type="hidden" name="action" value="{{ session.get("action") }}">
+                            {% if session.get("contract_action") == "search"   %}
+                                <input type="hidden" name="search" value="{{ session.get("contract_search_query") }}">
+                                <input type="hidden" name="action" value="{{ session.get("contract_action") }}">
 
-                                 {% if session.get("filters") != "" %}
-                                    <input type="hidden" name="filters" value="{{ session.get("filters") }}">
+                                 {% if session.get("contract_filters") != "" %}
+                                    <input type="hidden" name="filters" value="{{ session.get("contract_filters") }}">
                                  {% endif %}
-                                {% if session.get("order") != "" %}
-                                    <input type="hidden" name="orders" value="{{ session.get("order") }}">
+                                {% if session.get("contract_order") != "" %}
+                                    <input type="hidden" name="orders" value="{{ session.get("contract_order") }}">
                                 {% endif %}
                             {% endif %}
-                           <input type="hidden" name="page" value="{{ session.get("page") }}">
+                           <input type="hidden" name="page" value="{{ session.get("contract_page") }}">
                             <div class="buttons">
                                 <button type="submit" class="back">Back</button>
                                 <button type="button" class="edit" onclick="EditContract(); fileLoader()">Edit</button>
@@ -129,9 +130,9 @@
 {% block javascript %}
     <script type="text/javascript">
         const form_data = {
-            "company": `{{ form.company(placeholder=search_result.company.company_name.upper(), class="table__input rounded", id="default_input") | safe }}`,
-            "voen": '{{ form.voen(placeholder= search_result.company.voen.upper(), class="table__input rounded") | safe}}',
-            "contract": '{{ form.contract_number(placeholder=search_result.contract_number.upper(), class="table__input rounded") | safe }}',
+            "company": '{{ form.company(placeholder=search_result.company.company_name.upper(), class="table__input rounded", id="default_input") | safe }}',
+            "voen": '{{ form.voen(placeholder= search_result.company.voen, class="table__input rounded") | safe}}',
+            "contract_number": '{{ form.contract_number(placeholder=search_result.contract_number, class="table__input rounded") | safe }}',
             "date": '{{ form.date(placeholder=search_result.date, class="table__input rounded") | safe }}',
             "amount": '{{ form.amount(placeholder="%.2f"|format(search_result.amount), class="table__input rounded") | safe }}',
             "pdf_file": '{{ form.pdf_file | safe }}',

@@ -11,7 +11,7 @@ def filter_string_fields(string_data: str) -> str:
 
 
 def sanitize_company(company_name: str) -> str:
-    sanitized = regex.sub(r'[^\p{L}\p{N}]', '', company_name)
+    sanitized = regex.sub(r'[^\p{L}\p{N}\s]', '', company_name)
     return sanitized
 
 

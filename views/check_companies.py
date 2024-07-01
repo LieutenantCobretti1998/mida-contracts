@@ -1,13 +1,11 @@
 import flask_wtf
 from flask import Blueprint, render_template, request, session, redirect, url_for, jsonify, flash, send_file
-from werkzeug.utils import secure_filename
-from forms.contract_search import SearchContract
+from forms.edit_company_form import EditCompanyForm
 from forms.filters import *
-from forms.edit_contract_form import EditContractForm
+from forms.company_search import CompanySearchForm
 from database.db_init import db
 from database.validators import CompanySearchEngine
 from configuration import POSTS_PER_PAGE
-from forms.company_search import CompanySearchForm
 
 
 def handle_search(search_query: str, form: flask_wtf.Form, page: int, filters: str, order: str) -> render_template:
@@ -80,8 +78,10 @@ def get_all_companies():
 
 @check_companies_bp.route('/company/<int:company_id>', methods=['GET', 'POST'])
 def get_company(company_id):
+    form = EditCompanyForm()
     search_engine = CompanySearchEngine(db.session, company_id)
     search_result = search_engine.search_company()
     return render_template("check_company.html",
-                           search_result=search_result
+                           search_result=search_result,
+                           form=form
                            )

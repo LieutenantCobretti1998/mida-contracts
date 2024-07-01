@@ -66,14 +66,12 @@ def get_all_contracts():
     session["contract_page"] = page
     match action:
         case "search":
-            # print(request.args.get("filters"))
             filters = request.args.get("filters", "")
             orders = request.args.get("orders", "")
             session["contract_filters"] = filters
             session["contract_order"] = orders
             search_query = request.args.get("search", "").strip()
             session["contract_search_query"] = search_query
-            # print(type(search_query))
             return handle_search(search_query, form, page, filters, orders)
         case "all":
             return handle_all_contracts(form, page)
@@ -141,9 +139,10 @@ def preview_pdf(contract_id):
 def related_contracts(voen):
     form = SearchContract()
     session["which_page"] = "companies"
-    action = "search"
+    session["company_voen"] = voen
     page = request.args.get("page", 1, type=int)
-    session["contract_action"] = action
+    session["contract_action"] = "company_search"
+    print(session["contract_action"])
     session["contract_search_query"] = voen
     search_query = voen
     return handle_search(search_query, form, page=page)

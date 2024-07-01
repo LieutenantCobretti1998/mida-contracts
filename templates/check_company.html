@@ -6,29 +6,28 @@
 {% block content_part %}
     <table class="table">
         <tbody class="main-table-part">
-            <tbody class="main-table-part">
                 <tr>
-                    <td>
+                    <td class="control">
                         <form action="{{ url_for("all_companies.get_all_companies") }}" method="get">
                             {% if session.get("action") == "all" %}
-                                <input type="hidden" name="search" value="{{ session.get("search_query") }}">
+                                <input type="hidden" name="search" value="{{ session.get("company_search_query") }}">
                                 <input type="hidden" name="action" value="{{ session.get("action") }}">
                             {% endif %}
                             {% if session.get("action") == "search" %}
-                                <input type="hidden" name="search" value="{{ session.get("search_query") }}">
-                                <input type="hidden" name="action" value="{{ session.get("action") }}">
+                                <input type="hidden" name="search" value="{{ session.get("company_search_query") }}">
+                                <input type="hidden" name="action" value="{{ session.get("company_action") }}">
 
                                  {% if session.get("filters") != "" %}
-                                    <input type="hidden" name="filters" value="{{ session.get("filters") }}">
+                                    <input type="hidden" name="filters" value="{{ session.get("company_filters") }}">
                                  {% endif %}
                                 {% if session.get("order") != "" %}
-                                    <input type="hidden" name="orders" value="{{ session.get("order") }}">
+                                    <input type="hidden" name="orders" value="{{ session.get("company_order") }}">
                                 {% endif %}
                             {% endif %}
-                           <input type="hidden" name="page" value="{{ session.get("page") }}">
+                           <input type="hidden" name="page" value="{{ session.get("company_page") }}">
                             <div class="buttons">
                                 <button type="submit" class="back">Back</button>
-                                <button type="button" class="edit" onclick="EditContract(); fileLoader()">Edit</button>
+                                <button type="button" class="edit" onclick="EditContract()">Edit</button>
                                 <a class="check_contracts" href="{{ url_for('all_contracts.related_contracts', voen=search_result.voen) }}">Related Contracts</a>
                             </div>
                         </form>
@@ -62,6 +61,12 @@
                     {% if search_result.m_h %} {{ search_result.m_h }} {% else %} no information {% endif %}
                     </td>
                 </tr>
+                 <tr>
+                    <td>h_h</td>
+                    <td id="h_h_label">
+                    {% if search_result.h_h %} {{ search_result.h_h }} {% else %} no information {% endif %}
+                    </td>
+                </tr>
                 <tr>
                     <td>swift</td>
                     <td id="swift_label">
@@ -77,7 +82,7 @@
                 </tr>
 
                 <tr>
-                    <td>telephone_number</td>
+                    <td>phone number</td>
                     <td id="telephone_number_label">
                     {% if search_result.address %} {{ search_result.address }} {% else %} no information {% endif %}
                     </td>
@@ -100,4 +105,22 @@
     </table>
 {% endblock content_part %}
 {% block javascript %}
+    <script type="text/javascript">
+        const form_data = {
+            "company": '{{ form.company(placeholder=search_result.company_name.upper(), class="table__input rounded", id="default_input") | safe }}',
+            "voen": '{{ form.voen(placeholder= search_result.voen, class="table__input rounded") | safe}}',
+            "bank_name": '{{ form.bank_name(placeholder= search_result.bank_name, class="table__input rounded") | safe }}',
+            "m_h": '{{ form.m_h(placeholder= search_result.m_h, class="table__input rounded") | safe }}',
+            "h_h": '{{ form.h_h(placeholder= search_result.h_h, class="table__input rounded") | safe }}',
+            "swift": '{{ form.h_h(placeholder= search_result.swift, class="table__input rounded") | safe }}',
+            "email": '{{ form.h_h(placeholder= search_result.email, class="table__input rounded") | safe }}',
+            "telephone_number": '{{ form.h_h(placeholder= search_result.telephone_number, class="table__input rounded") | safe }}',
+            "address": '{{ form.h_h(placeholder= search_result.address, class="table__input rounded") | safe }}',
+            "website": '{{ form.h_h(placeholder= search_result.website, class="table__input rounded") | safe }}',
+            "save_button": '{{ form.save(class="save_button table__save__button") | safe }}'
+        }
+    </script>
+    <script src="{{ url_for('static', filename='js/edit_form.js')  }}"></script>
+    <script src="{{ url_for('static', filename='js/form_focus.js') }}"></script>
+    <script src={{ url_for('static', filename='js/add_contract.js') }}></script>
 {% endblock javascript %}
