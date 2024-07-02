@@ -2,10 +2,13 @@ import re
 from typing import Any, Type
 import os
 import flask
+import sqlalchemy
 from flask import current_app
 from flask_sqlalchemy.session import Session
 from sqlalchemy import or_, desc, asc, func
 from sqlalchemy.exc import NoResultFound, SQLAlchemyError
+from sqlalchemy.orm import InstrumentedAttribute
+
 from database.models import *
 from abc import ABC
 
@@ -55,7 +58,7 @@ class ContractManager(ValidatorWrapper):
 
 
 class SearchEngine(ValidatorWrapper):
-    def __init__(self, db_session: Session, search: str = None):
+    def __init__(self, db_session: Session, search: str | int = None):
         super().__init__(db_session)
         self.search = search
 
@@ -118,8 +121,12 @@ class SearchEngine(ValidatorWrapper):
     #             flat_results.append(result)
     #     return flat_results
 
-    def search_company(self) -> Contract:
-        result = self.db_session.query(Contract).join(Companies).filter(Contract.id == int(self.search)).first()
+    def search_company_with_contract(self) -> Contract | None:
+        result = self.db_session.query(Contract).join(Companies).filter(Contract.id == self.search).first()
+        return result
+
+    def search_company(self) -> Companies | None:
+        result = self.db_session.query(Companies).filter_by(id=self.search).first()
         return result
 
     def get_all_results(self, db, page: int, per_page: int) -> dict[str, int | Any]:
@@ -131,7 +138,7 @@ class SearchEngine(ValidatorWrapper):
                 }
 
 
-class Edit(ValidatorWrapper):
+class EditContract(ValidatorWrapper):
     def __init__(self, db_session: Session, contract_id: int):
         super().__init__(db_session)
         self.id = contract_id
@@ -264,10 +271,10 @@ class Edit(ValidatorWrapper):
                                                    f"create contract form page")
             self.db_session.commit()
             return True, f"Contract updated successfully"
-        except SQLAlchemyError as e:
+        except sqlalchemy.exc.DBAPIError as e:
             print("An error occurred:", e)
             self.db_session.rollback()
-            return False, f"An error occurred in the server"
+            return False, f"An error occurred in the server. Please try again later"
 
 
 class CompanyManager(ContractManager):
@@ -372,3 +379,42 @@ class CompanySearchEngine(SearchEngine):
     def search_company(self) -> Type[Companies] | None:
         result = self.db_session.query(Companies).filter_by(id=self.search).first()
         return result
+
+
+class EditCompany(EditContract):
+    def __init__(self, db_session: Session, company_id: int):
+        super().__init__(db_session, company_id)
+        self.company_id = company_id
+
+    def update_company_voen_or_swift(self, key: str, value: str | int) -> InstrumentedAttribute | None:
+        result = self.db_session.query(Companies).filter_by(**{key: value}).first()
+        if result:
+            return result.company_name
+        return None
+
+    def update_data(self, changes: dict, pdf_file: flask = None, *args, **kwargs) -> tuple[bool, str]:
+        """
+                    The main update logic after company's edit. it will check all the possibilities of updating or refuse the
+                    company to update based on different situations
+                """
+        company_to_update = self.db_session.query(Companies).filter_by(id=self.id).first()
+        if not company_to_update:
+            return False, f"Contract was not found in database"
+        company_to_update_dict = {column.name: getattr(company_to_update, column.name) for column in company_to_update.__table__.columns}
+        for key, value in changes.items():
+            try:
+                if value != company_to_update_dict[key]:
+                    if key in ["voen", "swift", "company_name"]:
+                        print(key)
+                        check_voen_or_swift = self.update_company_voen_or_swift(key, value)
+                        if check_voen_or_swift:
+                            return False, f"This {key} is already linked to {check_voen_or_swift}."
+                        setattr(company_to_update, key, value)
+                    setattr(company_to_update, key, value)
+                else:
+                    continue
+                self.db_session.commit()
+            except sqlalchemy.exc.DBAPIError as e:
+                self.db_session.rollback()
+                return False, "An error occurred with the database. Please try again later"
+        return True, "The contract was updated successfully"
