@@ -42,7 +42,7 @@ function EditContract() {
     const first_tr = tbody.querySelector(".control");
     first_tr.innerHTML = `
         <div class="buttons">
-               <button type="button" class="cancel" onclick="CancelEdit(${[...form_data_keys]})">Cancel</button>
+               <button type="button" class="cancel" onclick="CancelEdit()">Cancel</button>
                ${save_button}
         </div>
     `;
@@ -101,7 +101,7 @@ function EditContract() {
 
 // cancel logic
 function CancelEdit(form_data) {
-    const keys = JSON.parse(form_data);
+    console.log(form_data)
     // Remove the edit form
     const edit_form_element = document.querySelector("#edit-form");
     if (edit_form_element) {
@@ -113,8 +113,8 @@ function CancelEdit(form_data) {
 
     // Remove edit-mode slug in URL
     history.pushState({}, "", window.location.pathname);
-    if(keys.includes("pdf_file")) {
-        const dynamic_script = document.getElementById("dynamic_script");
+    const dynamic_script = document.getElementById("dynamic_script");
+    if (dynamic_script) {
         document.body.removeChild(dynamic_script);
     }
 }
