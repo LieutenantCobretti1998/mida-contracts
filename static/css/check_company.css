@@ -237,6 +237,9 @@ body {
   max-width: 100%;
   height: 5vh;
 }
+.table tbody > tr > td {
+  width: 500px;
+}
 .table tbody > tr:hover {
   cursor: default;
   animation: SmoothColorChange 0.5s forwards;
@@ -299,7 +302,6 @@ body {
 
 .buttons {
   position: absolute;
-  padding-left: 55rem;
   display: flex;
   justify-content: center;
   align-items: center;

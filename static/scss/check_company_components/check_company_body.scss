@@ -31,6 +31,10 @@
     background-size: 200% 100%;
     max-width: 100%;
     height: 5vh;
+    & > td {
+      width: 500px;
+    }
+
     &:hover {
       cursor: default;
       animation: SmoothColorChange .5s forwards;
@@ -88,7 +92,7 @@
 
 .buttons {
   position: absolute;
-  padding-left: 55rem;
+  //padding-left: 55rem;
   display: flex;
   justify-content: center;
   align-items: center;
