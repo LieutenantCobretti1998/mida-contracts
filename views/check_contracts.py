@@ -5,7 +5,7 @@ from forms.contract_search import SearchContract
 from forms.filters import *
 from forms.edit_contract_form import EditContractForm
 from database.db_init import db
-from database.validators import SearchEngine, Edit
+from database.validators import SearchEngine, EditContract
 from configuration import POSTS_PER_PAGE
 
 
@@ -82,7 +82,7 @@ def get_all_contracts():
 def get_contract(contract_id):
     form = EditContractForm()
     search_engine = SearchEngine(db.session, contract_id)
-    search_result = search_engine.search_company()
+    search_result = search_engine.search_company_with_contract()
     return render_template("check_contract.html",
                            search_result=search_result,
                            contract_id=contract_id,
@@ -92,8 +92,8 @@ def get_contract(contract_id):
 @check_contracts_bp.route('/update_contract/<int:contract_id>', methods=['POST'])
 def update_contract(contract_id):
     search_engine = SearchEngine(db.session, contract_id)
-    edit_engine = Edit(db.session, contract_id)
-    original_data = search_engine.search_company()
+    edit_engine = EditContract(db.session, contract_id)
+    original_data = search_engine.search_company_with_contract()
     form = EditContractForm()
     if form.validate_on_submit():
         file = form.pdf_file.data
@@ -128,7 +128,7 @@ def update_contract(contract_id):
 @check_contracts_bp.route('/preview_pdf/<int:contract_id>', methods=['GET'])
 def preview_pdf(contract_id):
     search_engine = SearchEngine(db.session, contract_id)
-    contract_result = search_engine.search_company()
+    contract_result = search_engine.search_company_with_contract()
     if contract_result and contract_result.pdf_file_path:
         return send_file(contract_result.pdf_file_path)
     else:
