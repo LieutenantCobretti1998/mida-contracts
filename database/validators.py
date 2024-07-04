@@ -24,6 +24,19 @@ class ContractManager(ValidatorWrapper):
     def __init__(self, db_session: Session):
         super().__init__(db_session)
 
+    def delete_contract(self, contract_id: int) -> bool:
+        contract = self.db_session.query(Contract).filter_by(id=contract_id).first()
+        if contract:
+            try:
+                self.db_session.delete(contract)
+                self.db_session.commit()
+                return True
+            except Exception:
+                self.db_session.rollback()
+                return False
+
+
+
     def get_or_create_company(self, company_name: str, voen: str, *args, **kwargs) -> None | Type[
         Companies] | Companies:
         if not company_name:
@@ -418,3 +431,4 @@ class EditCompany(EditContract):
                 self.db_session.rollback()
                 return False, "An error occurred with the database. Please try again later"
         return True, "The contract was updated successfully"
+

@@ -1,15 +1,16 @@
 import flask_wtf
-from flask import Blueprint, render_template, request, session, redirect, url_for, jsonify, flash, send_file
+from flask import Blueprint, render_template, request, session, redirect, url_for, jsonify, flash, send_file, abort
 from werkzeug.utils import secure_filename
 from forms.contract_search import SearchContract
 from forms.filters import *
 from forms.edit_contract_form import EditContractForm
 from database.db_init import db
-from database.validators import SearchEngine, EditContract
+from database.validators import SearchEngine, EditContract, ContractManager
 from configuration import POSTS_PER_PAGE
 
 
-def handle_search(search_query: str, form: flask_wtf.Form, page: int = None, filters: str = None, order: str = None) -> render_template:
+def handle_search(search_query: str, form: flask_wtf.Form, page: int = None, filters: str = None,
+                  order: str = None) -> render_template:
     search_engine = SearchEngine(db.session, search_query)
     search_results = search_engine.search_query(page, POSTS_PER_PAGE, filters, order)
     total_contracts = search_results["total_contracts"]
@@ -135,6 +136,36 @@ def preview_pdf(contract_id):
         return jsonify({"error": "Company not found"}), 404
 
 
+@check_contracts_bp.route('/delete_contract/<int:contract_id>', methods=['DELETE'])
+def delete_contract(contract_id):
+    form = SearchContract()
+    contract_manager = ContractManager(db.session)
+    contract_on_delete = contract_manager.delete_contract(contract_id)
+    action = session.get("contract_action", "all")
+    session["which_page"] = "contracts"
+    page = session.get("contract_page", 1)
+    filters = session.get("contract_filters", {})
+    orders = session.get("contract_order", {})
+    search_query = session.get("contract_search_query", "")
+    if contract_on_delete:
+        return jsonify({
+            'status': 'success',
+            'message': 'Contract deleted successfully',
+            'redirect_url': url_for('all_contracts.get_all_contracts',
+                                    search=search_query,
+                                    action=action,
+                                    filters=filters,
+                                    orders=orders,
+                                    page=page,
+                                    )
+        }), 200
+    else:
+        return jsonify({
+            'status': 'error',
+            'message': "Something went wrong"
+        }), 400
+
+
 @check_contracts_bp.route('/related_contracts/<string:voen>', methods=['GET'])
 def related_contracts(voen):
     form = SearchContract()
@@ -142,7 +173,6 @@ def related_contracts(voen):
     session["company_voen"] = voen
     page = request.args.get("page", 1, type=int)
     session["contract_action"] = "company_search"
-    print(session["contract_action"])
     session["contract_search_query"] = voen
     search_query = voen
     return handle_search(search_query, form, page=page)
