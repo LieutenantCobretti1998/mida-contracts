@@ -75,6 +75,9 @@ def get_all_contracts():
             session["contract_search_query"] = search_query
             return handle_search(search_query, form, page, filters, orders)
         case "all":
+            session["contract_filters"] = ""
+            session["contract_order"] = ""
+            session["contract_search_query"] = ""
             return handle_all_contracts(form, page)
     return handle_all_contracts(form, page)
 
@@ -138,16 +141,17 @@ def preview_pdf(contract_id):
 
 @check_contracts_bp.route('/delete_contract/<int:contract_id>', methods=['DELETE'])
 def delete_contract(contract_id):
-    form = SearchContract()
     contract_manager = ContractManager(db.session)
     contract_on_delete = contract_manager.delete_contract(contract_id)
     action = session.get("contract_action", "all")
     session["which_page"] = "contracts"
     page = session.get("contract_page", 1)
-    filters = session.get("contract_filters", {})
-    orders = session.get("contract_order", {})
+    filters = session.get("contract_filters", "")
+    orders = session.get("contract_order", "")
     search_query = session.get("contract_search_query", "")
+    print(filters, orders, search_query)
     if contract_on_delete:
+        db.session.commit()
         return jsonify({
             'status': 'success',
             'message': 'Contract deleted successfully',
@@ -160,6 +164,7 @@ def delete_contract(contract_id):
                                     )
         }), 200
     else:
+        db.session.rollback()
         return jsonify({
             'status': 'error',
             'message': "Something went wrong"

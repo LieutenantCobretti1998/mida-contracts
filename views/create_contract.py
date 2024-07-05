@@ -41,9 +41,9 @@ def save_contract():
                 company_id=company.id,
                 pdf_file_path=file_path
             )
-            file.save(file_path)
             db.session.add(contract)
             db.session.commit()
+            file.save(file_path)
             flash("The contract is saved successfully!", "success")
             return redirect(url_for("create_contract.create_contract"))
 

@@ -6,7 +6,7 @@ import sqlalchemy
 from flask import current_app
 from flask_sqlalchemy.session import Session
 from sqlalchemy import or_, desc, asc, func
-from sqlalchemy.exc import NoResultFound, SQLAlchemyError
+from sqlalchemy.exc import NoResultFound, SQLAlchemyError, DBAPIError
 from sqlalchemy.orm import InstrumentedAttribute
 
 from database.models import *
@@ -24,18 +24,27 @@ class ContractManager(ValidatorWrapper):
     def __init__(self, db_session: Session):
         super().__init__(db_session)
 
+    def delete_pdf_file(self, contract_id: int) -> None:
+        contract = self.db_session.query(Contract).filter_by(id=contract_id).first()
+        if contract:
+            try:
+                contract_pdf_path = str(contract.pdf_file_path)
+                os.remove(contract_pdf_path)
+            except FileNotFoundError:
+                raise FileNotFoundError("Pdf file is not found")
+
     def delete_contract(self, contract_id: int) -> bool:
         contract = self.db_session.query(Contract).filter_by(id=contract_id).first()
         if contract:
             try:
+                self.delete_pdf_file(contract_id)
                 self.db_session.delete(contract)
-                self.db_session.commit()
                 return True
-            except Exception:
-                self.db_session.rollback()
+            except DBAPIError:
                 return False
-
-
+            except FileNotFoundError:
+                return False
+        return False
 
     def get_or_create_company(self, company_name: str, voen: str, *args, **kwargs) -> None | Type[
         Companies] | Companies:
@@ -43,17 +52,19 @@ class ContractManager(ValidatorWrapper):
             return None
 
         try:
-            company = self.db_session.query(Companies).filter_by(company_name=company_name).one()
-            if company.voen != voen:
-                raise ValueError(f"The {company_name} company already has a voen {company.voen}")
-            return company
+            existed_company = self.db_session.query(Companies).filter_by(company_name=company_name).one()
+            if existed_company.voen != voen:
+                raise ValueError(f"The {company_name} company already has a voen {existed_company.voen}")
+            return existed_company
         except NoResultFound:
             if self.check_voen(voen):
                 raise ValueError(
                     f"VOEN is already linked to {self.db_session.query(Companies).filter_by(voen=voen).one().company_name} company")
-            company = Companies(company_name=company_name, voen=voen)
-            self.db_session.add(company)
-            return company
+            new_company = Companies(company_name=company_name, voen=voen)
+            print(new_company.id)
+            self.db_session.add(new_company)
+            self.db_session.flush()
+            return new_company
 
     def check_voen(self, voen: str) -> bool:
         if not voen:
@@ -261,8 +272,9 @@ class EditContract(ValidatorWrapper):
                                         contract_to_update.company_id = existed_company_id
                                         contract_to_update.pdf_file_path = new_pdf_file_path
                                     except FileNotFoundError:
-                                        return False, ("There is the file path problem. It was corrupted or not existed."
-                                                       "Please, load a new pdf first")
+                                        return False, (
+                                            "There is the file path problem. It was corrupted or not existed."
+                                            "Please, load a new pdf first")
                                 else:
                                     return False, (f"There is no such company in the database: {value}.Please go to the"
                                                    f" create contract form page")
@@ -276,8 +288,9 @@ class EditContract(ValidatorWrapper):
                                         contract_to_update.company_id = existed_voen_id
                                         contract_to_update.pdf_file_path = new_pdf_file_path
                                     except FileNotFoundError:
-                                        return False, ("There is the file path problem. It was corrupted or not existed."
-                                                       "Please, load a new pdf first")
+                                        return False, (
+                                            "There is the file path problem. It was corrupted or not existed."
+                                            "Please, load a new pdf first")
                                 else:
                                     return False, (f"There is no such voen related to any company in the database: "
                                                    f"{value}.Please go to the"
@@ -413,7 +426,8 @@ class EditCompany(EditContract):
         company_to_update = self.db_session.query(Companies).filter_by(id=self.id).first()
         if not company_to_update:
             return False, f"Contract was not found in database"
-        company_to_update_dict = {column.name: getattr(company_to_update, column.name) for column in company_to_update.__table__.columns}
+        company_to_update_dict = {column.name: getattr(company_to_update, column.name) for column in
+                                  company_to_update.__table__.columns}
         for key, value in changes.items():
             try:
                 if value != company_to_update_dict[key]:
@@ -431,4 +445,3 @@ class EditCompany(EditContract):
                 self.db_session.rollback()
                 return False, "An error occurred with the database. Please try again later"
         return True, "The contract was updated successfully"
-
