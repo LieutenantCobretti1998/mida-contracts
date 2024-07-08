@@ -117,3 +117,8 @@ def update_company(company_id):
     else:
         errors = {field.name: field.errors for field in form}
         return jsonify(errors=errors)
+
+
+@check_companies_bp.route('/delete_company/<int:company_id>', methods=['DELETE'])
+def delete_company(company_id):
+    pass

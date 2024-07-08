@@ -307,6 +307,28 @@ class CompanyManager(ContractManager):
     def __init__(self, db_session: Session):
         super().__init__(db_session)
 
+    def delete_pdf_folder(self, company_id: int) -> None:
+        company = self.db_session.query(Contract).filter_by(id=company_id).first()
+        if company:
+            try:
+                contract_pdf_path = str(company.pdf_file_path)
+                os.remove(contract_pdf_path)
+            except FileNotFoundError:
+                raise FileNotFoundError("Pdf file is not found")
+
+    def delete_contract(self, contract_id: int) -> bool:
+        contract = self.db_session.query(Contract).filter_by(id=contract_id).first()
+        if contract:
+            try:
+                self.delete_pdf_file(contract_id)
+                self.db_session.delete(contract)
+                return True
+            except DBAPIError:
+                return False
+            except FileNotFoundError:
+                return False
+        return False
+
     def check_swift(self, swift_code: str) -> bool | ValueError:
         if not swift_code:
             return False
