@@ -1,12 +1,12 @@
 "use strict";
 
-function openPopUpMenu() {
-       const main_container = document.querySelector(".main_container");
+function openPopUpMenu(id, url) {
+       const main_container = document.querySelector(".table");
        main_container.insertAdjacentHTML("afterend",
            `<div class="confirmation_dialog">
-                    <h1>Are you sure you want to delete this contract ?</h1>
+                    <h1>Are you sure you want to delete this ${url ==='delete_contract'? 'Contract': 'Company'} ?</h1>
                     <div class="popup_buttons">
-                        <button onclick="deleteContract()" type="button" class="yes">Yes</button>
+                        <button onclick="deleteContract(${id}, ${url})" type="button" class="yes">Yes</button>
                         <button onclick="closePopUpMenu()" type="button" class="no">No</button>
                     </div>
                  </div>`
@@ -23,19 +23,22 @@ function closePopUpMenu() {
 
 }
 
-function deleteContract() {
-    fetch(form_url, {
+function deleteContract(id, url) {
+    fetch(`${url}/${id}`, {
         method: "DELETE",
         headers: {
             "X-CSRFToken": csrf_token
         }
     })
-    .then(response => {response.json()
-    .then(data => {
-        if (data.status === "success") {
-            window.location.href = data.redirect_url;
-        }
-    })
+        .then(response => {response.json()
+        .then(data => {
+            if (data.status === "success") {
+                window.location.reload();
+            }
+            else {
+                window.location.reload();
+            }
+        })
     })
 
 }
