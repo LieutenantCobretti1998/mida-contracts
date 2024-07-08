@@ -143,32 +143,18 @@ def preview_pdf(contract_id):
 def delete_contract(contract_id):
     contract_manager = ContractManager(db.session)
     contract_on_delete = contract_manager.delete_contract(contract_id)
-    action = session.get("contract_action", "all")
-    session["which_page"] = "contracts"
-    page = session.get("contract_page", 1)
-    filters = session.get("contract_filters", "")
-    orders = session.get("contract_order", "")
-    search_query = session.get("contract_search_query", "")
-    print(filters, orders, search_query)
     if contract_on_delete:
         db.session.commit()
+        flash("Contract deleted successfully", "success")
         return jsonify({
             'status': 'success',
-            'message': 'Contract deleted successfully',
-            'redirect_url': url_for('all_contracts.get_all_contracts',
-                                    search=search_query,
-                                    action=action,
-                                    filters=filters,
-                                    orders=orders,
-                                    page=page,
-                                    )
         }), 200
     else:
+        flash("Could not delete the contract. Something went wrong on the server side", "error")
         db.session.rollback()
         return jsonify({
             'status': 'error',
-            'message': "Something went wrong"
-        }), 400
+        }), 500
 
 
 @check_contracts_bp.route('/related_contracts/<string:voen>', methods=['GET'])

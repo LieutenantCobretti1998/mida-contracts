@@ -28,7 +28,6 @@
                             <div class="buttons">
                                 <button type="submit" class="back">Back</button>
                                 <button type="button" class="edit" onclick="EditContract(); fileLoader()">Edit</button>
-                                <button type="button" class="delete" onclick="openPopUpMenu()">Delete</button>
                             </div>
                         </form>
                     </td>
@@ -153,9 +152,4 @@
             document.body.appendChild(script);
         }
     </script>
-    <script type="text/javascript">
-        const form_url = "{{ url_for("all_contracts.delete_contract", contract_id=search_result.id) }}"
-        const csrf_token = "{{ csrf_token() }}"
-    </script>
-    <script src="{{ url_for('static', filename='js/delete.js') }}"></script>
 {% endblock javascript %}

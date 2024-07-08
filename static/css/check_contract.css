@@ -295,28 +295,12 @@ body {
   background-color: #f9e1c8;
 }
 
-.delete {
-  background-color: red;
-  color: white;
-}
-.delete:hover {
-  background-color: #9b1515;
-}
-
 .yes {
   background-color: green;
   color: white;
 }
 .yes:hover {
   background-color: darkgreen;
-}
-
-.no {
-  background-color: red;
-  color: white;
-}
-.no:hover {
-  background-color: #9b1515;
 }
 
 .buttons {
@@ -405,37 +389,6 @@ body {
   height: 100%;
   background-color: green;
   width: 0; /* Start with no fill */
-}
-
-.confirmation_dialog {
-  display: flex;
-  flex-direction: column;
-  gap: 5rem;
-  border-radius: 3rem;
-  border-spacing: 0 50px;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-40%, -60%); /* Start scaled down */
-  border: 1px solid #ccc;
-  padding: 20px;
-  background-color: white;
-  z-index: 2000; /* Ensures the dialog appears above other content */
-}
-
-.popup_buttons {
-  display: flex;
-  justify-content: space-between;
-}
-
-.backdrop {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  background-color: rgba(0, 0, 0, 0.5); /* Dark semi-transparent background */
-  z-index: 1000; /* Ensure it is below the dialog */
 }
 
 /*# sourceMappingURL=check_contract.css.map */
