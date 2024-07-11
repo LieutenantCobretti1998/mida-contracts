@@ -87,7 +87,7 @@
             {% block pop_up_message %} {% endblock pop_up_message %}
         {% endblock content_part %}
     </main>
-    <script src="../static/js/nav.js"></script>
+    <script src="{{ url_for('static', filename='js/nav.js') }}"></script>
     {% block javascript %} {% endblock javascript %}
 </body>
 </html>
