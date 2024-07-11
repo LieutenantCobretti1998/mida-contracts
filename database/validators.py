@@ -440,6 +440,31 @@ class EditCompany(EditContract):
             return result.company_name
         return None
 
+    def update_folder(self, new_company_name: str, old_company_name: str) -> bool:
+        base_dir = "./uploads/contracts/"
+        subfolders = os.listdir('./uploads/contracts/')
+        print(subfolders)
+        print(old_company_name)
+        for folder in subfolders:
+            print(folder)
+            if folder == old_company_name:
+                os.rename(f'{base_dir}{folder}', f'{base_dir}{new_company_name}')
+                print(f'Renamed {base_dir}{folder} to {base_dir}{new_company_name}')
+                return True
+        return False
+        # if company:
+
+    def update_company_pdf_and_path(self, new_company_name: str, old_company_name: str) -> None:
+        company = self.db_session.query(Companies).filter_by(company_name=new_company_name).first()
+        folder_updated = self.update_folder(new_company_name, old_company_name)
+        if folder_updated:
+            print(f'Updated {new_company_name}')
+            related_contracts = company.contracts
+            list(map(lambda contract: setattr(contract, "pdf_file_path",
+                                              re.sub(r'(?<=\\contracts\\)[^\\]+(?=\\)',
+                                                     new_company_name, contract.pdf_file_path)),
+                     related_contracts))
+
     def update_data(self, changes: dict, pdf_file: flask = None, *args, **kwargs) -> tuple[bool, str]:
         """
                     The main update logic after company's edit. it will check all the possibilities of updating or refuse the
@@ -459,11 +484,14 @@ class EditCompany(EditContract):
                         if check_voen_or_swift:
                             return False, f"This {key} is already linked to {check_voen_or_swift}."
                         setattr(company_to_update, key, value)
+                        if key == "company_name":
+                            self.update_company_pdf_and_path(value, company_to_update_dict["company_name"])
+
                     setattr(company_to_update, key, value)
                 else:
                     continue
-                self.db_session.commit()
             except sqlalchemy.exc.DBAPIError as e:
                 self.db_session.rollback()
                 return False, "An error occurred with the database. Please try again later"
+        self.db_session.commit()
         return True, "The contract was updated successfully"
