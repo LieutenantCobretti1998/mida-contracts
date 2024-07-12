@@ -277,3 +277,36 @@
     }
   }
 }
+
+.error {
+  padding-left: 1rem;
+  transform: translateX(25%);
+  position: absolute;
+  z-index: 5000;
+  width: 70%;
+  height: 5em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  border-radius: 10px;
+  opacity: 1;
+  gap: 1rem;
+  animation: FadeInOut 7s ease-in-out forwards;
+
+  & > svg {
+    fill: green;
+    width: 5em;
+
+  }
+
+  &__text {
+    font-size: $font-size-small;
+    color: $color-black;
+  }
+
+  &__description > strong {
+    font-size: $font-size-big;
+    font-weight: $roboto-font-weight-bold;
+  }
+}
