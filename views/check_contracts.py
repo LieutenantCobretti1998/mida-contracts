@@ -160,10 +160,6 @@ def delete_contract(contract_id):
 @check_contracts_bp.route('/related_contracts/<string:voen>', methods=['GET'])
 def related_contracts(voen):
     form = SearchContract()
-    session["which_page"] = "companies"
-    session["company_voen"] = voen
     page = request.args.get("page", 1, type=int)
-    session["contract_action"] = "company_search"
-    session["contract_search_query"] = voen
     search_query = voen
     return handle_search(search_query, form, page=page)

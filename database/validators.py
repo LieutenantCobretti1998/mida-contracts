@@ -1,6 +1,7 @@
 import re
 from typing import Any, Type
 import os
+import shutil
 import flask
 import sqlalchemy
 from flask import current_app
@@ -8,10 +9,8 @@ from flask_sqlalchemy.session import Session
 from sqlalchemy import or_, desc, asc, func
 from sqlalchemy.exc import NoResultFound, SQLAlchemyError, DBAPIError
 from sqlalchemy.orm import InstrumentedAttribute
-
 from database.models import *
 from abc import ABC
-
 from database.models import Companies
 
 
@@ -307,21 +306,23 @@ class CompanyManager(ContractManager):
     def __init__(self, db_session: Session):
         super().__init__(db_session)
 
-    def delete_pdf_folder(self, company_id: int) -> None:
-        company = self.db_session.query(Contract).filter_by(id=company_id).first()
+    @staticmethod
+    def delete_pdf_folder(company_name: str) -> None:
+        base_path = f"./uploads/contracts/{company_name}"
+        print(base_path)
+        if os.path.exists(base_path):
+            print("exist")
+            try:
+                shutil.rmtree(base_path)
+            except OSError:
+                raise FileNotFoundError()
+
+    def delete_company(self, company_id: int) -> bool:
+        company = self.db_session.query(Companies).filter_by(id=company_id).first()
         if company:
             try:
-                contract_pdf_path = str(company.pdf_file_path)
-                os.remove(contract_pdf_path)
-            except FileNotFoundError:
-                raise FileNotFoundError("Pdf file is not found")
-
-    def delete_contract(self, contract_id: int) -> bool:
-        contract = self.db_session.query(Contract).filter_by(id=contract_id).first()
-        if contract:
-            try:
-                self.delete_pdf_file(contract_id)
-                self.db_session.delete(contract)
+                self.delete_pdf_folder(str(company.company_name))
+                self.db_session.delete(company)
                 return True
             except DBAPIError:
                 return False

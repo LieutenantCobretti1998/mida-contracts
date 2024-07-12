@@ -4,7 +4,7 @@ from forms.edit_company_form import EditCompanyForm
 from forms.filters import *
 from forms.company_search import CompanySearchForm
 from database.db_init import db
-from database.validators import CompanySearchEngine, EditCompany, SearchEngine
+from database.validators import CompanySearchEngine, EditCompany, SearchEngine, CompanyManager
 from configuration import POSTS_PER_PAGE
 
 
@@ -121,4 +121,17 @@ def update_company(company_id):
 
 @check_companies_bp.route('/delete_company/<int:company_id>', methods=['DELETE'])
 def delete_company(company_id):
-    pass
+    company_manager = CompanyManager(db.session)
+    company_on_delete = company_manager.delete_company(company_id)
+    if company_on_delete:
+        db.session.commit()
+        flash("Company deleted successfully", "success")
+        return jsonify({
+            'status': 'success',
+        }), 200
+    else:
+        db.session.rollback()
+        flash("Could not delete the company. Something went wrong on the server side", "error")
+        return jsonify({
+            'status': 'error',
+        }), 500
