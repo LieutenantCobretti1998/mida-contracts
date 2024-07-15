@@ -1,5 +1,5 @@
 import flask_wtf
-from flask import Blueprint, render_template, request, session, redirect, url_for, jsonify, flash, send_file, abort
+from flask import Blueprint, render_template, request, session, redirect, url_for, jsonify, flash, send_file
 from werkzeug.utils import secure_filename
 from forms.contract_search import SearchContract
 from forms.filters import *
@@ -14,6 +14,7 @@ def handle_search(search_query: str, form: flask_wtf.Form, page: int = None, fil
     search_engine = SearchEngine(db.session, search_query)
     search_results = search_engine.search_query(page, POSTS_PER_PAGE, filters, order)
     total_contracts = search_results["total_contracts"]
+
     total_results = search_results["results_per_page"]
     total_pages = (total_contracts // POSTS_PER_PAGE) + (1 if total_contracts % POSTS_PER_PAGE != 0 else 0)
 
@@ -35,7 +36,7 @@ def handle_search(search_query: str, form: flask_wtf.Form, page: int = None, fil
                            )
 
 
-def handle_all_contracts(form: flask_wtf.Form, page: int) -> render_template:
+def handle_all_contracts(form: flask_wtf.Form, page: int = None) -> render_template:
     search_engine = SearchEngine(db.session)
     search_results = search_engine.get_all_results(db, page, POSTS_PER_PAGE)
     total_contracts = search_results["total_contracts"]
@@ -62,7 +63,6 @@ def get_all_contracts():
     form = SearchContract()
     action = request.args.get("action")
     session["contract_action"] = action
-    session["which_page"] = "contracts"
     page = request.args.get("page", 1, type=int)
     session["contract_page"] = page
     match action:

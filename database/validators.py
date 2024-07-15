@@ -157,7 +157,7 @@ class SearchEngine(ValidatorWrapper):
         total_contracts = stmt.count()
         limited_results = db.paginate(stmt, page=page, per_page=per_page, error_out=False).items
         return {"results_per_page": limited_results,
-                "total_contracts": total_contracts
+                "total_contracts": total_contracts + 1 if total_contracts == 0 else total_contracts
                 }
 
 
