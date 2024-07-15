@@ -4,7 +4,7 @@ function openPopUpMenu(url) {
        const main_container = document.querySelector(".table");
        main_container.insertAdjacentHTML("afterend",
            `<div class="confirmation_dialog">
-                    <h1>Are you sure you want to delete this ${url ==='delete_contract'? 'Contract': 'Company'} ?</h1>
+                    <h1>Are you sure you want to delete this ${url.includes("delete_company")? 'Company': 'Contract'} ?</h1>
                     <div class="popup_buttons">
                         <button onclick="deleteContract('${url}')" type="button" class="yes">Yes</button>
                         <button onclick=closePopUpMenu() type="button" class="no">No</button>
@@ -28,7 +28,8 @@ function deleteContract(url) {
     fetch(`${url}`, {
         method: "DELETE",
         headers: {
-            "X-CSRFToken": csrf_token
+            "X-CSRFToken": csrf_token,
+            'Content-Type': 'application/json'
         }
     })
         .then(response => {response.json()
@@ -41,5 +42,4 @@ function deleteContract(url) {
             }
         })
     })
-
 }
