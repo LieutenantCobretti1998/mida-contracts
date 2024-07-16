@@ -24,11 +24,10 @@ function closePopUpMenu() {
 }
 
 function deleteContract(url) {
-    console.log(url)
     fetch(`${url}`, {
         method: "DELETE",
         headers: {
-            "X-CSRFToken": csrf_token,
+            "X-CSRF-Token": csrf_token,
             'Content-Type': 'application/json'
         }
     })

@@ -121,6 +121,7 @@ def update_company(company_id):
 
 @check_companies_bp.route('/delete_company/<int:company_id>', methods=['DELETE'])
 def delete_company(company_id):
+    print(company_id)
     company_manager = CompanyManager(db.session)
     company_on_delete = company_manager.delete_company(company_id)
     if company_on_delete:
