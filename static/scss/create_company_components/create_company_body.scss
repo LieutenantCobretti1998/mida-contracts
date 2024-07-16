@@ -81,19 +81,8 @@ caption {
 
   }
 
-  tbody > tr:not(:last-child) {
-    & > td {
-      border-top: 1px solid black;
-      border-bottom: 1px solid black;
-
-      //&:first-child {
-      //  border-left: 1px solid black;
-      //}
-      //
-      //&:last-child {
-      //  border-right: 1px solid black;
-      //}
-    }
+  tr:hover {
+    animation: SmoothColorChange .5s forwards;
   }
 
   tr:nth-child(odd):not(:nth-last-child(-n+2)) {

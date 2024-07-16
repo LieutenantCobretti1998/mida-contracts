@@ -95,21 +95,6 @@ caption {
     background-image: linear-gradient(to right, $color-table-background, darken($color-table-background, 10%)); // Gradient adjustment
   }
 
-  tbody > tr:not(:last-child) {
-    & > td {
-      border-top: 1px solid black;
-      border-bottom: 1px solid black;
-
-      //&:first-child {
-      //  border-left: 1px solid black;
-      //}
-      //
-      //&:last-child {
-      //  border-right: 1px solid black;
-      //}
-    }
-  }
-
   &__input {
     box-sizing: border-box;
     padding-left: 10px;

@@ -281,9 +281,8 @@ caption {
   transition: background-color 0.5s ease; /* Smooth transition for background color change */
   width: 100%; /* Ensure the row uses full width if not set */
 }
-.table tbody > tr:not(:last-child) > td {
-  border-top: 1px solid black;
-  border-bottom: 1px solid black;
+.table tr:hover {
+  animation: SmoothColorChange 0.5s forwards;
 }
 .table tr:nth-child(odd):not(:nth-last-child(-n+2)) {
   background-color: white;
