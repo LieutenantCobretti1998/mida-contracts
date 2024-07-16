@@ -293,6 +293,10 @@ caption {
 .table tr:nth-child(even):not(:nth-last-child(-n+2)) {
   background-image: linear-gradient(to right, #FEFAF6, #f9e1c8);
 }
+.table tbody > tr:not(:last-child) > td {
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+}
 .table__input {
   box-sizing: border-box;
   padding-left: 10px;

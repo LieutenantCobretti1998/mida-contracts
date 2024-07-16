@@ -4,12 +4,11 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/check_contract.css') }}">
 {% endblock style %}
 {% block content_part %}
-        <table class="table">
+        <table  class="table">
             <tbody class="main-table-part">
                 <tr>
                     <td class="control">
-                        <form {% if session.get("contract_action") == "company_search" %} action="{{ url_for("all_contracts.related_contracts", voen=session.get("company_voen")) }}"
-                                {% else %} action="{{ url_for("all_contracts.get_all_contracts") }}" {% endif %} method="get">
+                        <form  action="{{ url_for("all_contracts.get_all_contracts") }}" method="get">
                             {% if session.get("contract_action") == "all" %}
                                 <input type="hidden" name="action" value="{{ session.get("contract_action") }}">
                             {% endif %}

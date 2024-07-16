@@ -268,7 +268,7 @@ caption {
   padding: 2vw;
   box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.2);
 }
-.table > caption {
+.table caption {
   font-size: 2.5rem;
   margin-bottom: 2vw;
 }
@@ -281,8 +281,9 @@ caption {
   transition: background-color 0.5s ease; /* Smooth transition for background color change */
   width: 100%; /* Ensure the row uses full width if not set */
 }
-.table tr:hover {
-  animation: SmoothColorChange 0.5s forwards;
+.table tbody > tr:not(:last-child) > td {
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
 }
 .table tr:nth-child(odd):not(:nth-last-child(-n+2)) {
   background-color: white;

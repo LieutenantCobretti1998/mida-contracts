@@ -17,7 +17,7 @@
 
 {% block content_part %}
     {% set counter = namespace(value=(page-1) * posts_per_page) %}
-    <table class="table">
+    <table border=1 frame=void rules=rows  class="table">
         <caption>
             <div class="table__header">
                 <div class="table__header__search">
@@ -39,7 +39,9 @@
                         </select>
                      </form>
                 </div>
-                All Companies -{% if companies != [] %} {{ amount_of_companies }} {% else %} 0 {% endif %}
+                <span class="table__header__all-companies">
+                    All Companies: {% if companies != [] %} {{ amount_of_companies }} {% else %} 0 {% endif %}
+                </span>
             </div>
         </caption>
         <thead>

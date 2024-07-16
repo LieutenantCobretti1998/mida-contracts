@@ -253,6 +253,9 @@ body {
   justify-content: space-evenly;
   align-items: center;
 }
+.table__header__all-companies {
+  align-self: end;
+}
 .table__header__search form {
   display: flex;
   align-content: center;

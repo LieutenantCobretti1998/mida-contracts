@@ -9,18 +9,18 @@
                 <tr>
                     <td class="control">
                         <form action="{{ url_for("all_companies.get_all_companies") }}" method="get">
-                            {% if session.get("action") == "all" %}
+                            {% if session.get("company_action") == "all" %}
                                 <input type="hidden" name="search" value="{{ session.get("company_search_query") }}">
-                                <input type="hidden" name="action" value="{{ session.get("action") }}">
+                                <input type="hidden" name="action" value="{{ session.get("company_action") }}">
                             {% endif %}
-                            {% if session.get("action") == "search" %}
+                            {% if session.get("company_action") == "search" %}
                                 <input type="hidden" name="search" value="{{ session.get("company_search_query") }}">
                                 <input type="hidden" name="action" value="{{ session.get("company_action") }}">
 
-                                 {% if session.get("filters") != "" %}
+                                 {% if session.get("company_filters") != "" %}
                                     <input type="hidden" name="filters" value="{{ session.get("company_filters") }}">
                                  {% endif %}
-                                {% if session.get("order") != "" %}
+                                {% if session.get("company_order") != "" %}
                                     <input type="hidden" name="orders" value="{{ session.get("company_order") }}">
                                 {% endif %}
                             {% endif %}
