@@ -42,7 +42,7 @@
     &:nth-child(odd):not(:first-child):not(:last-child) {
       background-image: linear-gradient(to right, $color-white, darken($color-white, 10%));
     }
-    &:nth-child(even) {
+    &:nth-child(even):not(:first-child):not(:last-child) {
       background-image: linear-gradient(to right, $color-table-background, darken($color-table-background, 10%)); // Gradient adjustment
   }
   }
@@ -199,3 +199,13 @@
     width: 0; /* Start with no fill */
 }
 
+#is_adv_payer {
+
+  & > li {
+    list-style: none;
+
+    &:not(:last-child) {
+      margin-bottom: 1.2rem;
+    }
+  }
+}

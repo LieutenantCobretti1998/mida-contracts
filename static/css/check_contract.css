@@ -247,7 +247,7 @@ body {
 .table tbody > tr:nth-child(odd):not(:first-child):not(:last-child) {
   background-image: linear-gradient(to right, white, #e6e6e6);
 }
-.table tbody > tr:nth-child(even) {
+.table tbody > tr:nth-child(even):not(:first-child):not(:last-child) {
   background-image: linear-gradient(to right, #FEFAF6, #f9e1c8);
 }
 .table tbody > tr:not(:first-child):not(:last-child) > td {
@@ -393,6 +393,13 @@ body {
   height: 100%;
   background-color: green;
   width: 0; /* Start with no fill */
+}
+
+#is_adv_payer > li {
+  list-style: none;
+}
+#is_adv_payer > li:not(:last-child) {
+  margin-bottom: 1.2rem;
 }
 
 /*# sourceMappingURL=check_contract.css.map */

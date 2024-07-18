@@ -164,3 +164,13 @@ td {
     width: 0; /* Start with no fill */
 }
 
+#is_adv_payer {
+
+  & > li {
+    list-style: none;
+
+    &:not(:last-child) {
+      margin-bottom: 1.2rem;
+    }
+  }
+}
