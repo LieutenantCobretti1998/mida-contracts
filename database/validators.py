@@ -1,5 +1,5 @@
 import re
-from typing import Any, Type
+from typing import Any, Type, List, Dict
 import os
 import shutil
 import flask
@@ -159,6 +159,18 @@ class SearchEngine(ValidatorWrapper):
         return {"results_per_page": limited_results,
                 "total_contracts": total_contracts + 1 if total_contracts == 0 else total_contracts
                 }
+
+    def get_all_results_data(self, db, per_page: int) -> list[dict[Any]]:
+        query = self.db_session.query(Contract).join(Companies, Companies.id == Contract.company_id).limit(per_page)
+        contracts = query.all()
+        contract_list = [{
+            "company_name": contract.company.company_name,
+            "voen": contract.company.voen,
+            "contract_number": contract.contract_number,
+            "date": contract.date,
+            "amount": contract.amount
+        } for contract in contracts]
+        return contract_list
 
 
 class EditContract(ValidatorWrapper):

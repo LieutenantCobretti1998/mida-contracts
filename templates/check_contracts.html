@@ -2,155 +2,12 @@
 {% block title %} Check Contracts {% endblock title %}
 {% block style %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/all.css') }}">
+    <link href="https://unpkg.com/gridjs/dist/theme/mermaid.min.css" rel="stylesheet" />
 {% endblock style %}
 {% block class_all_contracts %}active{% endblock class_all_contracts %}
 {% block class_check_contract_li %}remove-pointer{% endblock class_check_contract_li %}
-{% block loading %}
-    <div class="loader">
-        <div class="inner one"></div>
-        <div class="inner two"></div>
-        <div class="inner three"></div>
-    </div>
-{% endblock loading %}
 {% block content_part %}
-    {% set counter = namespace(value=(page - 1) * posts_per_page) %}
-    <table border=1 frame=void rules=rows class="table">
-        <caption>
-            <div class="table__header">
-                <div class="table__header__search">
-                    <form action="{{ url_for('all_contracts.get_all_contracts') }}" method="get">
-                        {{ form.search(class="table__header__search__label", placeholder="Search") }}
-                        <button class="table__header__search__button" type="submit" name="action" value="search">Search</button>
-                        <button class="table__header__search__button" type="submit" name="action" value="all">All Contracts</button>
-                        <label id="label-filter" for="filter-selection"></label>
-                        <select name="filters" id="filter-selection" class="filter-button">
-                            <option value="" selected disabled hidden>Filters</option>
-                            <option value="company" {% if filters == "company" and action == "search" %}selected{% endif %}>Company</option>
-                            <option value="date" {% if filters == "date" and action == "search" %}selected{% endif %}>Date</option>
-                            <option value="amount" {% if filters == "amount" and action == "search" %}selected{% endif %}>Amount</option>
-                        </select>
-                        <label id="label-filter" for="order-selection"></label>
-                        <select name="orders" id="order-selection" class="order-button">
-                            <option value="" selected disabled hidden>Order by</option>
-                            <option value="ascending"  {% if order == "ascending" and action == "search" %}selected{% endif %}>Ascending</option>
-                            <option value="descending" {% if order == "descending" and action == "search" %}selected{% endif %}>Descending</option>
-                        </select>
-                    </form>
-                </div>
-                <span class="table__header__all-contracts">
-                        All Contracts: {% if companies != [] %} {{ amount_of_companies }} {% else %} 0 {% endif %}
-                </span>
-            </div>
-        </caption>
-        <thead>
-            <tr>
-                <th><strong>No</strong></th>
-                <th>COMPANY</th>
-                <th>Voen</th>
-                <th>Contract number</th>
-                <th>date</th>
-                <th>amount</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for company in companies %}
-                {% if company.__class__.__name__ == 'Companies' %}
-                    {% for contract in company.contracts %}
-                        {% set counter.value = counter.value + 1 %}
-                        <tr>
-                            <td>{{ counter.value }}</td>
-                            <td>{{ company.company_name }}</td>
-                            <td>{{ company.voen }}</td>
-                            <td>{{ contract.contract_number }}</td>
-                            <td>{{ contract.date }}</td>
-                            <td>{{ "%.2f"| format(contract.amount)  }}</td>
-                            <td class="check_option">
-                                <a class="check" href={{ url_for('all_contracts.get_contract', contract_id=contract.id) }}>Check</a>
-                            </td>
-                             <td>
-                                <svg onclick="openPopUpMenu('{{ url_for('all_contracts.delete_contract', contract_id=contract.id) }}')" xmlns="http://www.w3.org/2000/svg" class="delete" viewBox="0 0 512 512">
-                                    <path d="M112 112l20 320c.95 18.49 14.4 32 32 32h184c17.67 0 30.87-13.51 32-32l20-320" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"></path>
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M80 112h352"/><path d="M192 112V72h0a23.93 23.93 0 0124-24h80a23.93 23.93 0 0124 24h0v40M256 176v224M184 176l8 224M328 176l-8 224" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/></svg>
-                            </td>
-                            <td></td>
-                        </tr>
-                    {% endfor %}
-                {% elif company.__class__.__name__ == 'Contract' %}
-                    {% set counter.value = counter.value + 1 %}
-                    <tr>
-                            <td>{{ counter.value }}</td>
-                            <td>{{ company.company.company_name }}</td>
-                            <td>{{ company.company.voen }}</td>
-                            <td>{{ company.contract_number }}</td>
-                            <td>{{ company.date }}</td>
-                            <td>{{ "%.2f"| format(company.amount)  }}</td>
-                            <td>
-                                <a class="check" href={{ url_for('all_contracts.get_contract', contract_id=company.id) }}>Check</a>
-                            </td>
-                            <td>
-                                <svg onclick="openPopUpMenu('{{ url_for('all_contracts.delete_contract', contract_id=company.id) }}')"  xmlns="http://www.w3.org/2000/svg" class="delete"
-                                     viewBox="0 0 512 512">
-                                    <path d="M112 112l20 320c.95 18.49 14.4 32 32 32h184c17.67 0 30.87-13.51 32-32l20-320" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"></path>
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M80 112h352"/><path d="M192 112V72h0a23.93 23.93 0 0124-24h80a23.93 23.93 0 0124 24h0v40M256 176v224M184 176l8 224M328 176l-8 224" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/></svg>
-                            </td>
-                        </tr>
-                {% endif %}
-            {% endfor %}
-            <tr class="pagination_buttons">
-                <td id="prev">
-                    <form action="{{ url_for("all_contracts.get_all_contracts") }}" method="get">
-                        {% if action == 'search' %}
-                            <input type="hidden" name="search" value="{{ search_query }}">
-                            <input type="hidden" name="action" value="{{ action }}">
-
-                            {% if filters != "" %}
-                                <input type="hidden" name="filters" value="{{ filters }}">
-                            {% endif %}
-                            {% if order != "" %}
-                                <input type="hidden" name="orders" value="{{ order }}">
-                            {% endif %}
-                        {% elif  action == 'all' %}
-                            <input type="hidden" name="search" value="{{ search_query }}">
-                            <input type="hidden" name="action" value="{{ action }}">
-                        {% endif %}
-
-                        {% if page > 1  %}
-                            <button class="prev" type="submit" name="page" value="{{ page - 1 }}">Prev</button>
-                        {% else %}
-                            <button class="prev" disabled>Prev</button>
-                        {% endif %}
-                    </form>
-                </td>
-                <td id="page_number">
-                    Page: {{ page }}
-                </td>
-                <td id="next">
-                    <form action="{{ url_for("all_contracts.get_all_contracts") }}" method="get">
-                        {% if action == 'search'%}
-                            <input type="hidden" name="search" value="{{ search_query }}">
-                            <input type="hidden" name="action" value="{{ action }}">
-                            {% if filters != "" %}
-                                <input type="hidden" name="filters" value="{{ filters }}">
-                            {% endif %}
-
-                            {% if order != "" %}
-                                <input type="hidden" name="orders" value="{{ order }}">
-                            {% endif %}
-                        {% elif  action == 'all' %}
-                            <input type="hidden" name="search" value="{{ search_query }}">
-                            <input type="hidden" name="action" value="{{ action }}">
-                        {% elif action == 'company_search' %}
-                        {% endif %}
-                        {%  if page < total_pages %}
-                            <button type="submit" class="next" name="page" value="{{ page + 1 }}">Next</button>
-                        {% else %}
-                            <button class="next" disabled>Next</button>
-                        {% endif %}
-                    </form>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <div id="results"></div>
     {% block pop_up_message %}
             {% with messages = get_flashed_messages(with_categories=True) %}
                     {% if messages %}
@@ -201,13 +58,33 @@
         {% endblock pop_up_message %}
 {% endblock content_part %}
 {% block javascript %}
-    <script src="{{ url_for('static', filename='js/all_contracts_search_bar.js') }}"></script>
-    <script src={{ url_for('static', filename='js/add_contract.js') }}></script>
-    <script src="{{ url_for('static', filename='js/loading_screen.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/pagination.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/clear_url.js') }}"></script>
-     <script type="text/javascript">
-        const csrf_token = "{{ csrf_token() }}"
+    <script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
+    <script>
+        const grid = new gridjs.Grid({
+            columns: ["Company Name", "Voen", "Contract Number", "Date", "Amount"],
+            pagination: true,
+            sort: true,
+            search: true,
+            server: {
+                url: "http://10.100.179.27:7000/contracts/all_contracts_data",
+                then: data => data.map(contract => [
+                    contract.company_name,
+                    contract.voen,
+                    contract.contract_number,
+                    new Date(contract.date).toLocaleDateString(),
+                    parseFloat(contract.amount).toFixed(2),
+                ])
+            },
+        })
+         grid.render(document.getElementById("results"))
     </script>
-    <script src="{{ url_for('static', filename='js/delete.js') }}"></script>
+{#    <script src="{{ url_for('static', filename='js/all_contracts_search_bar.js') }}"></script>#}
+{#    <script src={{ url_for('static', filename='js/add_contract.js') }}></script>#}
+{#    <script src="{{ url_for('static', filename='js/loading_screen.js') }}"></script>#}
+{#    <script src="{{ url_for('static', filename='js/pagination.js') }}"></script>#}
+{#    <script src="{{ url_for('static', filename='js/clear_url.js') }}"></script>#}
+{#     <script type="text/javascript">#}
+{#        const csrf_token = "{{ csrf_token() }}"#}
+{#    </script>#}
+{#    <script src="{{ url_for('static', filename='js/delete.js') }}"></script>#}
 {% endblock javascript %}
