@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, DateField, DecimalField
+from wtforms import StringField, SubmitField, DateField, DecimalField, RadioField
 from flask_wtf.file import FileRequired, FileAllowed, FileField
 from wtforms.validators import DataRequired, NumberRange, Length
 from forms.custom_validators import *
@@ -23,6 +23,12 @@ class CreateContractForm(FlaskForm):
     amount = DecimalField("amount", validators=[DataRequired(message=empty_field),
                                                 NumberRange(min=1, max=1000000000, message=amount_error_message)]
                           )
+
+    is_adv_payer = RadioField("is adv payer",
+                              choices=[("Yes", "Yes"), ("No", "No")],
+                              validators=[DataRequired(message=check_adv)]
+                              )
+
     pdf_file = FileField("Upload pdf", validators=[FileRequired(message=empty_field),
                                                    FileAllowed(["pdf"], pdf_files_only)]
                          )

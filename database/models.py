@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, CHAR, DATE, ForeignKey, DECIMAL, VARCHAR
+from sqlalchemy import Column, Integer, CHAR, DATE, ForeignKey, DECIMAL, VARCHAR, BOOLEAN
 from database.db_init import Base
 from sqlalchemy.orm import relationship
 
@@ -27,4 +27,5 @@ class Contract(Base):
     company_id = Column(Integer, ForeignKey('companies.id'), nullable=False)
     amount = Column(DECIMAL(), nullable=False)
     company = relationship("Companies", back_populates="contracts")
+    adv_payer = Column("adv_payer", BOOLEAN, nullable=False, default=False)
     pdf_file_path = Column(VARCHAR, nullable=False)

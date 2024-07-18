@@ -25,20 +25,20 @@ def save_contract():
     filtered_voen = filter_voen(form.voen.data)
     filtered_contract = filter_contract_number(form.contract_number.data)
     contract_manager = ContractManager(db.session)
+    adv_payer = True if form.is_adv_payer.data == "Yes" else False
     if form.validate():
         try:
             file = form.pdf_file.data
             voen = form.voen.data
             filename = secure_filename(file.filename)
-            print(filename)
             file_path = add_contract_pdf(current_app.config['UPLOAD_FOLDER'], filtered_company_name, filename, voen)
-            print(file_path)
             company = contract_manager.get_or_create_company(filtered_company_name, filtered_voen)
             contract = Contract(
                 contract_number=filtered_contract,
                 date=form.date.data,
                 amount=float(form.amount.data),
                 company_id=company.id,
+                adv_payer=adv_payer,
                 pdf_file_path=file_path
             )
             db.session.add(contract)

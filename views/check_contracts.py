@@ -109,10 +109,12 @@ def update_contract(contract_id):
                 form.contract_number.data) if form.contract_number.data else original_data.contract_number,
             date=form.date.data if form.date.data else original_data.date,
             amount=float(form.amount.data) if form.amount.data else original_data.amount,
+            adv_payer=True if form.is_adv_payer.data == "Yes" else False,
             pdf_file_path=filename if form.pdf_file.data else original_data.pdf_file_path,
             company_name=filter_string_fields(
                 form.company.data) if form.company.data else original_data.company.company_name,
             voen=filter_voen(form.voen.data) if form.voen.data else original_data.company.voen,
+
         )
         success, message = edit_engine.update_data(data_dict, form.pdf_file.data)
         if success:
