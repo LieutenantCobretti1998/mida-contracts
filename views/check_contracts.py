@@ -39,7 +39,7 @@ def handle_search(search_query: str, form: flask_wtf.Form, page: int = None, fil
 def handle_all_contracts(form: flask_wtf.Form, page: int = None) -> render_template:
     search_engine = SearchEngine(db.session)
     search_results = search_engine.get_all_results(db, page, POSTS_PER_PAGE)
-    search_engine.get_all_results_api(POSTS_PER_PAGE)
+    # search_engine.get_all_results_api(POSTS_PER_PAGE)
     total_contracts = search_results["total_contracts"]
     companies = search_results["results_per_page"]
     total_pages = (total_contracts // POSTS_PER_PAGE) + (1 if total_contracts % POSTS_PER_PAGE != 0 else 0)

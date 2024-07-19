@@ -136,22 +136,26 @@ class SearchEngine(ValidatorWrapper):
                 }
 
     # APIs for the table
-    def get_all_results_api(self, per_page: int) -> list[dict[str, InstrumentedAttribute | Any]]:
+    def get_all_results_api(self, per_page: int, offset: int) -> tuple[list[dict[str, InstrumentedAttribute | Any]], int]:
         """
+        :param offset:
         :param per_page:
         :return: list[dict[str, InstrumentedAttribute | Any]]
         This method is for put all results of the contract in the table
         """
-        query = self.db_session.query(Contract).join(Companies, Companies.id == Contract.company_id).limit(per_page)
-        contracts = query.all()
+        query = (self.db_session.query(Contract)
+                 .join(Companies, Companies.id == Contract.company_id)
+                 )
+        total_count = query.count()
+        contracts = query.offset(offset).limit(per_page).all()
         contract_list = [{
             "company_name": contract.company.company_name,
             "voen": contract.company.voen,
             "contract_number": contract.contract_number,
             "date": contract.date,
-            "amount": contract.amount
+            "amount": float(contract.amount)
         } for contract in contracts]
-        return contract_list
+        return contract_list, total_count
 
     def search_query_api(self) -> list[dict[str, InstrumentedAttribute | Any]]:
         """
