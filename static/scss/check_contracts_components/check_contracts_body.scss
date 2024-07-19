@@ -316,3 +316,37 @@
     }
   }
 }
+
+.edit-btn,
+.pdf-btn,
+.delete-btn {
+  width: 60px;
+  height: 42px;
+  background-color: $color-button-check;
+  color: $color-white;
+  border-radius: 1rem;
+  transition: background-color .4s ease-in-out;
+
+  &:hover {
+    cursor: pointer;
+    background-color: $dark-color-button-check;
+  }
+}
+
+.delete-btn {
+  background-color: $color-red;
+
+  &:hover {
+    cursor: pointer;
+    background-color: $color-dark-red;
+  }
+}
+
+.pdf-btn {
+  background-color: $color-blue;
+
+  &:hover {
+    cursor: pointer;
+    background-color: $color-dark-blue;
+  }
+}

@@ -84,6 +84,7 @@ class SearchEngine(ValidatorWrapper):
     """
     Engine for searching purposes
     """
+
     def __init__(self, db_session: Session, search: str | int = None):
         super().__init__(db_session)
         self.search = search
@@ -136,8 +137,12 @@ class SearchEngine(ValidatorWrapper):
                 }
 
     # APIs for the table
-    def get_all_results_api(self, per_page: int, offset: int) -> tuple[list[dict[str, InstrumentedAttribute | Any]], int]:
+    def get_all_results_api(self, per_page: int, offset: int, sort_dir: str, mapping: tuple) -> tuple[
+        list[dict[str, InstrumentedAttribute | Any]], int]:
         """
+        :param mapping:
+        :param sorted_column:
+        :param sort_dir:
         :param offset:
         :param per_page:
         :return: list[dict[str, InstrumentedAttribute | Any]]
@@ -146,6 +151,10 @@ class SearchEngine(ValidatorWrapper):
         query = (self.db_session.query(Contract)
                  .join(Companies, Companies.id == Contract.company_id)
                  )
+        if sort_dir == "asc":
+            query = query.order_by(asc(getattr(mapping[1], mapping[0])))
+        else:
+            query = query.order_by(desc(getattr(mapping[1], mapping[0])))
         total_count = query.count()
         contracts = query.offset(offset).limit(per_page).all()
         contract_list = [{
@@ -157,12 +166,11 @@ class SearchEngine(ValidatorWrapper):
         } for contract in contracts]
         return contract_list, total_count
 
-    def search_query_api(self) -> list[dict[str, InstrumentedAttribute | Any]]:
+    def search_query_api(self, per_page: int, offset: int, sort_dir: str, mapping: tuple) -> tuple[list[dict[str, InstrumentedAttribute | Any]], int]:
         """
         :return: list[dict[str, InstrumentedAttribute | Any]]
         server-side search from db directly to table via api
         """
-        print(self.search)
         query = (self.db_session
         .query(Contract)
         .join(Companies, Companies.id == Contract.company_id)
@@ -171,7 +179,14 @@ class SearchEngine(ValidatorWrapper):
             Companies.voen.ilike(f"%{self.search}%"),
             Contract.contract_number.ilike(f"%{self.search}%"),
         )))
-        search_results = query.all()
+
+        if sort_dir == "asc":
+            query = query.order_by(asc(getattr(mapping[1], mapping[0])))
+        else:
+            query = query.order_by(desc(getattr(mapping[1], mapping[0])))
+
+        total_count = query.count()
+        contracts = query.offset(offset).limit(per_page).all()
 
         contract_list = [{
             "company_name": contract.company.company_name,
@@ -179,8 +194,8 @@ class SearchEngine(ValidatorWrapper):
             "contract_number": contract.contract_number,
             "date": contract.date,
             "amount": contract.amount
-        } for contract in search_results]
-        return contract_list
+        } for contract in contracts]
+        return contract_list, total_count
 
 
 class EditContract(ValidatorWrapper):
