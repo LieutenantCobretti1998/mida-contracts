@@ -162,7 +162,8 @@ class SearchEngine(ValidatorWrapper):
             "voen": contract.company.voen,
             "contract_number": contract.contract_number,
             "date": contract.date,
-            "amount": float(contract.amount)
+            "amount": float(contract.amount),
+            "adv_payer": bool(contract.adv_payer)
         } for contract in contracts]
         return contract_list, total_count
 

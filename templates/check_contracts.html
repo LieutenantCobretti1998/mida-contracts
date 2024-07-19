@@ -78,16 +78,26 @@
                     name: "Amount"
                 },
                 {
+                    name: "Adv Payer",
+                    formatter: (_, row) => {
+                        const advPayer = row.cells[5].data;
+                        console.log(advPayer)
+                        return gridjs.html(
+                            `<span>${advPayer ? "Yes": "No"}</span>`
+                        )
+                    }
+                },
+                {
                     sort: false,
                     name: "Actions",
                     formatter: (_, row) => {
-                       return gridjs.html(
-                           `<span style="display: flex; justify-content: space-between">` +
-                                `<button class="edit-btn" data-row-index="${row.rowIndex}">Edit</button>` +
-                                `<button class="pdf-btn" data-row-index="${row.rowIndex}">PDF</button>` +
-                                `<button class="delete-btn" data-row-index="${row.rowIndex}">Delete</button>` +
-                           `</span>`
-                       );
+                        return gridjs.html(
+                               `<span style="display: flex; justify-content: space-between">` +
+                                    `<button class="edit-btn" data-row-index="${row.rowIndex}">Edit</button>` +
+                                    `<button class="pdf-btn" data-row-index="${row.rowIndex}">PDF</button>` +
+                                    `<button class="delete-btn" data-row-index="${row.rowIndex}">Delete</button>` +
+                               `</span>`
+                           );
                     }
                 }
             ],
@@ -110,7 +120,7 @@
 
                         const col = columns[0];
                         const dir = col.direction === 1 ? "asc": "desc";
-                        let colName = ["Company Name", "Voen", "Contract Number", "Date", "Amount"][col.index];
+                        let colName = ["Company Name", "Voen", "Contract Number", "Date", "Amount", "Adv Payer"][col.index];
                         return `${prev}?order_by=${colName}&dir=${dir}`;
                     }
                 }
@@ -128,6 +138,7 @@
                     contract.contract_number,
                     new Date(contract.date).toLocaleDateString(),
                     parseFloat(contract.amount),
+                    Boolean(contract.adv_payer)
                 ]),
                 total: data => data.total_count
             },
