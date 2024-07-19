@@ -61,26 +61,27 @@ check_contracts_bp = Blueprint('all_contracts', __name__)
 
 @check_contracts_bp.route('/all_contracts', methods=['GET'])
 def get_all_contracts():
-    form = SearchContract()
-    action = request.args.get("action")
-    session["contract_action"] = action
-    page = request.args.get("page", 1, type=int)
-    session["contract_page"] = page
-    match action:
-        case "search":
-            filters = request.args.get("filters", "")
-            orders = request.args.get("orders", "")
-            session["contract_filters"] = filters
-            session["contract_order"] = orders
-            search_query = request.args.get("search", "").strip()
-            session["contract_search_query"] = search_query
-            return handle_search(search_query, form, page, filters, orders)
-        case "all":
-            session["contract_filters"] = ""
-            session["contract_order"] = ""
-            session["contract_search_query"] = ""
-            return handle_all_contracts(form, page)
-    return handle_all_contracts(form, page)
+    # form = SearchContract()
+    # action = request.args.get("action")
+    # session["contract_action"] = action
+    # page = request.args.get("page", 1, type=int)
+    # session["contract_page"] = page
+    # match action:
+    #     case "search":
+    #         filters = request.args.get("filters", "")
+    #         orders = request.args.get("orders", "")
+    #         session["contract_filters"] = filters
+    #         session["contract_order"] = orders
+    #         search_query = request.args.get("search", "").strip()
+    #         session["contract_search_query"] = search_query
+    #         return handle_search(search_query, form, page, filters, orders)
+    #     case "all":
+    #         session["contract_filters"] = ""
+    #         session["contract_order"] = ""
+    #         session["contract_search_query"] = ""
+    #         return handle_all_contracts(form, page)
+    # return handle_all_contracts(form, page)
+    return render_template("check_contracts.html")
 
 
 @check_contracts_bp.route('/contract/<int:contract_id>', methods=['GET'])
