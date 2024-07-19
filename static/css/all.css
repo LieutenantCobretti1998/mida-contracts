@@ -496,4 +496,37 @@ body {
   stroke: red;
 }
 
+.edit-btn,
+.pdf-btn,
+.delete-btn {
+  width: 60px;
+  height: 42px;
+  background-color: #0f6b6b;
+  color: white;
+  border-radius: 1rem;
+  transition: background-color 0.4s ease-in-out;
+}
+.edit-btn:hover,
+.pdf-btn:hover,
+.delete-btn:hover {
+  cursor: pointer;
+  background-color: #043a3a;
+}
+
+.delete-btn {
+  background-color: red;
+}
+.delete-btn:hover {
+  cursor: pointer;
+  background-color: #9b1515;
+}
+
+.pdf-btn {
+  background-color: #1649f3;
+}
+.pdf-btn:hover {
+  cursor: pointer;
+  background-color: #032287;
+}
+
 /*# sourceMappingURL=all.css.map */

@@ -61,15 +61,60 @@
     <script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
     <script>
         const grid = new gridjs.Grid({
-            columns: ["Company Name", "Voen", "Contract Number", "Date", "Amount"],
+            columns: [
+                {
+                    name: "Company Name"
+                },
+                {
+                    name: "Voen"
+                },
+                {
+                    name: "Contract Number"
+                },
+                {
+                    name: "Date"
+                },
+                {
+                    name: "Amount"
+                },
+                {
+                    id: "actions",
+                    name: "Actions",
+                    formatter: (_, row) => {
+                       return gridjs.html(
+                           `<span style="display: flex; justify-content: space-between">` +
+                                `<button class="edit-btn" data-row-index="${row.rowIndex}">Edit</button>` +
+                                `<button class="pdf-btn" data-row-index="${row.rowIndex}">PDF</button>` +
+                                `<button class="delete-btn" data-row-index="${row.rowIndex}">Delete</button>` +
+                           `</span>`
+                       );
+                    }
+                }
+            ],
             pagination: {
-                limit: 2,
-                page: 1,
+                limit: 10,
+                page: 10,
                 server : {
-                    url: (prev, page, limit) => `${prev}?limit=${limit}&offset=${(page - 1) * limit}&page=${page + 1}`
+                    url: (prev, page, limit) => {
+                        const hasQuery = prev.includes("?");
+                        const prefix = hasQuery ? "&": "?";
+                        return `${prev}${prefix}limit=${limit}&page=${page + 1}`;
+                    }
                 }
             },
-            sort: true,
+            sort: {
+                multiColumn: false,
+                server: {
+                    url: (prev, columns) => {
+                        if (!columns.length) return prev;
+
+                        const col = columns[0];
+                        const dir = col.direction === 1 ? "asc": "desc";
+                        let colName = ["Company Name", "Voen", "Contract Number", "Date", "Amount"][col.index];
+                        return `${prev}?order_by=${colName}&dir=${dir}`;
+                    }
+                }
+            },
             search: {
                 server: {
                     url: (prev, keyword) => `${prev}/${encodeURIComponent(keyword)}`
