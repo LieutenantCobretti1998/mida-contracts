@@ -81,6 +81,9 @@ class ContractManager(ValidatorWrapper):
 
 
 class SearchEngine(ValidatorWrapper):
+    """
+    Engine for searching purposes
+    """
     def __init__(self, db_session: Session, search: str | int = None):
         super().__init__(db_session)
         self.search = search
@@ -116,34 +119,6 @@ class SearchEngine(ValidatorWrapper):
                 "total_contracts": total_results + 1 if total_results == 0 else total_results
                 }
 
-    # def search_voen(self) -> list:
-    #     searched_voen = (self.db_session.query(Companies).join(Contract, Companies.id == Contract.company_id)
-    #                      .filter(Companies.voen == self.search))
-    #     return searched_voen
-
-    # def filter_results(self, results: list) -> list:
-    #     filtered_results = []
-    #     for result in results:
-    #         # print(result.company_name, result.voen)
-    #         if (result.voen.find(self.search) != -1) or (result.company_name.find(self.search) != -1):
-    #             filtered_results.append(result)
-    #         else:
-    #             for contract in result.contracts:
-    #                 filtered_results.append(contract) if contract.contract_number.find(self.search) != -1 else None
-    #     # print(filtered_results)
-    #     return filtered_results
-
-    # @staticmethod
-    # def flat_results(results: list) -> list:
-    #     flat_results = []
-    #     for result in results:
-    #         if isinstance(result, Companies):
-    #             for contract in result.contracts:
-    #                 flat_results.append(contract)
-    #         else:
-    #             flat_results.append(result)
-    #     return flat_results
-
     def search_company_with_contract(self) -> Contract | None:
         result = self.db_session.query(Contract).join(Companies).filter(Contract.id == self.search).first()
         return result
@@ -160,7 +135,13 @@ class SearchEngine(ValidatorWrapper):
                 "total_contracts": total_contracts + 1 if total_contracts == 0 else total_contracts
                 }
 
-    def get_all_results_data(self, db, per_page: int) -> list[dict[Any]]:
+    # APIs for the table
+    def get_all_results_api(self, per_page: int) -> list[dict[str, InstrumentedAttribute | Any]]:
+        """
+        :param per_page:
+        :return: list[dict[str, InstrumentedAttribute | Any]]
+        This method is for put all results of the contract in the table
+        """
         query = self.db_session.query(Contract).join(Companies, Companies.id == Contract.company_id).limit(per_page)
         contracts = query.all()
         contract_list = [{
@@ -170,6 +151,31 @@ class SearchEngine(ValidatorWrapper):
             "date": contract.date,
             "amount": contract.amount
         } for contract in contracts]
+        return contract_list
+
+    def search_query_api(self) -> list[dict[str, InstrumentedAttribute | Any]]:
+        """
+        :return: list[dict[str, InstrumentedAttribute | Any]]
+        server-side search from db directly to table via api
+        """
+        print(self.search)
+        query = (self.db_session
+        .query(Contract)
+        .join(Companies, Companies.id == Contract.company_id)
+        .filter(or_(
+            Companies.company_name.ilike(f"%{self.search}%"),
+            Companies.voen.ilike(f"%{self.search}%"),
+            Contract.contract_number.ilike(f"%{self.search}%"),
+        )))
+        search_results = query.all()
+
+        contract_list = [{
+            "company_name": contract.company.company_name,
+            "voen": contract.company.voen,
+            "contract_number": contract.contract_number,
+            "date": contract.date,
+            "amount": contract.amount
+        } for contract in search_results]
         return contract_list
 
 

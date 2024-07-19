@@ -39,7 +39,7 @@ def handle_search(search_query: str, form: flask_wtf.Form, page: int = None, fil
 def handle_all_contracts(form: flask_wtf.Form, page: int = None) -> render_template:
     search_engine = SearchEngine(db.session)
     search_results = search_engine.get_all_results(db, page, POSTS_PER_PAGE)
-    search_engine.get_all_results_data(db.session, 10)
+    search_engine.get_all_results_api(POSTS_PER_PAGE)
     total_contracts = search_results["total_contracts"]
     companies = search_results["results_per_page"]
     total_pages = (total_contracts // POSTS_PER_PAGE) + (1 if total_contracts % POSTS_PER_PAGE != 0 else 0)
@@ -58,11 +58,6 @@ def handle_all_contracts(form: flask_wtf.Form, page: int = None) -> render_templ
 
 check_contracts_bp = Blueprint('all_contracts', __name__)
 
-@check_contracts_bp.route('/all_contracts_data', methods=['GET'])
-def all_contracts_data():
-    search_engine = SearchEngine(db.session)
-    search_results = search_engine.get_all_results_data(db.session, 10)
-    return jsonify(search_results)
 
 @check_contracts_bp.route('/all_contracts', methods=['GET'])
 def get_all_contracts():

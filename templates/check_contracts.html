@@ -64,9 +64,13 @@
             columns: ["Company Name", "Voen", "Contract Number", "Date", "Amount"],
             pagination: true,
             sort: true,
-            search: true,
+            search: {
+                server: {
+                    url: (prev, keyword) => `${prev}/${encodeURIComponent(keyword)}`
+                }
+            },
             server: {
-                url: "http://10.100.179.27:7000/contracts/all_contracts_data",
+                url: "http://10.100.179.27:7000/api/all_contracts",
                 then: data => data.map(contract => [
                     contract.company_name,
                     contract.voen,
