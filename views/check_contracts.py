@@ -87,10 +87,7 @@ def get_all_contracts():
 @check_contracts_bp.route('/contract/<int:contract_id>', methods=['GET'])
 def get_contract(contract_id):
     form = EditContractForm()
-    search_engine = SearchEngine(db.session, contract_id)
-    search_result = search_engine.search_company_with_contract()
     return render_template("check_contract.html",
-                           search_result=search_result,
                            contract_id=contract_id,
                            form=form)
 

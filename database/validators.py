@@ -158,6 +158,7 @@ class SearchEngine(ValidatorWrapper):
         total_count = query.count()
         contracts = query.offset(offset).limit(per_page).all()
         contract_list = [{
+            "id": contract.id,
             "company_name": contract.company.company_name,
             "voen": contract.company.voen,
             "contract_number": contract.contract_number,
@@ -190,13 +191,27 @@ class SearchEngine(ValidatorWrapper):
         contracts = query.offset(offset).limit(per_page).all()
 
         contract_list = [{
+            "id": contract.id,
             "company_name": contract.company.company_name,
             "voen": contract.company.voen,
             "contract_number": contract.contract_number,
             "date": contract.date,
-            "amount": contract.amount
+            "amount": contract.amount,
+            "adv_payer": bool(contract.adv_payer)
         } for contract in contracts]
         return contract_list, total_count
+
+    def get_contract_by_id_api(self) -> list[dict[Any]]:
+        result = self.db_session.query(Contract).join(Companies).filter(Contract.id == self.search).first()
+        contract = [{
+            "company_name": result.company.company_name,
+            "voen": result.company.voen,
+            "contract_number": result.contract_number,
+            "date": result.date,
+            "amount": float(result.amount),
+            "adv_payer": bool(result.adv_payer)
+        }]
+        return contract
 
 
 class EditContract(ValidatorWrapper):
