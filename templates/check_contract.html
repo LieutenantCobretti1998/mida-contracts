@@ -6,7 +6,10 @@
 {% block content_part %}
     <form action="{{ url_for('all_contracts.update_contract', contract_id = contract_id) }}" method="post" enctype="multipart/form-data">
         {{ form.csrf_token() }}
-        <table  class="table">
+        <table  class="table" data-edit-mode="true">
+            <caption id="caption">
+                <h1>Edit Contract</h1>
+            </caption>
             <tbody class="main-table-part">
                 <tr>
                     <td class="table__text">
@@ -172,6 +175,7 @@
 {% endblock content_part %}
 {% block javascript %}
     <script src="{{ url_for('static', filename='js/form_focus.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/edit-listener.js') }}"></script>
     <script src={{ url_for('static', filename='js/add_contract.js') }}></script>
     <script src="{{ url_for('static', filename='js/file_loader.js') }}"></script>
 {% endblock javascript %}
