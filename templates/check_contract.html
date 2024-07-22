@@ -4,85 +4,123 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/check_contract.css') }}">
 {% endblock style %}
 {% block content_part %}
+    <form action="{{ url_for('all_contracts.update_contract', contract_id = contract_id) }}" method="post" enctype="multipart/form-data">
+        {{ form.csrf_token() }}
         <table  class="table">
             <tbody class="main-table-part">
                 <tr>
-                    <td class="control">
-                        <form  action="{{ url_for("all_contracts.get_all_contracts") }}" method="get">
-                            {% if session.get("contract_action") == "all" %}
-                                <input type="hidden" name="action" value="{{ session.get("contract_action") }}">
-                            {% endif %}
-                            {% if session.get("contract_action") == "search"   %}
-                                <input type="hidden" name="search" value="{{ session.get("contract_search_query") }}">
-                                <input type="hidden" name="action" value="{{ session.get("contract_action") }}">
-
-                                 {% if session.get("contract_filters") != "" %}
-                                    <input type="hidden" name="filters" value="{{ session.get("contract_filters") }}">
-                                 {% endif %}
-                                {% if session.get("contract_order") != "" %}
-                                    <input type="hidden" name="orders" value="{{ session.get("contract_order") }}">
-                                {% endif %}
-                            {% endif %}
-                           <input type="hidden" name="page" value="{{ session.get("contract_page") }}">
-                            <div class="buttons">
-                                <button type="submit" class="back">Back</button>
-                                <button type="button" class="edit" onclick="EditContract(); fileLoader()">Edit</button>
-                            </div>
-                        </form>
+                    <td class="table__text">
+                        {{ form.company.label() }}
                     </td>
-                </tr>
-                <tr>
-                    <td>Company</td>
-                    <td id="company_label">
+                    <td>
                         <div>
-                            {{ search_result.company.company_name }}
+                            {{ form.company(placeholder=search_result.company.company_name, class="table__input rounded", id="default_input") | safe }}
+                            <ul class="error-list">
+                            {% for error in form.company.errors %}
+                                <li class="error-list__message">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
                         </div>
                     </td>
                 </tr>
                 <tr>
-                    <td>VOEN</td>
-                    <td id="voen_label">
-                    <div>
-                        {{ search_result.company.voen }}
-                    </div>
+                    <td class="table__text">
+                        {{ form.voen.label() }}
                     </td>
-                </tr>
-                <tr>
-                    <td>Contract number</td>
-                    <td id="contract_number_label">
-                        {{ search_result.contract_number }}
-                    </td>
-                </tr>
-                <tr>
-                    <td>date</td>
-                    <td id="date_label">
-                        {{ search_result.date }}
-                    </td>
-                </tr>
-                <tr>
-                    <td>amount</td>
-                    <td id="amount_label">
-                        {{ "%.2f" | format(search_result.amount) }}
+                    <td>
+                        <div>
+                            {{ form.voen(placeholder= search_result.company.voen, class="table__input rounded") | safe}}
+                            <ul class="error-list">
+                            {% for error in form.voen.errors %}
+                                <li class="error-list__message">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                        </div>
                     </td>
                 </tr>
 
                 <tr>
-                    <td>adv payer</td>
-                    <td id="is_adv_payer_label">
-                        {{ search_result.adv_payer }}
+                    <td class="table__text">
+                        {{ form.contract_number.label() }}
+                    </td>
+
+                    <td>
+                        {{ form.contract_number(placeholder=search_result.contract_number, class="table__input rounded") | safe }}
+                        <ul class="error-list">
+                            {% for error in form.contract_number.errors %}
+                                <li class="error-list__message">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
                     </td>
                 </tr>
 
                 <tr>
-                    <td>PDF</td>
-                    <td id="pdf_file_label">
-                        <button class="preview-pdf" id="pdf_file">
-                            <a href="{{ url_for("all_contracts.preview_pdf", contract_id=search_result.id) }}">Preview PDF</a>
-                        </button>
+                    <td class="table__text">
+                       {{ form.date.label() }}
+                    </td>
+
+                    <td>
+                       {{ form.date(placeholder=search_result.date, class="table__input rounded") | safe }}
+                        <ul class="error-list">
+                            {% for error in form.date.errors %}
+                                <li class="error-list__message">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="table__text">
+                        {{ form.amount.label() }}
+                    </td>
+
+                    <td>
+                        {{ form.amount(placeholder="%.2f"|format(search_result.amount), class="table__input rounded") | safe }}
+                        <ul class="error-list">
+                            {% for error in form.amount.errors %}
+                                <li class="error-list__message">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="table__text">
+                        {{ form.is_adv_payer.label() }}
+                    </td>
+
+                    <td>
+                        {{ form.is_adv_payer }}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="table__text">
+                        {{ form.pdf_file.label() }}
+                    </td>
+                    <td>
+                        <div class="upload-container">
+                            {{ form.pdf_file(class="table__pdf-upload") }}
+                            <div class="progress-bar">
+                                <div id="progress"></div>
+                            </div>
+                        </div>
+                         <ul class="error-list">
+                            {% for error in form.pdf_file.errors %}
+                                <li class="error-list__message">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="table__save">
+                        {{ form.save(class="save-btn") }}
                     </td>
                 </tr>
             </tbody>
         </table>
+    </form>
         {% block pop_up_message %}
             {% with messages = get_flashed_messages(with_categories=True) %}
                     {% if messages %}
@@ -133,30 +171,7 @@
         {% endblock pop_up_message %}
 {% endblock content_part %}
 {% block javascript %}
-    <script type="text/javascript">
-        const form_data = {
-            "company": '{{ form.company(placeholder=search_result.company.company_name, class="table__input rounded", id="default_input") | safe }}',
-            "voen": '{{ form.voen(placeholder= search_result.company.voen, class="table__input rounded") | safe}}',
-            "contract_number": '{{ form.contract_number(placeholder=search_result.contract_number, class="table__input rounded") | safe }}',
-            "date": '{{ form.date(placeholder=search_result.date, class="table__input rounded") | safe }}',
-            "amount": '{{ form.amount(placeholder="%.2f"|format(search_result.amount), class="table__input rounded") | safe }}',
-            "is_adv_payer": '{{ form.is_adv_payer }}',
-            "pdf_file": '{{ form.pdf_file | safe }}',
-            "save_button": '{{ form.save(class="save_button table__save__button") | safe }}'
-        }
-        // my global vars
-        window.url = '{{ url_for('all_contracts.update_contract', contract_id=search_result.id) | safe}}';
-        window.token = '{{ form.csrf_token(id="csrf_token_label") | safe }}';
-    </script>
-    <script src="{{ url_for('static', filename='js/edit_form.js')  }}"></script>
     <script src="{{ url_for('static', filename='js/form_focus.js') }}"></script>
     <script src={{ url_for('static', filename='js/add_contract.js') }}></script>
-    <script type="text/javascript">
-        function fileLoader() {
-            const script = document.createElement("script");
-            script.id = "dynamic_script";
-            script.src = "{{ url_for('static', filename='js/file_loader.js') }}";
-            document.body.appendChild(script);
-        }
-    </script>
+    <script src="{{ url_for('static', filename='js/file_loader.js') }}"></script>
 {% endblock javascript %}

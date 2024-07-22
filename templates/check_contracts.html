@@ -2,7 +2,7 @@
 {% block title %} Check Contracts {% endblock title %}
 {% block style %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/all.css') }}">
-    <link href="https://unpkg.com/gridjs/dist/theme/mermaid.min.css" rel="stylesheet" />
+    <link href="https://unpkg.com/gridjs@6.2.0/dist/theme/mermaid.min.css" rel="stylesheet" />
 {% endblock style %}
 {% block class_all_contracts %}active{% endblock class_all_contracts %}
 {% block class_check_contract_li %}remove-pointer{% endblock class_check_contract_li %}
@@ -72,7 +72,7 @@
     </script>
     <script type="module" src="{{ url_for('static', filename='js/delete.js') }}"></script>
     <script type="module" src="{{ url_for('static', filename="js/redirection.js") }}"></script>
-    <script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
+    <script src="https://unpkg.com/gridjs@6.2.0/dist/gridjs.umd.js"></script>
     <script type="module">
         const grid = new gridjs.Grid({
             columns: [
@@ -166,4 +166,5 @@
         })
          grid.render(document.getElementById("results"));
     </script>
+    <script type="module" src="{{ url_for('static', filename='js/gridJs.js') }}"></script>
 {% endblock javascript %}
