@@ -6,7 +6,7 @@ import flask
 import sqlalchemy
 from flask import current_app
 from flask_sqlalchemy.session import Session
-from sqlalchemy import or_, desc, asc, func
+from sqlalchemy import or_, desc, asc, func, and_
 from sqlalchemy.exc import NoResultFound, SQLAlchemyError, DBAPIError
 from sqlalchemy.orm import InstrumentedAttribute
 from database.models import *
@@ -60,7 +60,6 @@ class ContractManager(ValidatorWrapper):
                 raise ValueError(
                     f"VOEN is already linked to {self.db_session.query(Companies).filter_by(voen=voen).one().company_name} company")
             new_company = Companies(company_name=company_name, voen=voen)
-            print(new_company.id)
             self.db_session.add(new_company)
             self.db_session.flush()
             return new_company
@@ -82,50 +81,14 @@ class ContractManager(ValidatorWrapper):
 
 class SearchEngine(ValidatorWrapper):
     """
-    Engine for searching purposes
+    Engine for searching, filtering and formatting purposes in contracts / contract tables
     """
-
     def __init__(self, db_session: Session, search: str | int = None):
         super().__init__(db_session)
         self.search = search
 
-    def search_query(self, page: int, per_page: int, filters: str, order: str) -> dict:
-        # results = self.db_session.query(Companies).join(Contract).filter(or_(
-        #     Companies.company_name.ilike(f"%{self.search}%"),
-        #     Companies.voen.ilike(f"%{self.search}%"),
-        #     Contract.contract_number.ilike(f"%{self.search}%")
-        # )).all()
-        results = self.db_session.query(Contract).join(Contract.company).filter(or_(
-            Companies.company_name.ilike(f"%{self.search}%"),
-            Companies.voen.ilike(f"%{self.search}%"),
-            Contract.contract_number.ilike(f"%{self.search}%"),
-        ))
-        # Filters
-        match filters:
-            case "company":
-                results = results.order_by(desc(Companies.company_name) if order == "descending"
-                                           else asc(Companies.company_name))
-
-            case "date":
-                results = results.order_by(desc(Contract.date) if order == "descending"
-                                           else asc(Contract.date))
-
-            case "amount":
-                results = results.order_by(desc(Contract.amount) if order == "descending"
-                                           else asc(Contract.amount))
-
-        total_results = results.count()
-        paginated_results = results.offset((page - 1) * per_page).limit(per_page).all()
-        return {"results_per_page": paginated_results,
-                "total_contracts": total_results + 1 if total_results == 0 else total_results
-                }
-
     def search_company_with_contract(self) -> Contract | None:
         result = self.db_session.query(Contract).join(Companies).filter(Contract.id == self.search).first()
-        return result
-
-    def search_company(self) -> Companies | None:
-        result = self.db_session.query(Companies).filter_by(id=self.search).first()
         return result
 
     def get_all_results(self, db, page: int, per_page: int) -> dict[str, int | Any]:
@@ -136,12 +99,24 @@ class SearchEngine(ValidatorWrapper):
                 "total_contracts": total_contracts + 1 if total_contracts == 0 else total_contracts
                 }
 
+    def asc_or_desc(self, query, sort_direction: str, mapping: tuple):
+        """
+        :param mapping:
+        :param query:
+        :param sort_direction:
+        :return: None
+        This method is for avoiding duplication of the sorting the columns
+        """
+        if sort_direction == "asc":
+            return query.order_by(asc(getattr(mapping[1], mapping[0])))
+        else:
+            return query.order_by(desc(getattr(mapping[1], mapping[0])))
+
     # APIs for the table
     def get_all_results_api(self, per_page: int, offset: int, sort_dir: str, mapping: tuple) -> tuple[
         list[dict[str, InstrumentedAttribute | Any]], int]:
         """
         :param mapping:
-        :param sorted_column:
         :param sort_dir:
         :param offset:
         :param per_page:
@@ -151,10 +126,7 @@ class SearchEngine(ValidatorWrapper):
         query = (self.db_session.query(Contract)
                  .join(Companies, Companies.id == Contract.company_id)
                  )
-        if sort_dir == "asc":
-            query = query.order_by(asc(getattr(mapping[1], mapping[0])))
-        else:
-            query = query.order_by(desc(getattr(mapping[1], mapping[0])))
+        query = self.asc_or_desc(query, sort_dir, mapping)
         total_count = query.count()
         contracts = query.offset(offset).limit(per_page).all()
         contract_list = [{
@@ -168,8 +140,13 @@ class SearchEngine(ValidatorWrapper):
         } for contract in contracts]
         return contract_list, total_count
 
-    def search_query_api(self, per_page: int, offset: int, sort_dir: str, mapping: tuple) -> tuple[list[dict[str, InstrumentedAttribute | Any]], int]:
+    def search_query_api(self, per_page: int, offset: int, sort_dir: str, mapping: tuple) -> (
+            tuple)[list[dict[str, InstrumentedAttribute | Any]], int]:
         """
+        :param mapping:
+        :param sort_dir:
+        :param offset:
+        :param per_page:
         :return: list[dict[str, InstrumentedAttribute | Any]]
         server-side search from db directly to table via api
         """
@@ -182,10 +159,7 @@ class SearchEngine(ValidatorWrapper):
             Contract.contract_number.ilike(f"%{self.search}%"),
         )))
 
-        if sort_dir == "asc":
-            query = query.order_by(asc(getattr(mapping[1], mapping[0])))
-        else:
-            query = query.order_by(desc(getattr(mapping[1], mapping[0])))
+        query = self.asc_or_desc(query, sort_dir, mapping)
 
         total_count = query.count()
         contracts = query.offset(offset).limit(per_page).all()
@@ -201,7 +175,7 @@ class SearchEngine(ValidatorWrapper):
         } for contract in contracts]
         return contract_list, total_count
 
-    def get_contract_by_id_api(self) -> list[dict[Any]]:
+    def get_contract_by_id_api(self) -> list[dict[str, float | bool | Any]]:
         result = self.db_session.query(Contract).join(Companies).filter(Contract.id == self.search).first()
         contract = [{
             "company_name": result.company.company_name,
@@ -247,28 +221,20 @@ class EditContract(ValidatorWrapper):
     def change_pdf_file_path(self, company_id: int, old_file_path: str, contract_id: int) -> str:
         new_company_name = self.db_session.query(Companies).where(Companies.id == company_id).first().company_name
         new_company_voen = self.db_session.query(Companies).where(Companies.id == company_id).first().voen
-        print(f"New company voen: {new_company_voen}")
-        print(os.path.basename(old_file_path))
         company_upload_path = os.path.join(current_app.config['UPLOAD_FOLDER'], new_company_name)
         company_upload_path = os.path.normpath(company_upload_path)
-        print(company_upload_path)
         old_file_path = os.path.normpath(old_file_path)
         new_file_path = os.path.join(str(company_upload_path), os.path.basename(re.sub(r"_\d{10}_",
                                                                                        f"_{new_company_voen}_",
                                                                                        old_file_path)))
-        print(f"Old File Path: {old_file_path}")
-        print(f"New File Path: {new_file_path}")
-
         os.rename(old_file_path, new_file_path)
         new_file_path = os.path.normpath(new_file_path)
         return new_file_path
 
     @staticmethod
     def change_pdf_itself(previous_pdf_file_path: str, new_pdf_file_name: str) -> str:
-        print(f"{new_pdf_file_name}: {previous_pdf_file_path}")
         new_pdf_path = os.path.join(os.path.dirname(previous_pdf_file_path), new_pdf_file_name)
         new_pdf_path = os.path.normpath(new_pdf_path)
-        print(f"New File Path: {new_pdf_path}")
         os.remove(previous_pdf_file_path)
         return new_pdf_path
 
@@ -283,6 +249,7 @@ class EditContract(ValidatorWrapper):
         contract_to_update = self.db_session.query(Contract).join(Contract.company).filter(
             Contract.id == int(self.id)).first()
         if not contract_to_update:
+            self.db_session.close()
             return False, f"Contract was not found in database"
         try:
             company_name = changes.get("company_name")
@@ -294,22 +261,18 @@ class EditContract(ValidatorWrapper):
                     contract_to_update.company_id = existed_company_id
                     update_status["company_and_voen_updated"] = True
                 else:
-                    return False, ("The provided company name and VOEN do not match any existing company. "
+                    return False, ("The provided company name and VOEN do not match to any existing company. "
                                    "Please check your information or create a new company record.")
-
             for key, value in changes.items():
                 if hasattr(contract_to_update, key):
                     current_value = getattr(contract_to_update, key)
-                    if key == "pdf_file_path" and current_value != value:
+                    if key == "pdf_file_path" and changes["pdf_file_path"] is not None:
                         try:
                             new_pdf_path = self.change_pdf_itself(current_value, value)
                             setattr(contract_to_update, key, new_pdf_path)
                             pdf_file.save(new_pdf_path)
                         except FileNotFoundError:
                             return False, "There is the file path problem. It was corrupted or not existed."
-
-                    elif current_value != value:
-                        setattr(contract_to_update, key, value)
                 elif hasattr(contract_to_update.company, key) and not update_status["company_and_voen_updated"]:
                     current_value = getattr(contract_to_update.company, key)
                     if current_value != value:
@@ -461,7 +424,6 @@ class CompanySearchEngine(SearchEngine):
         ))
                    .outerjoin(Contract, Companies.contracts)
                    .group_by(Companies.id))
-        print(results)
         # Filters
         match filters:
             case "company":
@@ -533,7 +495,6 @@ class EditCompany(EditContract):
             try:
                 if value != company_to_update_dict[key]:
                     if key in ["voen", "swift", "company_name"]:
-                        print(key)
                         check_voen_or_swift = self.update_company_voen_or_swift(key, value)
                         if check_voen_or_swift:
                             return False, f"This {key} is already linked to {check_voen_or_swift}."
