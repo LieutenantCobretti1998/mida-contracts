@@ -1,59 +1,11 @@
 import flask_wtf
-from flask import Blueprint, render_template, request, session, redirect, url_for, jsonify, flash, send_file
+from flask import Blueprint, render_template, request, session, redirect, url_for, jsonify, flash, send_file, abort
 from werkzeug.utils import secure_filename
 from forms.contract_search import SearchContract
 from forms.filters import *
 from forms.edit_contract_form import EditContractForm
 from database.db_init import db
 from database.validators import SearchEngine, EditContract, ContractManager
-from configuration import POSTS_PER_PAGE
-
-
-def handle_search(search_query: str, form: flask_wtf.Form, page: int = None, filters: str = None,
-                  order: str = None) -> render_template:
-    search_engine = SearchEngine(db.session, search_query)
-    search_results = search_engine.search_query(page, POSTS_PER_PAGE, filters, order)
-    total_contracts = search_results["total_contracts"]
-
-    total_results = search_results["results_per_page"]
-    total_pages = (total_contracts // POSTS_PER_PAGE) + (1 if total_contracts % POSTS_PER_PAGE != 0 else 0)
-
-    if page > total_pages:
-        return redirect(
-            url_for('all_contracts.get_all_contracts', action="search", page=total_pages, filters=filters, orders=order,
-                    search=search_query))
-    return render_template("check_contracts.html",
-                           amount_of_companies=total_contracts,
-                           companies=total_results,
-                           form=form,
-                           page=page,
-                           total_pages=total_pages,
-                           action=session["contract_action"],
-                           search_query=search_query,
-                           filters=filters,
-                           order=order,
-                           posts_per_page=POSTS_PER_PAGE
-                           )
-
-
-def handle_all_contracts(form: flask_wtf.Form, page: int = None) -> render_template:
-    search_engine = SearchEngine(db.session)
-    search_results = search_engine.get_all_results(db, page, POSTS_PER_PAGE)
-    total_contracts = search_results["total_contracts"]
-    companies = search_results["results_per_page"]
-    total_pages = (total_contracts // POSTS_PER_PAGE) + (1 if total_contracts % POSTS_PER_PAGE != 0 else 0)
-    if page > total_pages:
-        return redirect(url_for('all_contracts.get_all_contracts', action="all", page=total_pages))
-    return render_template("check_contracts.html",
-                           amount_of_companies=total_contracts,
-                           companies=companies,
-                           form=form,
-                           page=page,
-                           total_pages=total_pages,
-                           action=session["contract_action"],
-                           posts_per_page=POSTS_PER_PAGE
-                           )
-
 
 check_contracts_bp = Blueprint('all_contracts', __name__)
 
@@ -91,7 +43,7 @@ def update_contract(contract_id):
             date=form.date.data if form.date.data else original_data.date,
             amount=float(form.amount.data) if form.amount.data else original_data.amount,
             adv_payer=True if form.is_adv_payer.data == "Yes" else False,
-            pdf_file_path=filename if form.pdf_file.data else original_data.pdf_file_path,
+            pdf_file_path=filename if form.pdf_file.data else None,
             company_name=filter_string_fields(
                 form.company.data) if form.company.data else original_data.company.company_name,
             voen=filter_voen(form.voen.data) if form.voen.data else original_data.company.voen,
@@ -101,12 +53,11 @@ def update_contract(contract_id):
         if success:
             db.session.commit()
             flash(message, "success")
-            return jsonify(redirect_url=url_for('all_contracts.get_contract', contract_id=contract_id))
+            return redirect(url_for('all_contracts.get_contract', contract_id=contract_id))
         else:
             db.session.rollback()
             flash(message, "warning")
-            return jsonify(redirect_url=url_for('all_contracts.get_contract', contract_id=contract_id))
-        # return redirect(url_for('all_contracts.get_contract', contract_id=contract_id))
+            return redirect(url_for('all_contracts.get_contract', contract_id=contract_id))
     else:
         errors = {field.name: field.errors for field in form}
         return jsonify(errors=errors, success=False)
@@ -116,10 +67,11 @@ def update_contract(contract_id):
 def preview_pdf(contract_id):
     search_engine = SearchEngine(db.session, contract_id)
     contract_result = search_engine.search_company_with_contract()
-    if contract_result and contract_result.pdf_file_path:
-        return send_file(contract_result.pdf_file_path)
-    else:
-        return jsonify({"error": "Company not found"}), 404
+    try:
+        if contract_result and contract_result.pdf_file_path:
+            return send_file(contract_result.pdf_file_path)
+    except FileNotFoundError:
+        abort(404)
 
 
 @check_contracts_bp.route('/delete_contract/<int:contract_id>', methods=['DELETE'])
@@ -140,9 +92,9 @@ def delete_contract(contract_id):
         }), 500
 
 
-@check_contracts_bp.route('/related_contracts/<string:voen>', methods=['GET'])
-def related_contracts(voen):
-    form = SearchContract()
-    page = request.args.get("page", 1, type=int)
-    search_query = voen
-    return handle_search(search_query, form, page=page)
+# @check_contracts_bp.route('/related_contracts/<string:voen>', methods=['GET'])
+# def related_contracts(voen):
+#     form = SearchContract()
+#     page = request.args.get("page", 1, type=int)
+#     search_query = voen
+#     return handle_search(search_query, form, page=page)

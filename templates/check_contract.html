@@ -94,6 +94,11 @@
 
                     <td>
                         {{ form.is_adv_payer }}
+                        <ul class="error-list">
+                            {% for error in form.is_adv_payer.errors %}
+                                <li class="error-list__message">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
                     </td>
                 </tr>
 
