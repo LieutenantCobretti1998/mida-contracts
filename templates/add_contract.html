@@ -12,7 +12,7 @@
     <form action="{{ url_for('create_contract.save_contract') }}" method="post" enctype="multipart/form-data">
         {{ form.csrf_token() }}
         <table  class="table">
-            <caption>Add a new contract</caption>
+            <caption id="caption">Add a new contract</caption>
             <thead></thead>
             <tbody class="table__body">
                 <tr>
@@ -122,7 +122,7 @@
 
                 <tr>
                     <td class="table__save">
-                        {{ form.save(class="table__save__button") }}
+                        {{ form.save(class="save-btn") }}
                     </td>
                 </tr>
             </tbody>
@@ -178,7 +178,8 @@
         {% endblock pop_up_message %}
 {% endblock content_part %}
 {% block javascript %}
+   <script src="{{ url_for('static', filename='js/form_focus.js') }}"></script>
     <script src={{ url_for('static', filename='js/add_contract.js') }}></script>
-    <script src={{ url_for('static', filename='js/file_loader.js') }}></script>
+    <script src="{{ url_for('static', filename='js/file_loader.js') }}"></script>
 {% endblock javascript %}
 

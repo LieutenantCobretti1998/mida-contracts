@@ -212,6 +212,7 @@ body {
 }
 
 #caption {
+  margin-bottom: 5rem;
   font-size: 2.5rem;
 }
 
@@ -292,8 +293,8 @@ body {
 }
 
 .save-btn {
-  width: 80px;
-  height: 40px;
+  width: 100px;
+  height: 60px;
   background-color: green;
   color: white;
   border-radius: 1rem;
@@ -301,7 +302,7 @@ body {
 }
 .save-btn:hover {
   cursor: pointer;
-  background-color: darkgreen;
+  background-color: darkgreen !important;
 }
 
 .upload-container {

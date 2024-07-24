@@ -5,6 +5,7 @@
   background-color: $color-main-background;
 }
 #caption {
+   margin-bottom: 5rem;
   font-size: $font-size-big;
 }
 .table {
@@ -94,8 +95,8 @@
 }
 
 .save-btn {
-  width: 80px;
-  height: 40px;
+  width: 100px;
+  height: 60px;
   background-color: $color-green;
   color: white;
   border-radius: 1rem;
@@ -103,7 +104,7 @@
 
   &:hover {
     cursor: pointer;
-    background-color: $color-dark-green;
+    background-color: $color-dark-green !important;
   }
 }
 
