@@ -1,6 +1,6 @@
 "use strict"
 function FocusInput() {
-     if (document.querySelector(".table").getAttribute("data-edit-mode") === "true") {
+     if (document.querySelector(".table")) {
          // Focus on input field when press the enter button
         document.addEventListener("keypress", function (e) {
             if (e.key === "Enter") {
