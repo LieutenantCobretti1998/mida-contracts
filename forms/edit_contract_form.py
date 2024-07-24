@@ -30,4 +30,4 @@ class EditContractForm(FlaskForm):
     pdf_file = FileField(validators=[Optional(),
                                      FileAllowed(["pdf"], pdf_files_only)]
                          )
-    save = SubmitField('Save')
+    save = SubmitField('Save Changes')

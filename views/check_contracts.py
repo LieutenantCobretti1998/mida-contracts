@@ -30,6 +30,7 @@ def get_contract(contract_id):
 def update_contract(contract_id):
     search_engine = SearchEngine(db.session, contract_id)
     edit_engine = EditContract(db.session, contract_id)
+    search_result = search_engine.search_company_with_contract()
     original_data = search_engine.search_company_with_contract()
     form = EditContractForm()
     if form.validate_on_submit():
@@ -59,8 +60,8 @@ def update_contract(contract_id):
             flash(message, "warning")
             return redirect(url_for('all_contracts.get_contract', contract_id=contract_id))
     else:
-        errors = {field.name: field.errors for field in form}
-        return jsonify(errors=errors, success=False)
+        flash("Validation Error. Please check all fields", "error")
+        return render_template('check_contract.html', form=form, contract_id=contract_id, search_result=search_result)
 
 
 @check_contracts_bp.route('/preview_pdf/<int:contract_id>', methods=['GET'])
@@ -90,7 +91,6 @@ def delete_contract(contract_id):
         return jsonify({
             'status': 'error',
         }), 500
-
 
 # @check_contracts_bp.route('/related_contracts/<string:voen>', methods=['GET'])
 # def related_contracts(voen):

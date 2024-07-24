@@ -176,6 +176,10 @@ class SearchEngine(ValidatorWrapper):
         return contract_list, total_count
 
     def get_contract_by_id_api(self) -> list[dict[str, float | bool | Any]]:
+        """
+        :return: list[dict[str, float | bool | Any]]
+        Find a contract by id for pushing it to the table
+        """
         result = self.db_session.query(Contract).join(Companies).filter(Contract.id == self.search).first()
         contract = [{
             "company_name": result.company.company_name,
@@ -199,7 +203,7 @@ class EditContract(ValidatorWrapper):
             Checks if the company exists in the database. If it exists then update the contract foreign key to the other
             company and voen else flash error
         """
-        result = self.db_session.query(Companies).filter(Companies.company_name == company_name).first()
+        result = self.db_session.query(Companies).filter_by(company_name=company_name).first()
         return result.id if result else None
 
     def is_voen_exists(self, voen_result: str) -> int | None:
@@ -212,13 +216,17 @@ class EditContract(ValidatorWrapper):
 
     def voen_and_company_matched(self, company_name: str, voen_result: str) -> int | None:
         """
-            Check if there is an existing company with the given name and VOEN.
-            Returns the company's ID if found, None otherwise.
+
         """
         result = self.db_session.query(Companies).filter_by(company_name=company_name, voen=voen_result).first()
         return result.id if result else None
 
-    def change_pdf_file_path(self, company_id: int, old_file_path: str, contract_id: int) -> str:
+    def change_pdf_file_path(self, company_id: int, old_file_path: str) -> str:
+        """
+        :param company_id:
+        :param old_file_path:
+        :return: str
+        """
         new_company_name = self.db_session.query(Companies).where(Companies.id == company_id).first().company_name
         new_company_voen = self.db_session.query(Companies).where(Companies.id == company_id).first().voen
         company_upload_path = os.path.join(current_app.config['UPLOAD_FOLDER'], new_company_name)
@@ -233,6 +241,11 @@ class EditContract(ValidatorWrapper):
 
     @staticmethod
     def change_pdf_itself(previous_pdf_file_path: str, new_pdf_file_name: str) -> str:
+        """
+        :param previous_pdf_file_path:
+        :param new_pdf_file_name:
+        :return: str
+        """
         new_pdf_path = os.path.join(os.path.dirname(previous_pdf_file_path), new_pdf_file_name)
         new_pdf_path = os.path.normpath(new_pdf_path)
         os.remove(previous_pdf_file_path)
@@ -246,8 +259,7 @@ class EditContract(ValidatorWrapper):
             The main update logic after contract's edit. it will check all the possibilities of updating or refuse the
             contract to update based on different situations
         """
-        contract_to_update = self.db_session.query(Contract).join(Contract.company).filter(
-            Contract.id == int(self.id)).first()
+        contract_to_update = self.db_session.query(Contract).join(Contract.company).filter(Contract.id == int(self.id)).first()
         if not contract_to_update:
             self.db_session.close()
             return False, f"Contract was not found in database"
@@ -283,7 +295,7 @@ class EditContract(ValidatorWrapper):
                                     try:
                                         new_pdf_file_path = self.change_pdf_file_path(existed_company_id,
                                                                                       contract_to_update.pdf_file_path,
-                                                                                      contract_to_update.id)
+                                                                                      )
                                         contract_to_update.company_id = existed_company_id
                                         contract_to_update.pdf_file_path = new_pdf_file_path
                                     except FileNotFoundError:
@@ -299,7 +311,7 @@ class EditContract(ValidatorWrapper):
                                     try:
                                         new_pdf_file_path = self.change_pdf_file_path(existed_voen_id,
                                                                                       contract_to_update.pdf_file_path,
-                                                                                      contract_to_update.id)
+                                                                                     )
                                         contract_to_update.company_id = existed_voen_id
                                         contract_to_update.pdf_file_path = new_pdf_file_path
                                     except FileNotFoundError:
@@ -312,8 +324,7 @@ class EditContract(ValidatorWrapper):
                                                    f"create contract form page")
             self.db_session.commit()
             return True, f"Contract updated successfully"
-        except sqlalchemy.exc.DBAPIError as e:
-            print("An error occurred:", e)
+        except sqlalchemy.exc.DBAPIError:
             self.db_session.rollback()
             return False, f"An error occurred in the server. Please try again later"
 
@@ -364,7 +375,6 @@ class CompanyManager(ContractManager):
 
             for key, value in company_data.items():
                 if value is not None:
-                    print(f"{key}: {value}")
                     setattr(company, key, value)
         except NoResultFound:
             if self.check_voen(voen):
@@ -391,7 +401,6 @@ class CompanySearchEngine(SearchEngine):
         super().__init__(db_session, search)
 
     def get_all_results(self, page: int, per_page: int, db=None, *args, **kwargs) -> dict[str, int | Any]:
-        # list_of_colmns = self.db_session.query(Companies)
         stmt = self.db_session.query(
             Companies.id,
             Companies.company_name,
