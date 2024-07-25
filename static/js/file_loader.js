@@ -1,31 +1,8 @@
 "use strict"
 
-document.getElementById("pdf_file").addEventListener("change", (event) => {
-    const file = event.target.files[0];
-    const table = document.querySelector(".table");
-    const button_element = document.querySelector(".save-btn");
-    console.log(button_element.style.pointerEvents)
-    if (!file) {
-        document.getElementById('progress').style.width = '0';
-        const button_is_active = !button_element.disabled;
-        console.log(button_is_active)
-
-        if (button_is_active) {
-            // If the button is not active, disable it
-            button_element.disabled = true;
-            button_element.style.pointerEvents = "none";
-            button_element.style.cursor = "default";
-            button_element.style.backgroundColor = "#EEEDEB";
-        }
-    }
-    else {
-        button_element.setAttribute("disabled", "true");
-        if(button_element.hasAttribute("disabled")) {
-            button_element.style.pointerEvents = "none";
-            button_element.style.cursor = "default";
-            button_element.style.backgroundColor = "#EEEDEB";
-        }
-        const reader = new FileReader();
+export default function pdfReader(file=null, save_button=null, edit_mode=false, update_function=null) {
+    const reader = new FileReader();
+    if (file && !edit_mode) {
         reader.onloadstart = function () {
             document.getElementById("progress").style.width = "0"; // Reset progress bar on new file load
         };
@@ -36,12 +13,37 @@ document.getElementById("pdf_file").addEventListener("change", (event) => {
             }
         };
         reader.onloadend = function () {
-            button_element.removeAttribute("disabled");
-            button_element.style.pointerEvents = "";
-            button_element.style.cursor = "";
-            button_element.style.backgroundColor = "#008000FF";
+            save_button.removeAttribute("disabled");
+            save_button.style.pointerEvents = "";
+            save_button.style.cursor = "";
+            save_button.style.backgroundColor = "#008000FF";
             document.getElementById('progress').style.width = '100%';
         };
-        reader.readAsArrayBuffer(file);
+        return reader.readAsArrayBuffer(file);
     }
+    else if(file && !edit_mode) {
+        reader.onloadstart = function () {
+        document.getElementById("progress").style.width = "0"; // Reset progress bar on new file load
+    };
+        reader.onprogress = function (event) {
+            if (event.lengthComputable) {
+                const percentage = (event.loaded / event.total) * 100;
+                document.getElementById("progress").style.width = `${percentage}%`;
+            }
+        };
+        reader.onloadend = function () {
+            document.getElementById("progress").style.width = '100%';
+            update_function();
+        };
+        return reader.readAsArrayBuffer(file);
+    }
+}
+
+document.getElementById("pdf_file").addEventListener("change", (event) => {
+    const file = event.target.files[0];
+    const button_element = document.querySelector(".save-btn");
+            button_element.style.pointerEvents = "none";
+            button_element.style.cursor = "default";
+            button_element.style.backgroundColor = "#EEEDEB";
+        pdfReader(file, button_element);
 });
