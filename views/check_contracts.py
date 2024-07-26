@@ -1,7 +1,5 @@
-import flask_wtf
-from flask import Blueprint, render_template, request, session, redirect, url_for, jsonify, flash, send_file, abort
+from flask import Blueprint, render_template, redirect, url_for, jsonify, flash, send_file, abort
 from werkzeug.utils import secure_filename
-from forms.contract_search import SearchContract
 from forms.filters import *
 from forms.edit_contract_form import EditContractForm
 from database.db_init import db
