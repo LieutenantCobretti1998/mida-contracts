@@ -83,6 +83,7 @@ class SearchEngine(ValidatorWrapper):
     """
     Engine for searching, filtering and formatting purposes in contracts / contract tables
     """
+
     def __init__(self, db_session: Session, search: str | int = None):
         super().__init__(db_session)
         self.search = search
@@ -90,14 +91,6 @@ class SearchEngine(ValidatorWrapper):
     def search_company_with_contract(self) -> Contract | None:
         result = self.db_session.query(Contract).join(Companies).filter(Contract.id == self.search).first()
         return result
-
-    def get_all_results(self, db, page: int, per_page: int) -> dict[str, int | Any]:
-        stmt = self.db_session.query(Contract).join(Contract.company).distinct()
-        total_contracts = stmt.count()
-        limited_results = db.paginate(stmt, page=page, per_page=per_page, error_out=False).items
-        return {"results_per_page": limited_results,
-                "total_contracts": total_contracts + 1 if total_contracts == 0 else total_contracts
-                }
 
     def asc_or_desc(self, query, sort_direction: str, mapping: tuple):
         """
@@ -259,7 +252,8 @@ class EditContract(ValidatorWrapper):
             The main update logic after contract's edit. it will check all the possibilities of updating or refuse the
             contract to update based on different situations
         """
-        contract_to_update = self.db_session.query(Contract).join(Contract.company).filter(Contract.id == int(self.id)).first()
+        contract_to_update = self.db_session.query(Contract).join(Contract.company).filter(
+            Contract.id == int(self.id)).first()
         if not contract_to_update:
             self.db_session.close()
             return False, f"Contract was not found in database"
@@ -311,7 +305,7 @@ class EditContract(ValidatorWrapper):
                                     try:
                                         new_pdf_file_path = self.change_pdf_file_path(existed_voen_id,
                                                                                       contract_to_update.pdf_file_path,
-                                                                                     )
+                                                                                      )
                                         contract_to_update.company_id = existed_voen_id
                                         contract_to_update.pdf_file_path = new_pdf_file_path
                                     except FileNotFoundError:
@@ -400,58 +394,77 @@ class CompanySearchEngine(SearchEngine):
     def __init__(self, db_session: Session, search: str = None):
         super().__init__(db_session, search)
 
-    def get_all_results(self, page: int, per_page: int, db=None, *args, **kwargs) -> dict[str, int | Any]:
-        stmt = self.db_session.query(
-            Companies.id,
-            Companies.company_name,
-            Companies.voen,
-            func.count(Contract.id).label('contract_count')).outerjoin(Contract, Companies.contracts).group_by(
-            Companies.id)
-        total_companies = self.db_session.query(func.count(Companies.id)).scalar()
-        offset = (page - 1) * per_page
-        limited_results = stmt.offset(offset).limit(per_page).all()
-        results = [{
-            "id": id,
-            "company_name": company_name,
-            "voen": voen,
-            "contract_count": contract_count
-        } for id, company_name, voen, contract_count in limited_results]
-        return {"results_per_page": results,
-                "total_companies": total_companies,
-                }
+    def get_all_results_api(self, per_page: int, offset: int, sort_dir: str, mapping: tuple) -> (
+            tuple)[list[dict[str, InstrumentedAttribute | Any]], int]:
+        """
+         :param per_page:
+         :param offset:
+         :param sort_dir:
+         :param mapping:
+         :return:
+         This method is for put all results of the contract in the table
+        """
+        query = self.db_session.query(Companies)
 
-    def search_query(self, page: int, per_page: int, filters: str, order: str) -> dict:
-        results = (self.db_session.query(
-            Companies.id,
-            Companies.company_name,
-            Companies.voen,
-            func.count(Contract.id).label("contract_count")
-        )
-                   .filter(or_(
+        query = self.asc_or_desc(query, sort_dir, mapping)
+        total_count = query.count()
+        companies = query.offset(offset).limit(per_page).all()
+        company_list = [{
+            "id": company.id,
+            "company_name": company.company_name,
+            "voen": company.voen,
+            "email": company.email,
+            "telephone_number": company.telephone_number,
+            "address": company.address,
+            "website": company.website,
+            "bank_name": company.bank_name,
+            "m_h": company.m_h,
+            "h_h": company.h_h,
+            "swift": company.swift
+        } for company in companies]
+        return company_list, total_count
+
+    def search_query_api(self, per_page: int, offset: int, sort_dir: str, mapping: tuple) -> (
+            tuple)[list[dict[str, InstrumentedAttribute | Any]], int]:
+        """
+        :param per_page:
+        :param offset:
+        :param sort_dir:
+        :param mapping:
+        :return:
+        """
+
+        query = (self.db_session
+        .query(Companies)
+        .filter(or_(
             Companies.company_name.ilike(f"%{self.search}%"),
-            Companies.voen.ilike(f"%{self.search}%")
-        ))
-                   .outerjoin(Contract, Companies.contracts)
-                   .group_by(Companies.id))
-        # Filters
-        match filters:
-            case "company":
-                results = results.order_by(desc(Companies.company_name) if order == "descending"
-                                           else asc(Companies.company_name))
+            Companies.voen.ilike(f"%{self.search}%"),
+            Companies.swift.ilike(f"%{self.search}%"),
+            Companies.bank_name.ilike(f"%{self.search}%"),
+            Companies.m_h.ilike(f"%{self.search}%"),
+            Companies.h_h.ilike(f"%{self.search}%"),
+            Companies.telephone_number.ilike(f"%{self.search}%"),
+            Companies.address.ilike(f"%{self.search}%"),
+            Companies.website.ilike(f"%{self.search}%")
+        )))
 
-            case "contracts":
-                results = results.order_by(desc("contract_count") if order == "descending"
-                                           else asc("contract_count"))
-
-        total_results = results.count()
-        paginated_results = results.offset((page - 1) * per_page).limit(per_page).all()
-        return {"results_per_page": paginated_results,
-                "total_companies": total_results + 1 if total_results == 0 else total_results,
-                }
-
-    def search_company(self) -> Type[Companies] | None:
-        result = self.db_session.query(Companies).filter_by(id=self.search).first()
-        return result
+        query = self.asc_or_desc(query, sort_dir, mapping)
+        total_count = query.count()
+        companies = query.offset(offset).limit(per_page).all()
+        company_list = [{
+            "id": company.id,
+            "company_name": company.company_name,
+            "voen": company.voen,
+            "email": company.email,
+            "telephone_number": company.telephone_number,
+            "address": company.address,
+            "website": company.website,
+            "bank_name": company.bank_name,
+            "m_h": company.m_h,
+            "h_h": company.h_h,
+            "swift": company.swift
+        } for company in companies]
+        return company_list, total_count
 
 
 class EditCompany(EditContract):
