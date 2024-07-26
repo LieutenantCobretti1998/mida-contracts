@@ -42,8 +42,16 @@ export default function pdfReader(file=null, save_button=null, edit_mode=false, 
 document.getElementById("pdf_file").addEventListener("change", (event) => {
     const file = event.target.files[0];
     const button_element = document.querySelector(".save-btn");
-            button_element.style.pointerEvents = "none";
-            button_element.style.cursor = "default";
-            button_element.style.backgroundColor = "#EEEDEB";
-        pdfReader(file, button_element);
+    if(!file) {
+        document.getElementById("progress").style.width = "0"
+        button_element.removeAttribute("disabled");
+        button_element.style.pointerEvents = "auto";
+        button_element.style.cursor = "pointer";
+        button_element.style.backgroundColor = "#008000FF";
+        return;
+    }
+    button_element.style.pointerEvents = "none";
+    button_element.style.cursor = "default";
+    button_element.style.backgroundColor = "#EEEDEB";
+    pdfReader(file, button_element);
 });
