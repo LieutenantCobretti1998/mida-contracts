@@ -12,7 +12,9 @@
     <form action="{{ url_for('create_contract.save_contract') }}" method="post" enctype="multipart/form-data">
         {{ form.csrf_token() }}
         <table  class="table">
-            <caption id="caption">Add a new contract</caption>
+            <caption id="caption">
+                <h1>Add a new contract</h1>
+            </caption>
             <thead></thead>
             <tbody class="table__body">
                 <tr>

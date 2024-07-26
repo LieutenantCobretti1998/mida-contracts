@@ -1,132 +1,15 @@
 {% extends "base.html" %}
 {% block title %} Check Companies {% endblock title %}
 {% block style %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/check_companies.css') }}"
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/check_companies.css') }}" />
+    <link href="https://unpkg.com/gridjs@6.2.0/dist/theme/mermaid.min.css" rel="stylesheet" />
 {% endblock style %}
 
 {% block class_all_companies %}active{% endblock class_all_companies %}
 {% block class_all_company_li %}remove-pointer{% endblock class_all_company_li %}
 
-{% block loading %}
-    <div class="loader">
-        <div class="inner one"></div>
-        <div class="inner two"></div>
-        <div class="inner three"></div>
-    </div>
-{% endblock loading %}
-
 {% block content_part %}
-    {% set counter = namespace(value=(page-1) * posts_per_page) %}
-    <table border=1 frame=void rules=rows  class="table">
-        <caption>
-            <div class="table__header">
-                <div class="table__header__search">
-                     <form action="{{ url_for('all_companies.get_all_companies') }}" method="get">
-                        {{ form.search(class="table__header__search__label", placeholder="Search") }}
-                        <button class="table__header__search__button" type="submit" name="action" value="search">Search</button>
-                        <button class="table__header__search__button" type="submit" name="action" value="all">All Companies</button>
-                         <label id="label-filter" for="filter-selection"></label>
-                        <select name="filters" id="filter-selection" class="filter-button">
-                            <option value="" selected disabled hidden>Filters</option>
-                            <option value="company" {% if filters == "company" and action == "search" %}selected{% endif %}>Company</option>
-                            <option value="contracts" {% if filters == "contracts" and action == "search" %}selected{% endif %}>Contracts</option>
-                        </select>
-                        <label id="label-filter" for="order-selection"></label>
-                        <select name="orders" id="order-selection" class="order-button">
-                            <option value="" selected disabled hidden>Order by</option>
-                            <option value="ascending"  {% if order == "ascending" and action == "search" %}selected{% endif %}>Ascending</option>
-                            <option value="descending" {% if order == "descending" and action == "search" %}selected{% endif %}>Descending</option>
-                        </select>
-                     </form>
-                </div>
-                <span class="table__header__all-companies">
-                    All Companies: {% if companies != [] %} {{ amount_of_companies }} {% else %} 0 {% endif %}
-                </span>
-            </div>
-        </caption>
-        <thead>
-            <tr>
-                <th><strong>No</strong></th>
-                <th>COMPANY</th>
-                <th>Voen</th>
-                <th>Number of Contracts</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for company in companies %}
-                {% set counter.value = counter.value + 1 %}
-                <tr>
-                    <td>{{ counter.value }}</td>
-                    <td>{{ company.company_name }}</td>
-                    <td>{{ company.voen }}</td>
-                    <td>{{ company.contract_count }}</td>
-                    <td>
-                        <a class="check" href={{ url_for('all_companies.get_company', company_id=company.id ) }}>Check</a>
-                    </td>
-                    <td>
-                        <svg onclick="openPopUpMenu('{{ url_for('all_companies.delete_company', company_id=company.id) }}')" xmlns="http://www.w3.org/2000/svg" class="delete"
-                             viewBox="0 0 512 512">
-                            <path d="M112 112l20 320c.95 18.49 14.4 32 32 32h184c17.67 0 30.87-13.51 32-32l20-320" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"></path>
-                            <path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M80 112h352"/><path d="M192 112V72h0a23.93 23.93 0 0124-24h80a23.93 23.93 0 0124 24h0v40M256 176v224M184 176l8 224M328 176l-8 224" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/></svg>
-                    </td>
-                    <td></td>
-                </tr>
-            {% endfor %}
-
-        <tr class="pagination_buttons">
-                <td id="prev">
-                    <form action="{{ url_for('all_companies.get_all_companies') }}" method="get">
-                        {% if action == 'search' %}
-                            <input type="hidden" name="search" value="{{ search_query }}">
-                            <input type="hidden" name="action" value="{{ action }}">
-
-                            {% if filters != "" %}
-                                <input type="hidden" name="filters" value="{{ filters }}">
-                            {% endif %}
-                            {% if order != "" %}
-                                <input type="hidden" name="orders" value="{{ order }}">
-                            {% endif %}
-                        {% elif  action == 'all' %}
-                            <input type="hidden" name="search" value="{{ search_query }}">
-                            <input type="hidden" name="action" value="{{ action }}">
-                        {% endif %}
-
-                        {% if page > 1  %}
-                            <button class="prev" type="submit" name="page" value="{{ page - 1 }}">Prev</button>
-                        {% else %}
-                            <button class="prev" disabled>Prev</button>
-                        {% endif %}
-                    </form>
-                </td>
-                <td id="page_number">
-                    Page: {{ page }}
-                </td>
-                <td id="next">
-                    <form action="{{ url_for('all_companies.get_all_companies') }}" method="get">
-                        {% if action == 'search'%}
-                            <input type="hidden" name="search" value="{{ search_query }}">
-                            <input type="hidden" name="action" value="{{ action }}">
-                            {% if filters != "" %}
-                                <input type="hidden" name="filters" value="{{ filters }}">
-                            {% endif %}
-
-                            {% if order != "" %}
-                                <input type="hidden" name="orders" value="{{ order }}">
-                            {% endif %}
-                        {% elif  action == 'all' %}
-                            <input type="hidden" name="search" value="{{ search_query }}">
-                            <input type="hidden" name="action" value="{{ action }}">
-                        {% endif %}
-                        {%  if page < total_pages %}
-                            <button type="submit" class="next" name="page" value="{{ page + 1 }}">Next</button>
-                        {% else %}
-                            <button class="next" disabled>Next</button>
-                        {% endif %}
-                    </form>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <div id="results"></div>
     {% block pop_up_message %}
             {% with messages = get_flashed_messages(with_categories=True) %}
                     {% if messages %}
@@ -177,13 +60,112 @@
         {% endblock pop_up_message %}
 {% endblock content_part %}
 {% block javascript %}
-    <script src="{{ url_for('static', filename='js/pagination.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/all_contracts_search_bar.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/loading_screen.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/clear_url.js') }}"></script>
-    <script src={{ url_for('static', filename='js/add_contract.js') }}></script>
-    <script type="text/javascript">
-        const csrf_token = "{{ csrf_token() }}"
+    <script src="https://unpkg.com/gridjs@6.2.0/dist/gridjs.umd.js"></script>
+   <script type="module">
+        const grid = new gridjs.Grid({
+            columns: [
+                {
+                    name: "Company Id",
+                    hidden: true
+                },
+
+                {
+                    name: "Company Name"
+                },
+                {
+                    name: "Voen"
+                },
+                {
+                    name: "Email"
+                },
+                {
+                    name: "Tel Number"
+                },
+                {
+                    name: "Address"
+                },
+                {
+                    name: "Website",
+                    formatter: (cell, _) => {
+                        return gridjs.html(
+                            cell ? `<a href="${cell}">Link</a>` : ''
+                        )
+                    }
+                },
+                {
+                    name: "Bank"
+                },
+                {
+                    name: "M-H"
+                },
+                {
+                    name: "H-H"
+                },
+                {
+                    name: "Swift"
+                },
+                {
+                    sort: false,
+                    name: "Actions",
+                    formatter: (cell, row) => {
+                        const company_id = row.cells[0].data;
+
+                         return gridjs.html(
+                               `<span style="display: flex; justify-content: space-between">` +
+                                    `<button type="button" class="edit-btn" data-company-id=${company_id}>Edit</button>` +
+
+                               `</span>`
+                           );
+                    }
+                }
+            ],
+            pagination: {
+                limit: 10,
+                page: 10,
+                server : {
+                    url: (prev, page, limit) => {
+                        const hasQuery = prev.includes("?");
+                        const prefix = hasQuery ? "&": "?";
+                        return `${prev}${prefix}limit=${limit}&page=${page + 1}`;
+                    }
+                }
+            },
+            sort: {
+                multiColumn: false,
+                server: {
+                    url: (prev, columns) => {
+                        if (!columns.length) return prev;
+
+                        const col = columns[0];
+                        const dir = col.direction === 1 ? "asc": "desc";
+                        let colName = ["Company Id", "Company Name", "Voen", "Email", "Tel Number", "Address", "Website", "Bank", "M-H", "H-H", "Swift"][col.index];
+                        return `${prev}?order_by=${colName}&dir=${dir}`;
+                    }
+                }
+            },
+            search: {
+                server: {
+                    url: (prev, keyword) => `${prev}/${encodeURIComponent(keyword)}`
+                }
+            },
+            server: {
+                url: "/api/all_companies",
+                then: data => data.data.map(company => [
+                    company.id,
+                    company.company_name,
+                    company.voen,
+                    company.email,
+                    company.telephone_number,
+                    company.address,
+                    company.website,
+                    company.bank_name,
+                    company.m_h,
+                    company.h_h,
+                    company.swift,
+                ]),
+                total: data => data.total_count
+            },
+        })
+         grid.render(document.getElementById("results"));
     </script>
-    <script src="{{ url_for('static', filename='js/delete.js') }}"></script>
 {% endblock javascript %}

@@ -9,7 +9,11 @@
     <form action="{{ url_for('create_company.save_company') }}" method="POST">
         {{ form.csrf_token() }}
         <table  class="table">
-                <caption>Add a new company or requisites</caption>
+                <caption id="caption">
+                    <h1>
+                    Add a new company or requisites
+                    </h1>
+                </caption>
                 <thead></thead>
                 <tbody class="table__body">
                 <tr>
@@ -175,7 +179,7 @@
 
                  <tr>
                      <td class="table__save">
-                         {{ form.save(class="table__save__button") }}
+                         {{ form.save(class="save-btn") }}
                      </td>
                  </tr>
 
@@ -233,4 +237,5 @@
 {% endblock content_part %}
 {% block javascript %}
     <script src="{{ url_for('static', filename='js/add_contract.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/form_focus.js') }}"></script>
 {% endblock javascript %}
