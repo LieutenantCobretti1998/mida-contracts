@@ -4,14 +4,53 @@
   gap: 7vw;
   background-color: $color-main-background;
 }
-form {
-  display: flex;
-  width: 100%;
-  height: 100%;
+#caption {
+  margin-bottom: 5rem;
+  font-size: $font-size-big;
+}
+.table {
+  border-radius: 8px;
+  border-spacing: 0 50px;
+  width: 70%;
+  background-color: $color-white;
+  table-layout: fixed;
+  text-align: left;
+  max-height: 1rem;
+  margin: 2vw 2vw 2vw 19vw;
+  padding: 2vw;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .1), 0 1px 2px 0 rgba(0, 0, 0, .26);
+
+  &__input {
+    border: 0;
+    box-sizing: border-box;
+    padding-left: 10px;
+    width: 100%;
+    transition: scale .2s ease-in-out;
+  }
+
+  tbody > tr {
+    font-size: $font-size-medium;
+
+  }
+  tbody > tr:not(:last-child) {
+    & > td {
+      border: 1px solid #9d9d9e;
+      border-collapse: collapse;
+
+      & > label {
+        padding-left: 10px;
+      }
+    }
+  }
 }
 
-caption {
-  font-size: $font-size-big-2 !important;
+.rounded {
+  height: 3.5rem;
+  border-radius: .35rem;
+}
+
+.focused {
+  scale: (1.1);
 }
 
 .error-list {
@@ -55,105 +94,30 @@ caption {
   }
 }
 
-.table {
-  transition: width 3s ease-in-out;
-  border-radius: 3rem;
-  width: 70%;
-  max-height: 1em;
-  background-color: $color-table-background;
-  margin: 2vw 2vw 2vw 19vw ;
-  padding: 2vw;
-  box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.2);
+.save-btn {
+  width: 80px;
+  height: 40px;
+  background-color: $color-green;
+  color: white;
+  border-radius: 1rem;
+  transition: background-color .2s ease-in-out;
 
-  caption {
-    font-size: $font-size-big;
-    margin-bottom: $margin-medium;
+  &:hover {
+    cursor: pointer;
+    background-color: $color-dark-green !important;
   }
-
-  &__text {
-    text-transform: uppercase;
-    font-size: $font-size-medium;
-  }
-  tr {
-    background-size: 200% 100%; /* Larger background size for animation */
-    transition: background-color .5s ease; /* Smooth transition for background color change */
-    width: 100%; /* Ensure the row uses full width if not set */
-
-  }
-
-  tr:hover {
-    animation: SmoothColorChange .5s forwards;
-  }
-
-  tr:nth-child(odd):not(:nth-last-child(-n+2)) {
-    background-color: $color-white;
-  }
-  tr:nth-child(odd):not(:nth-last-child(-n+2)) {
-    background-image: linear-gradient(to right, $color-white, darken($color-white, 10%));
-  }
-
-  tr:nth-child(even):not(:last-child) {
-    background-image: linear-gradient(to right, $color-table-background, darken($color-table-background, 10%)); // Gradient adjustment
-  }
-
-  &__input {
-    box-sizing: border-box;
-    padding-left: 10px;
-    width: 100%;
-    transition: scale .2s ease-in-out;
-
-    &::placeholder {
-      padding-left: $margin-small;
-    }
-  }
-  &__save {
-
-    &__button {
-      background-color: $color-table-background;
-      cursor: pointer;
-      border-radius: 3rem;
-      border-color: rgba(0, 0, 0, 0.3);
-      width: 10rem;
-      margin-top: $margin-small;
-      font-size: $font-size-big;
-      transition: background-color .5s ease-in-out, transform .3s ease-in-out, box-shadow .3s ease-in-out;
-      box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.2);
-
-
-      &:hover {
-        background-color: darken($color-table-background, 10%);
-      }
-
-      &:active {
-        transform: scale(0.95);
-        box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
-      }
-    }
-  }
-}
-.focused {
-  scale: (1.1);
-}
-
-td {
-  padding: $padding-small;
-  display: table-cell;
-}
-
-.rounded {
-  height: 3.5rem;
-  border-radius: .35rem;
 }
 
 .upload-container {
-    display: flex;
-    align-items: center;
+  padding: 10px;
+  display: flex;
+  align-items: center;
 }
 
 .progress-bar {
     width: 200px; /* Fixed width or max width for the outer progress bar */
     height: 20px;
-    background-color: lightgrey;
+    background-color: $color-grey;
     margin-left: 10px; /* Space between the file input and progress bar */
 }
 
@@ -163,3 +127,13 @@ td {
     width: 0; /* Start with no fill */
 }
 
+#is_adv_payer {
+  padding: 10px;
+  & > li {
+    list-style: none;
+
+    &:not(:last-child) {
+      margin-bottom: 1.2rem;
+    }
+  }
+}
