@@ -7,16 +7,12 @@
   background-color: $color-main-background;
 }
 
+.gridjs-table {
+  width: auto;
+}
+
 .focused {
   scale: (1.1);
-}
-
-#page_number {
-  font-size: $font-size-big;
-}
-
-#label-filter {
-  display: none;
 }
 
 .error {

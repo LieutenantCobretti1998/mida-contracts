@@ -118,7 +118,7 @@ body {
   color: white;
   list-style: none;
   overflow: hidden;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.1s ease-in-out;
 }
 .submenu-companies__sub-options:hover,
 .submenu-contracts__sub-options:hover {
@@ -129,20 +129,20 @@ body {
   display: none;
   opacity: 0;
   height: 0;
-  transition: height 0.8s ease, opacity 0.8s ease;
+  transition: height 0.1s ease, opacity 0.8s ease;
 }
 
 .collapsing {
   display: flex;
   opacity: 0;
-  transition: height 0.8s ease, opacity 0.8s ease;
+  transition: height 0.1s ease, opacity 0.8s ease;
 }
 
 .show {
   height: auto;
   display: flex;
   opacity: 1;
-  transition: height 0.8s ease, opacity 0.8s ease;
+  transition: height 0.1s ease, opacity 0.8s ease;
 }
 
 .active {
@@ -172,14 +172,6 @@ body {
   cursor: default !important;
 }
 
-@keyframes SmoothColorChange {
-  from {
-    background-position: 0 0;
-  }
-  to {
-    background-position: 100% 100%; /* End with the gradient fully visible */
-  }
-}
 @keyframes FadeInOut {
   from {
     opacity: 1;
@@ -293,8 +285,8 @@ body {
 }
 
 .save-btn {
-  width: 100px;
-  height: 60px;
+  width: 80px;
+  height: 40px;
   background-color: green;
   color: white;
   border-radius: 1rem;

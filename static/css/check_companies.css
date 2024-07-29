@@ -118,7 +118,7 @@ body {
   color: white;
   list-style: none;
   overflow: hidden;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.1s ease-in-out;
 }
 .submenu-companies__sub-options:hover,
 .submenu-contracts__sub-options:hover {
@@ -129,20 +129,20 @@ body {
   display: none;
   opacity: 0;
   height: 0;
-  transition: height 0.8s ease, opacity 0.8s ease;
+  transition: height 0.1s ease, opacity 0.8s ease;
 }
 
 .collapsing {
   display: flex;
   opacity: 0;
-  transition: height 0.8s ease, opacity 0.8s ease;
+  transition: height 0.1s ease, opacity 0.8s ease;
 }
 
 .show {
   height: auto;
   display: flex;
   opacity: 1;
-  transition: height 0.8s ease, opacity 0.8s ease;
+  transition: height 0.1s ease, opacity 0.8s ease;
 }
 
 .active {
@@ -172,14 +172,6 @@ body {
   cursor: default !important;
 }
 
-@keyframes SmoothColorChange {
-  from {
-    background-position: 0 0;
-  }
-  to {
-    background-position: 100% 100%; /* End with the gradient fully visible */
-  }
-}
 @keyframes FadeInOut {
   from {
     opacity: 1;
@@ -208,42 +200,16 @@ body {
   margin: 3vw 2vw 2vw 14vw;
 }
 
-.gridjs-container {
-  min-width: 100% !important;
-}
-
 .main_container {
   background-color: #EEEDEB;
 }
 
+.gridjs-table {
+  width: auto;
+}
+
 .focused {
   scale: 1.1;
-}
-
-.check {
-  text-decoration: none;
-  color: #0f6b6b;
-  transition: color 0.2s ease-in-out;
-}
-.check:hover {
-  color: #36c7c7;
-}
-
-.check_option {
-  cursor: pointer;
-  scale: 0.9;
-  transition: scale 0.2s linear;
-}
-.check_option:hover {
-  scale: 1.1;
-}
-
-#page_number {
-  font-size: 2.5rem;
-}
-
-#label-filter {
-  display: none;
 }
 
 .error {
@@ -358,7 +324,7 @@ body {
 }
 
 .edit-btn,
-.pdf-btn,
+.related-btn,
 .delete-btn {
   width: 60px;
   height: 42px;
@@ -368,7 +334,7 @@ body {
   transition: background-color 0.2s ease-in-out;
 }
 .edit-btn:hover,
-.pdf-btn:hover,
+.related-btn:hover,
 .delete-btn:hover {
   cursor: pointer;
   background-color: #043a3a;
@@ -382,10 +348,10 @@ body {
   background-color: #9b1515;
 }
 
-.pdf-btn {
+.related-btn {
   background-color: #1649f3;
 }
-.pdf-btn:hover {
+.related-btn:hover {
   cursor: pointer;
   background-color: #032287;
 }

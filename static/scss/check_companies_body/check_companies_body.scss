@@ -2,44 +2,16 @@
   margin: 3vw 2vw 2vw 14vw ;
 }
 
-.gridjs-container {
-  min-width: 100% !important;
-}
-
 .main_container {
   background-color: $color-main-background;
 }
 
+.gridjs-table {
+  width: auto;
+}
+
 .focused {
   scale: (1.1);
-}
-
-.check {
-  text-decoration: none;
-  color: $color-button-check;
-  transition: color .2s ease-in-out;
-
-  &:hover {
-    color: $color-light-blue;
-  }
-}
-
-.check_option {
-  cursor: pointer;
-  scale: 0.9;
-  transition: scale .2s linear;
-
-  &:hover {
-    scale: 1.1;
-  }
-}
-
-#page_number {
-  font-size: $font-size-big;
-}
-
-#label-filter {
-  display: none;
 }
 
 .error {
@@ -165,7 +137,7 @@
 }
 
 .edit-btn,
-.pdf-btn,
+.related-btn,
 .delete-btn {
   width: 60px;
   height: 42px;
@@ -189,7 +161,7 @@
   }
 }
 
-.pdf-btn {
+.related-btn {
   background-color: $color-blue;
 
   &:hover {
