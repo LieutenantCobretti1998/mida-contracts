@@ -8,7 +8,6 @@ toggle_menu_element.addEventListener("click", (cur_ev) => {
     const toggle_button = cur_ev.target.closest(".toggle-menu-button");
     if (toggle_button) {
         const parent_container = toggle_button.parentElement;
-        console.log(parent_container)
         const sub_menu = parent_container.nextElementSibling;
         if(sub_menu) {
             const arrow_svg = parent_container.querySelector(".size-6");
@@ -22,20 +21,17 @@ function toggleSubMenu(sub_menu, arrow) {
     sub_menu.classList.add("collapsing");
     switch (is_shown) {
         case true:
-                console.log("works")
                 sub_menu.classList.remove("show");
                 sub_menu.classList.add("collapsing");
                 arrow.classList.remove("rotated-up");
                 arrow.classList.add("rotated-down");
                 setTimeout(() => {
-                    console.log("work suppose");
                     arrow.classList.remove("rotated-down");
                     sub_menu.classList.remove('collapsing');
                     sub_menu.classList.add('hidden');
                     }, 500)
                 break;
             case false:
-                console.log("heehhe")
                 sub_menu.classList.remove("hidden");
                 sub_menu.classList.add("collapsing");
                 arrow.classList.add("rotated-up");

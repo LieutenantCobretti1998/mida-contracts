@@ -5,7 +5,8 @@ function attachEventHandlers() {
     document.addEventListener('DOMContentLoaded', () => {
         const gridContainer = document.getElementById("results"); // The parent element of your grid
         gridContainer.addEventListener("click", (event) => {
-            const contract_id = event.target.getAttribute("data-contract-id");
+            const contract_id = event.target.getAttribute("data-id");
+            const data_voen = event.target.getAttribute("data-voen");
             const csrf_token = event.target.getAttribute("data-csrf-token");
             switch (true) {
                 case event.target.classList.contains("pdf-btn"):
@@ -15,7 +16,10 @@ function attachEventHandlers() {
                     deleteFullUrl(contract_id, csrf_token);
                     break;
                 case event.target.classList.contains("edit-btn"):
-                    editContract(contract_id, csrf_token);
+                    editContract(contract_id);
+                    break;
+                case event.target.classList.contains("related-btn"):
+                    openRelatedContracts(data_voen);
                     break;
             }
         });
@@ -42,8 +46,21 @@ function deleteFullUrl(contract_id, csrf_token) {
     openPopUpMenu(url_for_deletion, csrf_token);
 }
 
+/**
+ *
+ * @param {number} contract_id
+ */
 function editContract(contract_id) {
    window.open(`${edit_url_base}${contract_id}`);
+}
+
+
+/**
+ *
+ * @param {string} voen
+ */
+function openRelatedContracts(voen) {
+    window.open(`${related_contracts_url_base}${voen}`)
 }
 
 
