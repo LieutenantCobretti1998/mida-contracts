@@ -113,9 +113,9 @@
 
                         return gridjs.html(
                                `<span style="display: flex; justify-content: space-between">` +
-                                    `<button type="button" class="edit-btn" data-contract-id=${contract_id}>Edit</button>` +
-                                    `<button type="button" class="pdf-btn" data-contract-id=${contract_id}>PDF</button>` +
-                                    `<button data-csrf-token=${csrf_token} type="button" class="delete-btn" data-contract-id=${contract_id}>Delete</button>` +
+                                    `<button type="button" class="edit-btn" data-id=${contract_id}>Edit</button>` +
+                                    `<button type="button" class="pdf-btn" data-id=${contract_id}>PDF</button>` +
+                                    `<button data-csrf-token=${csrf_token} type="button" class="delete-btn" data-id=${contract_id}>Delete</button>`+
                                `</span>`
                            );
                     }
@@ -123,7 +123,6 @@
             ],
             pagination: {
                 limit: 10,
-                page: 10,
                 server : {
                     url: (prev, page, limit) => {
                         const hasQuery = prev.includes("?");
@@ -151,7 +150,7 @@
                 }
             },
             server: {
-                url: "/api/all_contracts",
+                url:  "{% if not search_mode %}/api/all_contracts{% else %}/api/all_contracts/{{ voen }}{% endif %}",
                 then: data => data.data.map(contract => [
                     contract.id,
                     contract.company_name,

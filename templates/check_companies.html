@@ -60,6 +60,20 @@
         {% endblock pop_up_message %}
 {% endblock content_part %}
 {% block javascript %}
+    <script type="text/javascript">
+        const csrf_token = "{{ csrf_token() }}";
+
+        let delete_url_base = "{{ url_for('all_companies.delete_company', company_id = 0) }}";
+        delete_url_base = delete_url_base.replace(/\/0$/, "/");
+
+        let edit_url_base = "{{ url_for('all_companies.get_company', company_id = 0) }}";
+        edit_url_base = edit_url_base.replace(/\/0$/, "/");
+
+        let related_contracts_url_base = "{{ url_for('all_contracts.related_contracts', voen = 0) }}";
+        related_contracts_url_base = related_contracts_url_base.replace(/\/0$/, "/");
+    </script>
+    <script type="module" src="{{ url_for('static', filename='js/delete.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename="js/redirection.js") }}"></script>
     <script src="https://unpkg.com/gridjs@6.2.0/dist/gridjs.umd.js"></script>
    <script type="module">
         const grid = new gridjs.Grid({
@@ -76,44 +90,19 @@
                     name: "Voen"
                 },
                 {
-                    name: "Email"
-                },
-                {
-                    name: "Tel Number"
-                },
-                {
-                    name: "Address"
-                },
-                {
-                    name: "Website",
-                    formatter: (cell, _) => {
-                        return gridjs.html(
-                            cell ? `<a href="${cell}">Link</a>` : ''
-                        )
-                    }
-                },
-                {
-                    name: "Bank"
-                },
-                {
-                    name: "M-H"
-                },
-                {
-                    name: "H-H"
-                },
-                {
-                    name: "Swift"
+                    name: "Related Contracts"
                 },
                 {
                     sort: false,
                     name: "Actions",
                     formatter: (cell, row) => {
                         const company_id = row.cells[0].data;
-
+                        const voen = row.cells[2].data;
                          return gridjs.html(
                                `<span style="display: flex; justify-content: space-between">` +
-                                    `<button type="button" class="edit-btn" data-company-id=${company_id}>Edit</button>` +
-
+                                    `<button type="button" class="edit-btn" data-id=${company_id}>Edit</button>` +
+                                     `<button type="button" class="related-btn" data-voen=${voen}>Contrs</button>` +
+                                    `<button data-csrf-token=${csrf_token} type="button" class="delete-btn" data-id=${company_id}>Delete</button>`+
                                `</span>`
                            );
                     }
@@ -121,7 +110,6 @@
             ],
             pagination: {
                 limit: 10,
-                page: 10,
                 server : {
                     url: (prev, page, limit) => {
                         const hasQuery = prev.includes("?");
@@ -138,7 +126,7 @@
 
                         const col = columns[0];
                         const dir = col.direction === 1 ? "asc": "desc";
-                        let colName = ["Company Id", "Company Name", "Voen", "Email", "Tel Number", "Address", "Website", "Bank", "M-H", "H-H", "Swift"][col.index];
+                        let colName = ["Company Id", "Company Name", "Voen", "Related Contracts"][col.index];
                         return `${prev}?order_by=${colName}&dir=${dir}`;
                     }
                 }
@@ -154,14 +142,7 @@
                     company.id,
                     company.company_name,
                     company.voen,
-                    company.email,
-                    company.telephone_number,
-                    company.address,
-                    company.website,
-                    company.bank_name,
-                    company.m_h,
-                    company.h_h,
-                    company.swift,
+                    company.related_contracts
                 ]),
                 total: data => data.total_count
             },

@@ -4,109 +4,155 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/check_company.css') }}">
 {% endblock style %}
 {% block content_part %}
-    <table class="table">
-        <tbody class="main-table-part">
-                <tr>
-                    <td class="control">
-                        <form action="{{ url_for("all_companies.get_all_companies") }}" method="get">
-                            {% if session.get("company_action") == "all" %}
-                                <input type="hidden" name="search" value="{{ session.get("company_search_query") }}">
-                                <input type="hidden" name="action" value="{{ session.get("company_action") }}">
-                            {% endif %}
-                            {% if session.get("company_action") == "search" %}
-                                <input type="hidden" name="search" value="{{ session.get("company_search_query") }}">
-                                <input type="hidden" name="action" value="{{ session.get("company_action") }}">
-
-                                 {% if session.get("company_filters") != "" %}
-                                    <input type="hidden" name="filters" value="{{ session.get("company_filters") }}">
-                                 {% endif %}
-                                {% if session.get("company_order") != "" %}
-                                    <input type="hidden" name="orders" value="{{ session.get("company_order") }}">
-                                {% endif %}
-                            {% endif %}
-                           <input type="hidden" name="page" value="{{ session.get("company_page") }}">
-                            <div class="buttons">
-                                <button type="submit" class="back">Back</button>
-                                <button type="button" class="edit" onclick="EditContract()">Edit</button>
-                                <a class="check_contracts" href="{{ url_for('all_contracts.related_contracts', voen=search_result.voen) }}">Related Contracts</a>
+    <form action="{{ url_for("all_companies.update_company", company_id = company_id) }}" method="post">
+        {{ form.csrf_token() }}
+        <table class="table" data-edit-mode="true">
+            <caption id="caption">
+                <h1>Edit Company</h1>
+            </caption>
+            <tbody class="main-table-part">
+                    <tr>
+                        <td class="label__text">{{ form.company.label() }}</td>
+                        <td>
+                            <div>
+                                {{ form.company(placeholder=search_result.company_name, class='table__input rounded', id='default_input') | safe }}
+                                <ul class="error-list">
+                                    {% for error in form.company.errors %}
+                                    <li class="error-list__message">{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
                             </div>
-                        </form>
-                    </td>
-                </tr>
-                <tr>
-                    <td>company</td>
-                    <td id="company_label">
-                        <div>
-                            {{ search_result.company_name }}
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>voen</td>
-                    <td id="voen_label">
-                    <div>
-                        {{ search_result.voen }}
-                    </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>bank name</td>
-                    <td id="bank_name_label">
-                    {% if search_result.bank_name %} {{ search_result.bank_name }} {% else %} no information {% endif %}
-                    </td>
-                </tr>
-                <tr>
-                    <td>m_h</td>
-                    <td id="m_h_label">
-                    {% if search_result.m_h %} {{ search_result.m_h }} {% else %} no information {% endif %}
-                    </td>
-                </tr>
-                 <tr>
-                    <td>h_h</td>
-                    <td id="h_h_label">
-                    {% if search_result.h_h %} {{ search_result.h_h }} {% else %} no information {% endif %}
-                    </td>
-                </tr>
-                <tr>
-                    <td>swift</td>
-                    <td id="swift_label">
-                    {% if search_result.swift %} {{ search_result.swift }} {% else %} no information {% endif %}
-                    </td>
-                </tr>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table__text">{{ form.voen.label() }}</td>
+                        <td>
+                            <div>
+                               {{ form.voen(placeholder=search_result.voen, class='table__input rounded') | safe }}
+                                <ul class="error-list">
+                                    {% for error in form.voen.errors %}
+                                    <li class="error-list__message">{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table__text">{{ form.bank_name.label() }}</td>
+                        <td>
+                            <div>
+                               {{ form.bank_name(placeholder=search_result.bank_name if search_result.bank_name else 'No data', class='table__input rounded') | safe }}
+                                <ul class="error-list">
+                                    {% for error in form.bank_name.errors %}
+                                    <li class="error-list__message">{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table__text">{{ form.m_h.label() }}</td>
+                        <td>
+                            <div>
+                               {{ form.m_h(placeholder=search_result.m_h if search_result.m_h else 'No data', class='table__input rounded') | safe }}
+                                <ul class="error-list">
+                                    {% for error in form.m_h.errors %}
+                                    <li class="error-list__message">{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                     <tr>
+                        <td class="table__text">{{ form.h_h.label() }}</td>
+                        <td>
+                            <div>
+                               {{ form.h_h(placeholder=search_result.h_h if search_result.h_h else 'No data' , class='table__input rounded') | safe }}
+                                <ul class="error-list">
+                                    {% for error in form.h_h.errors %}
+                                    <li class="error-list__message">{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table__text">{{ form.swift.label() }}</td>
+                        <td>
+                                <div>
+                               {{ form.swift(placeholder=search_result.swift if search_result.swift else 'No data', class='table__input rounded') | safe }}
+                                <ul class="error-list">
+                                    {% for error in form.swift.errors %}
+                                    <li class="error-list__message">{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
 
-                <tr>
-                    <td>email</td>
-                    <td id="email_label">
-                    {% if search_result.email %} {{ search_result.email }} {% else %} no information {% endif %}
-                    </td>
-                </tr>
+                    <tr>
+                        <td class="table__text">{{ form.email.label() }}</td>
+                        <td>
+                                <div>
+                               {{ form.email(placeholder=search_result.email if search_result.email else 'No data', class='table__input rounded') | safe }}
+                                <ul class="error-list">
+                                    {% for error in form.email.errors %}
+                                    <li class="error-list__message">{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
 
-                <tr>
-                    <td>phone number</td>
-                    <td id="telephone_number_label">
-                    {% if search_result.address %} {{ search_result.address }} {% else %} no information {% endif %}
-                    </td>
-                </tr>
+                    <tr>
+                        <td class="table__text">{{ form.telephone_number.label() }}</td>
+                        <td>
+                                <div>
+                               {{ form.telephone_number(placeholder=search_result.telephone_number if search_result.telephone_number else 'No data', class='table__input rounded') | safe }}
+                                <ul class="error-list">
+                                    {% for error in form.telephone_number.errors %}
+                                    <li class="error-list__message">{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
 
-                <tr>
-                    <td>address</td>
-                    <td id="address_label">
-                    {% if search_result.address %} {{ search_result.address }} {% else %} no information {% endif %}
-                    </td>
-                </tr>
+                    <tr>
+                        <td class="table__text">{{ form.address.label() }}</td>
+                        <td>
+                            <div>
+                               {{ form.address(placeholder=search_result.address if search_result.address else 'No data', class='table__input rounded') | safe }}
+                                <ul class="error-list">
+                                    {% for error in form.address.errors %}
+                                    <li class="error-list__message">{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
 
-                <tr>
-                    <td>website</td>
-                    <td id="website_label">
-                    {% if search_result.website %}
-                        <a href="{{ search_result.website }}" class="website">Visit Website</a>
-                    {% else %}
-                        No information
-                    {% endif %}
+                    <tr>
+                        <td class="table__text">{{ form.website.label() }}</td>
+                        <td>
+                            <div>
+                               {{ form.website(placeholder=search_result.website if search_result.website else 'No data', class='table__input rounded') | safe }}
+                                <ul class="error-list">
+                                    {% for error in form.website.errors %}
+                                    <li class="error-list__message">{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                    <td class="table__save">
+                        {{ form.save(class="save-btn") }}
                     </td>
                 </tr>
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </form>
     {% block pop_up_message %}
             {% with messages = get_flashed_messages(with_categories=True) %}
                     {% if messages %}
@@ -157,24 +203,5 @@
         {% endblock pop_up_message %}
 {% endblock content_part %}
 {% block javascript %}
-    <script type="text/javascript">
-        const form_data = {
-            "company": '{{ form.company(placeholder=search_result.company_name.upper(), class="table__input rounded", id="default_input") | safe }}',
-            "voen": '{{ form.voen(placeholder= search_result.voen, class="table__input rounded") | safe}}',
-            "bank_name": '{{ form.bank_name(placeholder= search_result.bank_name, class="table__input rounded") | safe }}',
-            "m_h": '{{ form.m_h(placeholder= search_result.m_h, class="table__input rounded") | safe }}',
-            "h_h": '{{ form.h_h(placeholder= search_result.h_h, class="table__input rounded") | safe }}',
-            "swift": '{{ form.swift(placeholder= search_result.swift, class="table__input rounded") | safe }}',
-            "email": '{{ form.email(placeholder= search_result.email, class="table__input rounded") | safe }}',
-            "telephone_number": '{{ form.telephone_number(placeholder= search_result.telephone_number, class="table__input rounded") | safe }}',
-            "address": '{{ form.address(placeholder= search_result.address, class="table__input rounded") | safe }}',
-            "website": '{{ form.website(placeholder= search_result.website, class="table__input rounded") | safe }}',
-            "save_button": '{{ form.save(class="save_button table__save__button") | safe }}'
-        }
-         window.url = '{{ url_for('all_companies.update_company', company_id=search_result.id) | safe}}';
-        window.token = '{{ form.csrf_token(id="csrf_token_label") | safe }}';
-    </script>
-    <script src="{{ url_for('static', filename='js/edit_form.js')  }}"></script>
-    <script src="{{ url_for('static', filename='js/form_focus.js') }}"></script>
-    <script src={{ url_for('static', filename='js/add_contract.js') }}></script>
+     <script src="{{ url_for('static', filename='js/form_focus.js') }}"></script>
 {% endblock javascript %}
