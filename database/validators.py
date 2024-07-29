@@ -90,7 +90,10 @@ class SearchEngine(ValidatorWrapper):
 
     def search_company_with_contract(self) -> Contract | None:
         result = self.db_session.query(Contract).join(Companies).filter(Contract.id == self.search).first()
-        return result
+        if result:
+            return result
+        else:
+            raise NoResultFound
 
     def asc_or_desc(self, query, sort_direction: str, mapping: tuple):
         """
@@ -167,22 +170,6 @@ class SearchEngine(ValidatorWrapper):
             "adv_payer": bool(contract.adv_payer)
         } for contract in contracts]
         return contract_list, total_count
-
-    def get_contract_by_id_api(self) -> list[dict[str, float | bool | Any]]:
-        """
-        :return: list[dict[str, float | bool | Any]]
-        Find a contract by id for pushing it to the table
-        """
-        result = self.db_session.query(Contract).join(Companies).filter(Contract.id == self.search).first()
-        contract = [{
-            "company_name": result.company.company_name,
-            "voen": result.company.voen,
-            "contract_number": result.contract_number,
-            "date": result.date,
-            "amount": float(result.amount),
-            "adv_payer": bool(result.adv_payer)
-        }]
-        return contract
 
 
 class EditContract(ValidatorWrapper):
@@ -394,6 +381,10 @@ class CompanySearchEngine(SearchEngine):
     def __init__(self, db_session: Session, search: str = None):
         super().__init__(db_session, search)
 
+    def search_company(self) -> Companies | None:
+        result = self.db_session.query(Companies).filter_by(id=self.search).first()
+        return result
+
     def get_all_results_api(self, per_page: int, offset: int, sort_dir: str, mapping: tuple) -> (
             tuple)[list[dict[str, InstrumentedAttribute | Any]], int]:
         """
@@ -404,23 +395,23 @@ class CompanySearchEngine(SearchEngine):
          :return:
          This method is for put all results of the contract in the table
         """
-        query = self.db_session.query(Companies)
-
-        query = self.asc_or_desc(query, sort_dir, mapping)
+        query = (self.db_session.query(Companies, func.count(Contract.id).label("contract_count"))
+                 .outerjoin(Contract, Companies.contracts).group_by(Companies.id))
+        if mapping[0] == "related_contracts":
+            match sort_dir:
+                case "asc":
+                    query = query.order_by(asc("contract_count"))
+                case "desc":
+                    query = query.order_by(desc("contract_count"))
+        else:
+            query = self.asc_or_desc(query, sort_dir, mapping)
         total_count = query.count()
         companies = query.offset(offset).limit(per_page).all()
         company_list = [{
-            "id": company.id,
-            "company_name": company.company_name,
-            "voen": company.voen,
-            "email": company.email,
-            "telephone_number": company.telephone_number,
-            "address": company.address,
-            "website": company.website,
-            "bank_name": company.bank_name,
-            "m_h": company.m_h,
-            "h_h": company.h_h,
-            "swift": company.swift
+            "id": company[0].id,
+            "company_name": company[0].company_name,
+            "voen": company[0].voen,
+            "related_contracts": company[1]
         } for company in companies]
         return company_list, total_count
 
@@ -435,34 +426,27 @@ class CompanySearchEngine(SearchEngine):
         """
 
         query = (self.db_session
-        .query(Companies)
+        .query(Companies, func.count(Contract.id).label("contract_count"))
+        .outerjoin(Contract, Companies.contracts).group_by(Companies.id)
         .filter(or_(
             Companies.company_name.ilike(f"%{self.search}%"),
             Companies.voen.ilike(f"%{self.search}%"),
-            Companies.swift.ilike(f"%{self.search}%"),
-            Companies.bank_name.ilike(f"%{self.search}%"),
-            Companies.m_h.ilike(f"%{self.search}%"),
-            Companies.h_h.ilike(f"%{self.search}%"),
-            Companies.telephone_number.ilike(f"%{self.search}%"),
-            Companies.address.ilike(f"%{self.search}%"),
-            Companies.website.ilike(f"%{self.search}%")
         )))
-
-        query = self.asc_or_desc(query, sort_dir, mapping)
+        if mapping[0] == "related_contracts":
+            match sort_dir:
+                case "asc":
+                    query = query.order_by(asc("contract_count"))
+                case "desc":
+                    query = query.order_by(desc("contract_count"))
+        else:
+            query = self.asc_or_desc(query, sort_dir, mapping)
         total_count = query.count()
         companies = query.offset(offset).limit(per_page).all()
         company_list = [{
-            "id": company.id,
-            "company_name": company.company_name,
-            "voen": company.voen,
-            "email": company.email,
-            "telephone_number": company.telephone_number,
-            "address": company.address,
-            "website": company.website,
-            "bank_name": company.bank_name,
-            "m_h": company.m_h,
-            "h_h": company.h_h,
-            "swift": company.swift
+            "id": company[0].id,
+            "company_name": company[0].company_name,
+            "voen": company[0].voen,
+            "related_contracts": company[1]
         } for company in companies]
         return company_list, total_count
 
