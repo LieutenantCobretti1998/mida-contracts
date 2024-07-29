@@ -29,3 +29,5 @@ class Contract(Base):
     company = relationship("Companies", back_populates="contracts")
     adv_payer = Column("adv_payer", BOOLEAN, nullable=False, default=False)
     pdf_file_path = Column(VARCHAR, nullable=False)
+
+

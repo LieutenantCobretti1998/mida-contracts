@@ -2,11 +2,12 @@ from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from wtforms import StringField, SubmitField, DateField, DecimalField
 from wtforms.fields.choices import RadioField
-from wtforms.validators import NumberRange, Length, Optional, DataRequired
+from wtforms.validators import NumberRange, Length, Optional
+from forms.create_contract_form import CreateContractForm
 from forms.custom_validators import *
 
 
-class EditContractForm(FlaskForm):
+class EditContractForm(CreateContractForm):
     company = StringField(
         validators=[Length(min=1, max=16, message=symbol_error_message),
                     Optional(strip_whitespace=False),
@@ -30,4 +31,4 @@ class EditContractForm(FlaskForm):
     pdf_file = FileField(validators=[Optional(),
                                      FileAllowed(["pdf"], pdf_files_only)]
                          )
-    save = SubmitField('Save Changes')
+    save = SubmitField("Save")

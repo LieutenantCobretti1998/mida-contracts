@@ -2,7 +2,6 @@ import flask_wtf
 from flask import Blueprint, render_template, request, session, url_for, jsonify, flash
 from forms.edit_company_form import EditCompanyForm
 from forms.filters import *
-from forms.company_search import CompanySearchForm
 from database.db_init import db
 from database.validators import CompanySearchEngine, EditCompany, SearchEngine, CompanyManager
 
@@ -22,7 +21,8 @@ def get_company(company_id):
     search_result = search_engine.search_company()
     return render_template("check_company.html",
                            search_result=search_result,
-                           form=form
+                           form=form,
+                           company_id=company_id
                            )
 
 
@@ -60,7 +60,6 @@ def update_company(company_id):
 
 @check_companies_bp.route('/delete_company/<int:company_id>', methods=['DELETE'])
 def delete_company(company_id):
-    print(company_id)
     company_manager = CompanyManager(db.session)
     company_on_delete = company_manager.delete_company(company_id)
     if company_on_delete:
