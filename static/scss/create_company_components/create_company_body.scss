@@ -5,12 +5,11 @@
   background-color: $color-main-background;
 }
 #caption {
-  margin-bottom: 5rem;
-  font-size: $font-size-big;
+   margin-bottom: 5rem;
+   font-size: $font-size-big;
 }
 .table {
-  border-radius: 8px;
-  border-spacing: 0 50px;
+  border-collapse: collapse;
   width: 70%;
   background-color: $color-white;
   table-layout: fixed;
@@ -32,14 +31,11 @@
     font-size: $font-size-medium;
 
   }
-  tbody > tr:not(:last-child) {
+  tbody > tr {
     & > td {
       border: 1px solid #9d9d9e;
-      border-collapse: collapse;
+      padding: 2rem;
 
-      & > label {
-        padding-left: 10px;
-      }
     }
   }
 }
@@ -56,7 +52,6 @@
 .error-list {
   list-style: none;
   color: red;
-  position: absolute;
   font-size: 1.6rem;
   text-transform: none;
 }
@@ -136,4 +131,9 @@
       margin-bottom: 1.2rem;
     }
   }
+}
+
+#td-save {
+  text-align: end;
+   padding: 1.5rem;
 }

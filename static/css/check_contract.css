@@ -210,7 +210,7 @@ body {
 
 .table {
   border-radius: 8px;
-  border-spacing: 0 50px;
+  border-collapse: collapse;
   width: 70%;
   background-color: white;
   table-layout: fixed;
@@ -220,39 +220,12 @@ body {
   padding: 2vw;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.26);
 }
-.table__input {
-  border: 0;
-  box-sizing: border-box;
-  padding-left: 10px;
-  width: 100%;
-  transition: scale 0.2s ease-in-out;
-}
 .table tbody > tr {
   font-size: 1.9rem;
 }
 .table tbody > tr:not(:last-child) > td {
   border: 1px solid #9d9d9e;
-  border-collapse: collapse;
-}
-.table tbody > tr:not(:last-child) > td > label {
-  padding-left: 10px;
-}
-
-.rounded {
-  height: 3.5rem;
-  border-radius: 0.35rem;
-}
-
-.focused {
-  scale: 1.1;
-}
-
-.error-list {
-  list-style: none;
-  color: red;
-  position: absolute;
-  font-size: 1.6rem;
-  text-transform: none;
+  padding: 2rem;
 }
 
 .error {
@@ -284,7 +257,8 @@ body {
   font-weight: 700;
 }
 
-.save-btn {
+.pdf-btn,
+.edit-btn {
   width: 80px;
   height: 40px;
   background-color: green;
@@ -292,38 +266,23 @@ body {
   border-radius: 1rem;
   transition: background-color 0.2s ease-in-out;
 }
-.save-btn:hover {
+.pdf-btn:hover,
+.edit-btn:hover {
   cursor: pointer;
-  background-color: darkgreen !important;
+  background-color: darkgreen;
 }
 
-.upload-container {
-  padding: 10px;
-  display: flex;
-  align-items: center;
+.pdf-btn {
+  background-color: #1649f3;
+}
+.pdf-btn:hover {
+  cursor: pointer;
+  background-color: #032287;
 }
 
-.progress-bar {
-  width: 200px; /* Fixed width or max width for the outer progress bar */
-  height: 20px;
-  background-color: lightgrey;
-  margin-left: 10px; /* Space between the file input and progress bar */
-}
-
-#progress {
-  height: 100%;
-  background-color: green;
-  width: 0; /* Start with no fill */
-}
-
-#is_adv_payer {
-  padding: 10px;
-}
-#is_adv_payer > li {
-  list-style: none;
-}
-#is_adv_payer > li:not(:last-child) {
-  margin-bottom: 1.2rem;
+#edit {
+  text-align: end;
+  padding: 1.5rem;
 }
 
 /*# sourceMappingURL=check_contract.css.map */

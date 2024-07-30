@@ -10,7 +10,7 @@
 }
 .table {
   border-radius: 8px;
-  border-spacing: 0 50px;
+  border-collapse: collapse;
   width: 70%;
   background-color: $color-white;
   table-layout: fixed;
@@ -20,14 +20,6 @@
   padding: 2vw;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .1), 0 1px 2px 0 rgba(0, 0, 0, .26);
 
-  &__input {
-    border: 0;
-    box-sizing: border-box;
-    padding-left: 10px;
-    width: 100%;
-    transition: scale .2s ease-in-out;
-  }
-
   tbody > tr {
     font-size: $font-size-medium;
 
@@ -35,30 +27,9 @@
   tbody > tr:not(:last-child) {
     & > td {
       border: 1px solid #9d9d9e;
-      border-collapse: collapse;
-
-      & > label {
-        padding-left: 10px;
-      }
+      padding: 2rem;
     }
   }
-}
-
-.rounded {
-  height: 3.5rem;
-  border-radius: .35rem;
-}
-
-.focused {
-  scale: (1.1);
-}
-
-.error-list {
-  list-style: none;
-  color: red;
-  position: absolute;
-  font-size: 1.6rem;
-  text-transform: none;
 }
 
 .error {
@@ -94,7 +65,8 @@
   }
 }
 
-.save-btn {
+.pdf-btn,
+.edit-btn{
   width: 80px;
   height: 40px;
   background-color: $color-green;
@@ -104,36 +76,20 @@
 
   &:hover {
     cursor: pointer;
-    background-color: $color-dark-green !important;
+    background-color: $color-dark-green;
   }
 }
 
-.upload-container {
-  padding: 10px;
-  display: flex;
-  align-items: center;
-}
+.pdf-btn {
+  background-color: $color-blue;
 
-.progress-bar {
-    width: 200px; /* Fixed width or max width for the outer progress bar */
-    height: 20px;
-    background-color: $color-grey;
-    margin-left: 10px; /* Space between the file input and progress bar */
-}
-
-#progress {
-    height: 100%;
-    background-color: green;
-    width: 0; /* Start with no fill */
-}
-
-#is_adv_payer {
-  padding: 10px;
-  & > li {
-    list-style: none;
-
-    &:not(:last-child) {
-      margin-bottom: 1.2rem;
-    }
+  &:hover {
+    cursor: pointer;
+    background-color: $color-dark-blue;
   }
+}
+
+#edit {
+  text-align: end;
+  padding: 1.5rem;
 }
