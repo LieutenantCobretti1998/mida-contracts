@@ -67,8 +67,8 @@
         let delete_url_base = "{{ url_for('all_contracts.delete_contract', contract_id = 0) }}"
         delete_url_base = delete_url_base.replace(/\/0$/, "/");
 
-        let edit_url_base = "{{ url_for('all_contracts.get_contract', contract_id = 0) }}"
-        edit_url_base = edit_url_base.replace(/\/0$/, "/")
+        let view_url_base = "{{ url_for('all_contracts.get_contract', contract_id = 0) }}"
+        view_url_base = view_url_base.replace(/\/0$/, "/")
     </script>
     <script type="module" src="{{ url_for('static', filename='js/delete.js') }}"></script>
     <script type="module" src="{{ url_for('static', filename="js/redirection.js") }}"></script>
@@ -113,8 +113,7 @@
 
                         return gridjs.html(
                                `<span style="display: flex; justify-content: space-between">` +
-                                    `<button type="button" class="edit-btn" data-id=${contract_id}>Edit</button>` +
-                                    `<button type="button" class="pdf-btn" data-id=${contract_id}>PDF</button>` +
+                                    `<button type="button" class="view-btn" data-id=${contract_id}>View</button>` +
                                     `<button data-csrf-token=${csrf_token} type="button" class="delete-btn" data-id=${contract_id}>Delete</button>`+
                                `</span>`
                            );

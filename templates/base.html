@@ -53,6 +53,32 @@
                                 </li>
                             </ul>
                     </li>
+                     <li class="main_container__nav__parameters__main_menu">
+                        <div class="main_container__nav__parameters__main_menu__container">
+                            <div class="main_container__nav__parameters__main_menu__svg svg">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                </svg>
+                            </div>
+                            <button type="button" class="toggle-menu-button">
+                                <span class="toggle-menu-button__text">Acts</span>
+                            </button>
+                            <div class="submenu-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                                    <path fill-rule="evenodd" d="M12 2.25a.75.75 0 0 1 .75.75v16.19l6.22-6.22a.75.75 0 1 1 1.06 1.06l-7.5 7.5a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 1 1 1.06-1.06l6.22 6.22V3a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        </div>
+                            <ul class="hidden submenu-contracts__sub-options submenu">
+                                <li class="{% block class_create_act_li %}{% endblock class_create_act_li %}">
+                                    <a class="submenu-contracts__sub-options {% block class_create_act %}{% endblock class_create_act %}" href="{{ url_for('create_contract.create_contract') }}">Create Contracts</a>
+                                </li>
+
+                                <li class="{% block class_check_act_li %}{% endblock class_check_act_li %}">
+                                    <a class="submenu-contracts__sub-options {% block class_all_acts %}{% endblock class_all_acts %}" href="{{ url_for('all_contracts.get_all_contracts') }}">All Contracts</a>
+                                </li>
+                            </ul>
+                    </li>
                     <li class="main_container__nav__parameters__main_menu">
                         <div class="main_container__nav__parameters__main_menu__container">
                             <div class="main_container__nav__parameters__main_menu__svg svg">

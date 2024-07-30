@@ -1,34 +1,28 @@
 {% extends 'base.html' %}
-{#{% block head %}#}
-{#     {{ super() }}#}
-{% block title %}Add Contract{% endblock title %}
-{#{% endblock head %}#}
+{% block title %} Contract's overview {% endblock title %}
 {% block style %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edit_contract.css') }}">
 {% endblock style %}
-{% block class_create_contract %}active{% endblock class_create_contract %}
-{% block class_create_contract_li %}remove-pointer{% endblock class_create_contract_li %}
 {% block content_part %}
-    <form action="{{ url_for('create_contract.save_contract') }}" method="post" enctype="multipart/form-data">
+    <form action="{{ url_for('all_contracts.update_contract', contract_id = contract_id) }}" method="post" enctype="multipart/form-data">
         {{ form.csrf_token() }}
-        <table  class="table">
+        <table  class="table" data-edit-mode="true">
             <caption id="caption">
-                <h1>Add a new contract</h1>
+                <h1>Edit Contract</h1>
             </caption>
-            <thead></thead>
-            <tbody class="table__body">
+            <tbody class="main-table-part">
                 <tr>
                     <td class="table__text">
                         {{ form.company.label() }}
                     </td>
                     <td>
                         <div>
-                            {{ form.company(id="default_input", class="table__input rounded", placeholder="COMPANY") }}
+                            {{ form.company(placeholder=search_result.company.company_name, class="table__input rounded", id="default_input") | safe }}
                             <ul class="error-list">
                             {% for error in form.company.errors %}
                                 <li class="error-list__message">{{ error }}</li>
                             {% endfor %}
-                        </ul>
+                            </ul>
                         </div>
                     </td>
                 </tr>
@@ -38,7 +32,7 @@
                     </td>
                     <td>
                         <div>
-                            {{ form.voen(class="table__input rounded", placeholder="VOEN")  }}
+                            {{ form.voen(placeholder= search_result.company.voen, class="table__input rounded") | safe}}
                             <ul class="error-list">
                             {% for error in form.voen.errors %}
                                 <li class="error-list__message">{{ error }}</li>
@@ -54,7 +48,7 @@
                     </td>
 
                     <td>
-                        {{ form.contract_number(class="table__input rounded", placeholder="CONTRACT'S NUMBER") }}
+                        {{ form.contract_number(placeholder=search_result.contract_number, class="table__input rounded") | safe }}
                         <ul class="error-list">
                             {% for error in form.contract_number.errors %}
                                 <li class="error-list__message">{{ error }}</li>
@@ -69,7 +63,7 @@
                     </td>
 
                     <td>
-                        {{ form.date(class="table__input date rounded", value="2016-11-24") }}
+                       {{ form.date(placeholder=search_result.date, class="table__input rounded") | safe }}
                         <ul class="error-list">
                             {% for error in form.date.errors %}
                                 <li class="error-list__message">{{ error }}</li>
@@ -84,7 +78,7 @@
                     </td>
 
                     <td>
-                        {{ form.amount(class="table__input rounded", placeholder="AMOUNT") }}
+                        {{ form.amount(placeholder="%.2f"|format(search_result.amount), class="table__input rounded") | safe }}
                         <ul class="error-list">
                             {% for error in form.amount.errors %}
                                 <li class="error-list__message">{{ error }}</li>
@@ -100,6 +94,11 @@
 
                     <td>
                         {{ form.is_adv_payer }}
+                        <ul class="error-list">
+                            {% for error in form.is_adv_payer.errors %}
+                                <li class="error-list__message">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
                     </td>
                 </tr>
 
@@ -181,8 +180,8 @@
         {% endblock pop_up_message %}
 {% endblock content_part %}
 {% block javascript %}
-   <script src="{{ url_for('static', filename='js/form_focus.js') }}"></script>
-    <script src={{ url_for('static', filename='js/add_contract.js') }}></script>
+    <script src="{{ url_for('static', filename='js/form_focus.js') }}"></script>
     <script type="module" src="{{ url_for('static', filename='js/file_loader.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/edit-listener.js') }}"></script>
+    <script src={{ url_for('static', filename='js/add_contract.js') }}></script>
 {% endblock javascript %}
-
