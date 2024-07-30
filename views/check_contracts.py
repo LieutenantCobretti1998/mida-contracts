@@ -14,13 +14,26 @@ def get_all_contracts():
     return render_template("check_contracts.html", search_mode=False)
 
 
-@check_contracts_bp.route('/contract/<int:contract_id>', methods=['GET'])
+@check_contracts_bp.route('/contract_overview/<int:contract_id>', methods=['GET'])
 def get_contract(contract_id):
+    try:
+        search_engine = SearchEngine(db.session, contract_id)
+        search_result = search_engine.search_company_with_contract()
+        return render_template("check_contract.html",
+                               search_result=search_result,
+                               contract_id=contract_id
+                               )
+    except NoResultFound:
+        abort(404)
+
+
+@check_contracts_bp.route('/contract/<int:contract_id>', methods=['GET'])
+def edit_contract(contract_id):
     try:
         form = EditContractForm()
         search_engine = SearchEngine(db.session, contract_id)
         search_result = search_engine.search_company_with_contract()
-        return render_template("check_contract.html",
+        return render_template("edit_contract.html",
                                search_result=search_result,
                                contract_id=contract_id,
                                form=form)
@@ -41,15 +54,15 @@ def update_contract(contract_id):
         if file:
             filename = secure_filename(make_unique(f"{original_data.company.voen}_{file.filename}"))
         data_dict = dict(
+            company_name=filter_string_fields(
+                form.company.data) if form.company.data else original_data.company.company_name,
+            voen=filter_voen(form.voen.data) if form.voen.data else original_data.company.voen,
             contract_number=filter_contract_number(
                 form.contract_number.data) if form.contract_number.data else original_data.contract_number,
             date=form.date.data if form.date.data else original_data.date,
             amount=float(form.amount.data) if form.amount.data else original_data.amount,
             adv_payer=True if form.is_adv_payer.data == "Yes" else False,
             pdf_file_path=filename if form.pdf_file.data else None,
-            company_name=filter_string_fields(
-                form.company.data) if form.company.data else original_data.company.company_name,
-            voen=filter_voen(form.voen.data) if form.voen.data else original_data.company.voen,
 
         )
         success, message = edit_engine.update_data(data_dict, form.pdf_file.data)
@@ -60,10 +73,10 @@ def update_contract(contract_id):
         else:
             db.session.rollback()
             flash(message, "warning")
-            return redirect(url_for('all_contracts.get_contract', contract_id=contract_id))
+            return redirect(url_for('all_contracts.edit_contract', contract_id=contract_id))
     else:
         flash("Validation Error. Please check all fields", "error")
-        return render_template('check_contract.html', form=form, contract_id=contract_id, search_result=search_result)
+        return render_template('edit_contract.html', form=form, contract_id=contract_id, search_result=search_result)
 
 
 @check_contracts_bp.route('/preview_pdf/<int:contract_id>', methods=['GET'])
