@@ -15,7 +15,7 @@ function attachEventHandlers() {
                 case event.target.classList.contains("delete-btn"):
                     deleteFullUrl(contract_id, csrf_token);
                     break;
-                case event.target.classList.contains("edit-btn"):
+                case event.target.classList.contains("view-btn"):
                     editContract(contract_id);
                     break;
                 case event.target.classList.contains("related-btn"):
@@ -51,7 +51,7 @@ function deleteFullUrl(contract_id, csrf_token) {
  * @param {number} contract_id
  */
 function editContract(contract_id) {
-   window.open(`${edit_url_base}${contract_id}`);
+   window.open(`${view_url_base}${contract_id}`);
 }
 
 
