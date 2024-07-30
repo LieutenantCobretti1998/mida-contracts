@@ -178,28 +178,28 @@ class EditContract(ValidatorWrapper):
         self.id = contract_id
 
     # Helpers methods for update logic
-    def is_company_exists(self, company_name: str) -> int | None:
+    def is_company_exists(self, company_name: str) -> int | bool:
         """
             Checks if the company exists in the database. If it exists then update the contract foreign key to the other
             company and voen else flash error
         """
         result = self.db_session.query(Companies).filter_by(company_name=company_name).first()
-        return result.id if result else None
+        return result.id if result else False
 
-    def is_voen_exists(self, voen_result: str) -> int | None:
+    def is_voen_exists(self, voen_result: str) -> int | bool:
         """
                Checks if the voen exists in the database. If it exists then update the contract foreign key to the other
                company and voen else flash error
                """
         result = self.db_session.query(Companies).filter_by(voen=voen_result).first()
-        return result.id if result else None
+        return result.id if result else False
 
-    def voen_and_company_matched(self, company_name: str, voen_result: str) -> int | None:
+    def voen_and_company_matched(self, company_name: str, voen_result: str) -> int | bool:
         """
 
         """
         result = self.db_session.query(Companies).filter_by(company_name=company_name, voen=voen_result).first()
-        return result.id if result else None
+        return result.id if result else False
 
     def change_pdf_file_path(self, company_id: int, old_file_path: str) -> str:
         """
@@ -239,6 +239,7 @@ class EditContract(ValidatorWrapper):
             The main update logic after contract's edit. it will check all the possibilities of updating or refuse the
             contract to update based on different situations
         """
+        update_status = {'company_and_voen_updated': False}
         contract_to_update = self.db_session.query(Contract).join(Contract.company).filter(
             Contract.id == int(self.id)).first()
         if not contract_to_update:
@@ -247,7 +248,6 @@ class EditContract(ValidatorWrapper):
         try:
             company_name = changes.get("company_name")
             voen = changes.get("voen")
-            update_status = {'company_and_voen_updated': False}
             if voen != contract_to_update.company.voen and company_name != contract_to_update.company.company_name:
                 existed_company_id = self.voen_and_company_matched(company_name, voen)
                 if existed_company_id:
@@ -257,16 +257,7 @@ class EditContract(ValidatorWrapper):
                     return False, ("The provided company name and VOEN do not match to any existing company. "
                                    "Please check your information or create a new company record.")
             for key, value in changes.items():
-                if hasattr(contract_to_update, key):
-                    current_value = getattr(contract_to_update, key)
-                    if key == "pdf_file_path" and changes["pdf_file_path"] is not None:
-                        try:
-                            new_pdf_path = self.change_pdf_itself(current_value, value)
-                            setattr(contract_to_update, key, new_pdf_path)
-                            pdf_file.save(new_pdf_path)
-                        except FileNotFoundError:
-                            return False, "There is the file path problem. It was corrupted or not existed."
-                elif hasattr(contract_to_update.company, key) and not update_status["company_and_voen_updated"]:
+                if hasattr(contract_to_update.company, key) and not update_status["company_and_voen_updated"]:
                     current_value = getattr(contract_to_update.company, key)
                     if current_value != value:
                         match key:
@@ -303,9 +294,22 @@ class EditContract(ValidatorWrapper):
                                     return False, (f"There is no such voen related to any company in the database: "
                                                    f"{value}.Please go to the"
                                                    f"create contract form page")
+                elif hasattr(contract_to_update, key):
+                    current_value = getattr(contract_to_update, key)
+                    if key == "pdf_file_path":
+                        if value is not None:
+                            try:
+                                new_pdf_path = self.change_pdf_itself(current_value, value)
+                                setattr(contract_to_update, key, new_pdf_path)
+                                pdf_file.save(new_pdf_path)
+                            except FileNotFoundError:
+                                return False, "There is the file path problem. It was corrupted or not existed."
+                    else:
+                        setattr(contract_to_update, key, value)
+
             self.db_session.commit()
             return True, f"Contract updated successfully"
-        except sqlalchemy.exc.DBAPIError:
+        except sqlalchemy.exc.DBAPIError as e:
             self.db_session.rollback()
             return False, f"An error occurred in the server. Please try again later"
 
