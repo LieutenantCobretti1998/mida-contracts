@@ -16,7 +16,7 @@ function attachEventHandlers() {
                     deleteFullUrl(contract_id, csrf_token);
                     break;
                 case event.target.classList.contains("view-btn"):
-                    editContract(contract_id);
+                    viewContractOrCompany(contract_id);
                     break;
                 case event.target.classList.contains("related-btn"):
                     openRelatedContracts(data_voen);
@@ -38,20 +38,20 @@ function viewPdf(contract_id) {
 
 /**
  *
- * @param {number} contract_id
+ * @param {number} id
  * @param {string} csrf_token
  */
-function deleteFullUrl(contract_id, csrf_token) {
-    const url_for_deletion = `${delete_url_base}${contract_id}`
+function deleteFullUrl(id, csrf_token) {
+    const url_for_deletion = `${delete_url_base}${id}`
     openPopUpMenu(url_for_deletion, csrf_token);
 }
 
 /**
  *
- * @param {number} contract_id
+ * @param {number} id
  */
-function editContract(contract_id) {
-   window.open(`${view_url_base}${contract_id}`);
+function viewContractOrCompany(id) {
+   window.open(`${view_url_base}${id}`);
 }
 
 
