@@ -88,6 +88,10 @@ class SearchEngine(ValidatorWrapper):
         super().__init__(db_session)
         self.search = search
 
+    def search_company(self) -> Companies | None:
+        result = self.db_session.query(Companies).filter_by(id=self.search).first()
+        return result
+
     def search_company_with_contract(self) -> Contract | None:
         result = self.db_session.query(Contract).join(Companies).filter(Contract.id == self.search).first()
         if result:
@@ -321,15 +325,29 @@ class CompanyManager(ContractManager):
     @staticmethod
     def delete_pdf_folder(company_name: str) -> None:
         base_path = f"./uploads/contracts/{company_name}"
-        print(base_path)
         if os.path.exists(base_path):
-            print("exist")
             try:
                 shutil.rmtree(base_path)
             except OSError:
                 raise FileNotFoundError()
 
+    @staticmethod
+    def create_pdf_folder(company_name: str) -> None:
+        """
+        :param company_name:
+        :return:
+        """
+        base_path = f"./uploads/contracts/{company_name}"
+        if os.path.exists(base_path):
+            return
+        os.makedirs(base_path)
+
     def delete_company(self, company_id: int) -> bool:
+        """
+
+        :param company_id:
+        :return: bool
+        """
         company = self.db_session.query(Companies).filter_by(id=company_id).first()
         if company:
             try:
@@ -343,6 +361,10 @@ class CompanyManager(ContractManager):
         return False
 
     def check_swift(self, swift_code: str) -> bool | ValueError:
+        """
+        :param swift_code:
+        :return: bool or ValueError
+        """
         if not swift_code:
             return False
         swift_code_query = self.db_session.query(Companies).filter_by(swift=swift_code).first()
@@ -353,6 +375,15 @@ class CompanyManager(ContractManager):
         return False
 
     def get_or_create_company(self, company_name: str, voen: str, company_data=None, *args, **kwargs) -> None:
+        """
+
+        :param company_name:
+        :param voen:
+        :param company_data:
+        :param args:
+        :param kwargs:
+        :return:
+        """
         try:
             company = self.db_session.query(Companies).filter_by(company_name=company_name).one()
             if company.voen != voen:
@@ -379,15 +410,19 @@ class CompanyManager(ContractManager):
                     website=company_data['website']
                 )
                 self.db_session.add(company)
+                self.create_pdf_folder(company_name)
 
 
 class CompanySearchEngine(SearchEngine):
     def __init__(self, db_session: Session, search: str = None):
         super().__init__(db_session, search)
 
-    def search_company(self) -> Companies | None:
-        result = self.db_session.query(Companies).filter_by(id=self.search).first()
-        return result
+    def search_company(self) -> Type[Companies]:
+        result = self.db_session.query(Companies).filter_by(id=self.search).one()
+        try:
+            return result
+        except NoResultFound:
+            raise NoResultFound
 
     def get_all_results_api(self, per_page: int, offset: int, sort_dir: str, mapping: tuple) -> (
             tuple)[list[dict[str, InstrumentedAttribute | Any]], int]:
@@ -466,16 +501,13 @@ class EditCompany(EditContract):
             return result.company_name
         return None
 
-    def update_folder(self, new_company_name: str, old_company_name: str) -> bool:
+    @staticmethod
+    def update_folder(new_company_name: str, old_company_name: str) -> bool:
         base_dir = "./uploads/contracts/"
         subfolders = os.listdir('./uploads/contracts/')
-        print(subfolders)
-        print(old_company_name)
         for folder in subfolders:
-            print(folder)
             if folder == old_company_name:
                 os.rename(f'{base_dir}{folder}', f'{base_dir}{new_company_name}')
-                print(f'Renamed {base_dir}{folder} to {base_dir}{new_company_name}')
                 return True
         return False
         # if company:
@@ -515,7 +547,7 @@ class EditCompany(EditContract):
                     setattr(company_to_update, key, value)
                 else:
                     continue
-            except sqlalchemy.exc.DBAPIError as e:
+            except sqlalchemy.exc.DBAPIError:
                 self.db_session.rollback()
                 return False, "An error occurred with the database. Please try again later"
         self.db_session.commit()

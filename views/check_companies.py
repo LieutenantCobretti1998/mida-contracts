@@ -1,5 +1,7 @@
 import flask_wtf
-from flask import Blueprint, render_template, request, session, url_for, jsonify, flash
+from flask import Blueprint, render_template, request, session, url_for, jsonify, flash, abort, redirect
+from sqlalchemy.exc import NoResultFound
+
 from forms.edit_company_form import EditCompanyForm
 from forms.filters import *
 from database.db_init import db
@@ -14,16 +16,32 @@ def get_all_companies():
     return render_template("check_companies.html")
 
 
-@check_companies_bp.route('/company/<int:company_id>', methods=['GET', 'POST'])
+@check_companies_bp.route('/company_overview/<int:company_id>', methods=['GET', 'POST'])
 def get_company(company_id):
+    try:
+        search_engine = CompanySearchEngine(db.session, company_id)
+        search_result = search_engine.search_company()
+        return render_template("check_company.html",
+                               search_result=search_result,
+                               company_id=company_id
+                               )
+    except NoResultFound:
+        abort(404)
+
+
+@check_companies_bp.route('/company/<int:company_id>', methods=['GET', 'POST'])
+def edit_company(company_id):
     form = EditCompanyForm()
-    search_engine = CompanySearchEngine(db.session, company_id)
-    search_result = search_engine.search_company()
-    return render_template("check_company.html",
-                           search_result=search_result,
-                           form=form,
-                           company_id=company_id
-                           )
+    try:
+        search_engine = CompanySearchEngine(db.session, company_id)
+        search_result = search_engine.search_company()
+        return render_template("edit_company.html",
+                               search_result=search_result,
+                               form=form,
+                               company_id=company_id
+                               )
+    except NoResultFound:
+        abort(404)
 
 
 @check_companies_bp.route('/update_company/<int:company_id>', methods=['POST'])
@@ -48,11 +66,11 @@ def update_company(company_id):
         success, message = edit_engine.update_data(data_dict)
         if success:
             flash(message, "success")
-            return jsonify(redirect_url=url_for('all_companies.get_company', company_id=company_id))
+            return redirect(url_for('all_companies.get_company', company_id=company_id))
         else:
             db.session.rollback()
             flash(message, "warning")
-            return jsonify(redirect_url=url_for('all_companies.get_company', company_id=company_id))
+            return redirect(url_for('all_companies.get_company', company_id=company_id))
     else:
         errors = {field.name: field.errors for field in form}
         return jsonify(errors=errors)
