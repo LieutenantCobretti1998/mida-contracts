@@ -1,17 +1,14 @@
 #results {
-  margin: 3vw 2vw 2vw 14vw ;
+  margin: 3vw 2vw 2vw 15vw ;
 }
 
 .main_container {
   background-color: $color-main-background;
 }
 
-.gridjs-table {
-  width: auto;
-}
-
-.focused {
-  scale: (1.1);
+.gridjs-wrapper,
+.gridjs-footer {
+  border-radius: 0 !important;
 }
 
 .error {
@@ -87,22 +84,13 @@
 .yes,
 .no {
   font-size: $font-size-medium;
-  width: 7em;
-  border-radius: 1.2rem;
+  width: 80px;
+  height: 40px;
+  border-radius: 1rem;
   background-color: $color-table-background;
   cursor: pointer;
   border-color: rgba(0, 0, 0, 0.3);
-  transition: background-color .5s ease-in-out, transform .3s ease-in-out, box-shadow .3s ease-in-out;
-  box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.2);
-
-  &:active {
-    transform: scale(0.95);
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
-  }
-
-  &:hover {
-      background-color: darken($color-table-background, 10%);
-  }
+  transition: background-color .2s ease-in-out;
 }
 
 .yes {
@@ -136,11 +124,10 @@
   }
 }
 
-.edit-btn,
-.related-btn,
+.view-btn,
 .delete-btn {
-  width: 60px;
-  height: 42px;
+  width: 80px;
+  height: 40px;
   background-color: $color-button-check;
   color: $color-white;
   border-radius: 1rem;
@@ -158,14 +145,5 @@
   &:hover {
     cursor: pointer;
     background-color: $color-dark-red;
-  }
-}
-
-.related-btn {
-  background-color: $color-blue;
-
-  &:hover {
-    cursor: pointer;
-    background-color: $color-dark-blue;
   }
 }

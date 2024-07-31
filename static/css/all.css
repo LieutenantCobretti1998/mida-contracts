@@ -204,17 +204,9 @@ body {
   background-color: #EEEDEB;
 }
 
-.gridjs-table {
-  width: auto;
-}
-
 .gridjs-wrapper,
 .gridjs-footer {
   border-radius: 0 !important;
-}
-
-.focused {
-  scale: 1.1;
 }
 
 .error {
@@ -288,7 +280,7 @@ body {
   font-size: 1.9rem;
   width: 80px;
   height: 40px;
-  border-radius: 1.2rem;
+  border-radius: 1rem;
   background-color: #FEFAF6;
   cursor: pointer;
   border-color: rgba(0, 0, 0, 0.3);

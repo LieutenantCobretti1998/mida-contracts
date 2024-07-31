@@ -197,19 +197,16 @@ body {
   }
 }
 #results {
-  margin: 3vw 2vw 2vw 14vw;
+  margin: 3vw 2vw 2vw 15vw;
 }
 
 .main_container {
   background-color: #EEEDEB;
 }
 
-.gridjs-table {
-  width: auto;
-}
-
-.focused {
-  scale: 1.1;
+.gridjs-wrapper,
+.gridjs-footer {
+  border-radius: 0 !important;
 }
 
 .error {
@@ -281,22 +278,13 @@ body {
 .yes,
 .no {
   font-size: 1.9rem;
-  width: 7em;
-  border-radius: 1.2rem;
+  width: 80px;
+  height: 40px;
+  border-radius: 1rem;
   background-color: #FEFAF6;
   cursor: pointer;
   border-color: rgba(0, 0, 0, 0.3);
-  transition: background-color 0.5s ease-in-out, transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-  box-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.2);
-}
-.yes:active,
-.no:active {
-  transform: scale(0.95);
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
-}
-.yes:hover,
-.no:hover {
-  background-color: #f9e1c8;
+  transition: background-color 0.2s ease-in-out;
 }
 
 .yes {
@@ -323,18 +311,16 @@ body {
   stroke: red;
 }
 
-.edit-btn,
-.related-btn,
+.view-btn,
 .delete-btn {
-  width: 60px;
-  height: 42px;
+  width: 80px;
+  height: 40px;
   background-color: #0f6b6b;
   color: white;
   border-radius: 1rem;
   transition: background-color 0.2s ease-in-out;
 }
-.edit-btn:hover,
-.related-btn:hover,
+.view-btn:hover,
 .delete-btn:hover {
   cursor: pointer;
   background-color: #043a3a;
@@ -346,14 +332,6 @@ body {
 .delete-btn:hover {
   cursor: pointer;
   background-color: #9b1515;
-}
-
-.related-btn {
-  background-color: #1649f3;
-}
-.related-btn:hover {
-  cursor: pointer;
-  background-color: #032287;
 }
 
 /*# sourceMappingURL=check_companies.css.map */

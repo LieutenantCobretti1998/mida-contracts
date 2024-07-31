@@ -20,16 +20,41 @@
   padding: 2vw;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .1), 0 1px 2px 0 rgba(0, 0, 0, .26);
 
+  &__input {
+    border: 0;
+    box-sizing: border-box;
+    padding-left: 10px;
+    width: 100%;
+    transition: scale .2s ease-in-out;
+  }
+
   tbody > tr {
     font-size: $font-size-medium;
 
   }
-  tbody > tr:not(:last-child) {
+  tbody > tr {
     & > td {
       border: 1px solid #9d9d9e;
       padding: 2rem;
+
     }
   }
+}
+
+.rounded {
+  height: 3.5rem;
+  border-radius: .35rem;
+}
+
+.focused {
+  scale: (1.1);
+}
+
+.error-list {
+  list-style: none;
+  color: red;
+  font-size: 1.6rem;
+  text-transform: none;
 }
 
 .error {
@@ -65,8 +90,7 @@
   }
 }
 
-.related-btn,
-.edit-btn{
+.save-btn {
   width: 80px;
   height: 40px;
   background-color: $color-green;
@@ -76,20 +100,41 @@
 
   &:hover {
     cursor: pointer;
-    background-color: $color-dark-green;
+    background-color: $color-dark-green !important;
   }
 }
 
-.related-btn {
-  background-color: $color-blue;
+.upload-container {
+  padding: 10px;
+  display: flex;
+  align-items: center;
+}
 
-  &:hover {
-    cursor: pointer;
-    background-color: $color-dark-blue;
+.progress-bar {
+    width: 200px; /* Fixed width or max width for the outer progress bar */
+    height: 20px;
+    background-color: $color-grey;
+    margin-left: 10px; /* Space between the file input and progress bar */
+}
+
+#progress {
+    height: 100%;
+    background-color: green;
+    width: 0; /* Start with no fill */
+}
+
+#is_adv_payer {
+  padding: 10px;
+  & > li {
+    list-style: none;
+
+    &:not(:last-child) {
+      margin-bottom: 1.2rem;
+    }
   }
 }
 
-#edit {
+#td-save {
   text-align: end;
-  padding: 1.5rem;
+   padding: 1.5rem;
 }

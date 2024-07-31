@@ -2,13 +2,8 @@
   margin: 3vw 2vw 2vw 15vw ;
 }
 
-
 .main_container {
   background-color: $color-main-background;
-}
-
-.gridjs-table {
-  width: auto;
 }
 
 .gridjs-wrapper,
@@ -16,9 +11,6 @@
   border-radius: 0 !important;
 }
 
-.focused {
-  scale: (1.1);
-}
 
 .error {
   padding-left: 1rem;
@@ -95,7 +87,7 @@
   font-size: $font-size-medium;
   width: 80px;
   height: 40px;
-  border-radius: 1.2rem;
+  border-radius: 1rem;
   background-color: $color-table-background;
   cursor: pointer;
   border-color: rgba(0, 0, 0, 0.3);
