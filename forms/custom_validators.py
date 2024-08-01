@@ -34,11 +34,11 @@ def is_date_valid(form, field) -> None:
 
 
 # Create a folder for newly added pdf
-def add_contract_pdf(directory: str, company_name: str, pdf_filename: str, voen: str) -> str:
+def add_contract_pdf(directory: str, company_name: str, pdf_filename: str) -> str:
     company_folder = os.path.join(directory, company_name)
     company_folder = os.path.normpath(company_folder)
     if not os.path.exists(company_folder):
         os.mkdir(company_folder)
-    unique_filename = make_unique(f"{voen}_{pdf_filename}")
+    unique_filename = make_unique(f"{pdf_filename}")
     file_path = os.path.join(company_folder, unique_filename)
     return file_path

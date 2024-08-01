@@ -52,7 +52,7 @@ def update_contract(contract_id):
         file = form.pdf_file.data
         filename = ""
         if file:
-            filename = secure_filename(make_unique(f"{original_data.company.voen}_{file.filename}"))
+            filename = secure_filename(make_unique(f"{file.filename}"))
         data_dict = dict(
             company_name=filter_string_fields(
                 form.company.data) if form.company.data else original_data.company.company_name,
