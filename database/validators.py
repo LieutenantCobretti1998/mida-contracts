@@ -1,5 +1,5 @@
 import re
-from typing import Any, Type, List, Dict
+from typing import Any, Type
 import os
 import shutil
 import flask
@@ -210,15 +210,16 @@ class EditContract(ValidatorWrapper):
         :param company_id:
         :param old_file_path:
         :return: str
+        The method which help to change the pdf file path
         """
         new_company_name = self.db_session.query(Companies).where(Companies.id == company_id).first().company_name
-        new_company_voen = self.db_session.query(Companies).where(Companies.id == company_id).first().voen
+
         company_upload_path = os.path.join(current_app.config['UPLOAD_FOLDER'], new_company_name)
         company_upload_path = os.path.normpath(company_upload_path)
+
         old_file_path = os.path.normpath(old_file_path)
-        new_file_path = os.path.join(str(company_upload_path), os.path.basename(re.sub(r"_\d{10}_",
-                                                                                       f"_{new_company_voen}_",
-                                                                                       old_file_path)))
+        old_file_pattern = r'(?<=\\contracts\\)[^\\]+(?=\\)'
+        new_file_path = os.path.join(str(company_upload_path), os.path.basename(re.sub(old_file_pattern, new_company_name, old_file_path)))
         os.rename(old_file_path, new_file_path)
         new_file_path = os.path.normpath(new_file_path)
         return new_file_path
@@ -512,22 +513,24 @@ class EditCompany(EditContract):
         return False
         # if company:
 
+    @staticmethod
+    def update_path(contract, new_company_name: str) -> None:
+        pattern = re.compile(r'(?<=\\contracts\\)[^\\]+(?=\\)')
+        updated_path = pattern.sub(new_company_name, contract.pdf_file_path)
+        setattr(contract, 'pdf_file_path', updated_path)
+
     def update_company_pdf_and_path(self, new_company_name: str, old_company_name: str) -> None:
         company = self.db_session.query(Companies).filter_by(company_name=new_company_name).first()
         folder_updated = self.update_folder(new_company_name, old_company_name)
         if folder_updated:
-            print(f'Updated {new_company_name}')
             related_contracts = company.contracts
-            list(map(lambda contract: setattr(contract, "pdf_file_path",
-                                              re.sub(r'(?<=\\contracts\\)[^\\]+(?=\\)',
-                                                     new_company_name, contract.pdf_file_path)),
-                     related_contracts))
+            list(map(lambda contract: self.update_path(contract, new_company_name), related_contracts))
 
     def update_data(self, changes: dict, pdf_file: flask = None, *args, **kwargs) -> tuple[bool, str]:
         """
-                    The main update logic after company's edit. it will check all the possibilities of updating or refuse the
-                    company to update based on different situations
-                """
+            The main update logic after company's edit. it will check all the possibilities of updating or refuse the
+            company to update based on different situations
+        """
         company_to_update = self.db_session.query(Companies).filter_by(id=self.id).first()
         if not company_to_update:
             return False, f"Contract was not found in database"
