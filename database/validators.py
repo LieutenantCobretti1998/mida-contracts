@@ -1,5 +1,5 @@
 import re
-from typing import Any, Type
+from typing import Any, Type, List, Union
 import os
 import shutil
 import flask
@@ -174,6 +174,13 @@ class SearchEngine(ValidatorWrapper):
             "adv_payer": bool(contract.adv_payer)
         } for contract in contracts]
         return contract_list, total_count
+
+    def search_related_contracts_api(self) -> Union[list[InstrumentedAttribute], list[None]]:
+        query = self.db_session.query(Companies).filter(Companies.company_name.ilike(f"%{self.search}%"))
+        if query:
+            companies = [company.company_name for company in query]
+            return companies
+        return []
 
 
 class EditContract(ValidatorWrapper):
