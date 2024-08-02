@@ -71,11 +71,7 @@
                         </div>
                             <ul class="hidden submenu-contracts__sub-options submenu">
                                 <li class="{% block class_create_act_li %}{% endblock class_create_act_li %}">
-                                    <a class="submenu-contracts__sub-options {% block class_create_act %}{% endblock class_create_act %}" href="{{ url_for('create_contract.create_contract') }}">Create Act</a>
-                                </li>
-
-                                <li class="{% block class_check_act_li %}{% endblock class_check_act_li %}">
-                                    <a class="submenu-contracts__sub-options {% block class_all_acts %}{% endblock class_all_acts %}" href="{{ url_for('all_contracts.get_all_contracts') }}">All Acts</a>
+                                    <a class="submenu-contracts__sub-options {% block class_create_act %}{% endblock class_create_act %}" href="{{ url_for('create_act.create_act') }}">Create Act</a>
                                 </li>
                             </ul>
                     </li>
