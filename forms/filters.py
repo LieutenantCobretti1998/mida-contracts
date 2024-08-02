@@ -25,6 +25,11 @@ def filter_contract_number(contract_number: str) -> str:
         return contract_number.strip().replace(" ", "")
 
 
+def filter_act_number(act_number: str) -> str:
+    if act_number:
+        return act_number.strip().replace(" ", "")
+
+
 def make_unique(filename: str) -> str:
     ident = str(uuid4())
     return f"{ident}_{filename}"

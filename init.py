@@ -25,6 +25,8 @@ def create_app() -> Flask:
     app.register_blueprint(create_company_bp, url_prefix="/companies")
     from views.check_companies import check_companies_bp
     app.register_blueprint(check_companies_bp, url_prefix="/companies")
+    from views.create_acts import create_act_bp
+    app.register_blueprint(create_act_bp, url_prefix="/acts")
     # initialize of flask app and db
     db.init_app(app)
     migrate = Migrate()
