@@ -90,3 +90,10 @@ def get_search(search):
         "total_count": total_count
     }
     return jsonify(response)
+
+
+@api_companies_bp.route('/all_companies/related_contracts/<string:search>', methods=['GET'])
+def get_search_for_act(search):
+    search_engine = CompanySearchEngine(db.session, search)
+    results = search_engine.search_related_contracts_api()
+    return jsonify(results)
