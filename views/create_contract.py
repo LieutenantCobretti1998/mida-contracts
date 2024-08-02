@@ -25,7 +25,7 @@ def save_contract():
     filtered_voen = filter_voen(form.voen.data)
     filtered_contract = filter_contract_number(form.contract_number.data)
     contract_manager = ContractManager(db.session)
-    adv_payer = True if form.is_adv_payer.data == "Yes" else False
+    adv_payer = True if form.is_adv_payer.data else False
     if form.validate():
         try:
             file = form.pdf_file.data
