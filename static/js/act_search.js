@@ -8,29 +8,75 @@ document.addEventListener("DOMContentLoaded", function() {
     company_input.addEventListener("input", e => {
         const query = company_input.value;
          data_list.innerHTML = "" ? company_input.value = '': null;
+         contract_list.innerHTML = "" ? company_input.value = '': null;
          contract_list.classList.add("hidden");
         if (query.length > 3) {
             contract_list.classList.remove("hidden");
-            getRelatedContracts(query, data_list).then(data => {
+            getRelatedCompanies(query).then(data => {
                 if(data.length > 0) {
-                    updateList(data, data_list);
-                    updateContractList(data, contract_list);
+                    let final_value = updateList(data, data_list);
+                    if(final_value) {
+                        getRelatedContracts(query).then(data => {
+                            if(data.length > 0) {
+                                updateContractList(data, contract_list);
 
+                            }
+                        })
+                    }
                 }
-            });
+            })
         }
-    });
+    })
 })
 
 /**
  *
  * @param query {string}
- * @param data_list {HTMLDataListElement}
  * @returns {Promise<void>}
  */
 
-async function getRelatedContracts(query, data_list) {
+async function getRelatedCompanies(query) {
+    const route = `/api/all_companies/related_companies/${query}`;
+
+    try {
+        const response = await fetch(route);
+        if (!response.ok) {
+            throw new Error("Could not fetch related contracts");
+        }
+        return await response.json()
+    }
+    catch (error) {
+        console.error(error.message)
+    }
+}
+
+/**
+ *
+ * @param query
+ * @return {Promise<void>}
+ */
+async function getRelatedContracts(query) {
     const route = `/api/all_companies/related_contracts/${query}`;
+
+    try {
+        const response = await fetch(route);
+        if (!response.ok) {
+            throw new Error("Could not fetch related contracts");
+        }
+        return await response.json()
+    }
+    catch (error) {
+        console.error(error.message)
+    }
+}
+
+/**
+ *
+ * @param query {string}
+ * @return {Promise<void>}
+ */
+async function getContractInfo(query) {
+    const route = `/api/all_contracts/related_contract/${query}`;
 
     try {
         const response = await fetch(route);
@@ -48,6 +94,7 @@ async function getRelatedContracts(query, data_list) {
  *
  * @param data{Object}
  * @param data_list{HTMLDataListElement}
+ * @return {string}
  */
 function updateList(data, data_list) {
     data_list.innerHTML = "";
@@ -55,27 +102,93 @@ function updateList(data, data_list) {
     data.forEach(company => {
         const option = document.createElement("option");
         option.value = company;
-        option.addEventListener("click", e => {
-            console.log("clicked")
-            const options = data_list.querySelectorAll("option");
-            options.forEach((option) => {option.removeAttribute("selected")});
-
-
-            if (e.target.tagName === 'option') {
-            e.target.setAttribute('selected', 'selected');
-            }
-        })
         data_list.appendChild(option);
     });
+
+    if (data_list.children.length === 1) {
+        return data_list.children[0].getAttribute("value");
+    }
 }
 
 /**
  *
- * @param data
- * @param contracts_list
+ * @param data {Object}
+ * @param contracts_list {HTMLSelectElement}
  */
 function updateContractList(data, contracts_list) {
+    contracts_list.innerHTML = "";
 
+    data.forEach(contract => {
+        const option = document.createElement("option");
+        option.value = contract.contract_number;
+        option.textContent = contract.contract_number;
+        option.setAttribute("data-id", contract.id);
+        contracts_list.appendChild(option);
+    });
+
+    const handle_selection_change = function () {
+        const selected_option = this.options[this.selectedIndex];
+        const data_id = selected_option.getAttribute("data-id");
+        getContractInfo(data_id).then(data => {
+            if (data) {
+                updateContractDetails(data);
+            }
+        })
+    }
+    contracts_list.addEventListener("change",handle_selection_change);
+    if (contracts_list.options.length > 0) {
+        contracts_list.selectedIndex = 0;
+        handle_selection_change.call(contracts_list);
+    }
+
+    contracts_list.addEventListener("change", function () {
+        const selected_option = this.options[this.selectedIndex];
+        const data_id = selected_option.getAttribute("data-id");
+        getContractInfo(data_id).then(data => {
+            if (data) {
+                updateContractDetails(data);
+            }
+        })
+
+    })
+}
+
+/**
+ *
+ * @param data{Object}
+ */
+function updateContractDetails(data) {
+    for(const key in data) {
+        if(key === "id") {
+            const contract_id = document.getElementById("contract_id");
+            contract_id.value = data["id"];
+            continue
+        }
+        const element = document.getElementById(key);
+        switch (element.id) {
+                        case "amount":
+                            element.innerText = parseFloat(data[key]).toFixed(2);
+                            break;
+                        case "date":
+                            element.innerText = new Date(data[key]).toLocaleDateString();
+                            break;
+                        case "adv_payer":
+                         element.innerText = data[key] ? "Yes" : "No";
+                         break;
+                        case "pdf_file":
+                            element.innerHTML = "";
+                            const button = document.createElement("button");
+                            button.classList.add("pdf-btn");
+                            button.textContent = "View";
+                            button.addEventListener("click", function (event) {
+                                window.open(`/contracts/preview_pdf/${data["id"]}`)
+                            });
+                            element.appendChild(button);
+                            break;
+                        default:
+                            element.innerText = data[key];
+                }
+            }
 }
 
 
