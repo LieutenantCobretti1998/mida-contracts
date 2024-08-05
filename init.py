@@ -1,9 +1,7 @@
 from flask import Flask
 from configuration import *
-from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from database.db_init import db
-from database.models import *
 
 # Initialization of the app
 
