@@ -1,7 +1,8 @@
 .main_container {
   position: relative;
   display: flex;
-  gap: 7vw;
+  flex-direction: column;
+  gap: 1.5vw;
   background-color: $color-main-background;
 }
 #caption {
@@ -144,6 +145,24 @@ datalist {
   overflow-y: scroll;
 }
 
+select {
+  width: 100%;
+}
+
 .hidden {
   display: none;
+}
+
+.pdf-btn {
+  width: 80px;
+  height: 40px;
+  background-color: $color-blue;
+  color: white;
+  border-radius: 1rem;
+  transition: background-color .2s ease-in-out;
+
+  &:hover {
+    cursor: pointer;
+    background-color: $color-dark-blue;
+  }
 }
