@@ -56,6 +56,13 @@ def get_search(search):
     return jsonify(response)
 
 
+@api_contracts_bp.route('/all_contracts/related_contract/<string:search>', methods=['GET'])
+def get_search_for_act_contract(search):
+    search_engine = CompanySearchEngine(db.session, search)
+    response = search_engine.search_related_contract_api()
+    return jsonify(response)
+
+
 # Here now we will have our company's api for the table
 
 @api_companies_bp.route('/all_companies', methods=['GET'])
@@ -92,8 +99,15 @@ def get_search(search):
     return jsonify(response)
 
 
-@api_companies_bp.route('/all_companies/related_contracts/<string:search>', methods=['GET'])
-def get_search_for_act(search):
+@api_companies_bp.route('/all_companies/related_companies/<string:search>', methods=['GET'])
+def get_search_for_act_companies(search):
     search_engine = CompanySearchEngine(db.session, search)
-    results = search_engine.search_related_contracts_api()
-    return jsonify(results)
+    response = search_engine.search_related_companies_api()
+    return jsonify(response)
+
+
+@api_companies_bp.route('/all_companies/related_contracts/<string:search>', methods=['GET'])
+def get_search_for_act_contracts(search):
+    search_engine = CompanySearchEngine(db.session, search)
+    response = search_engine.search_related_contracts_api()
+    return jsonify(response)

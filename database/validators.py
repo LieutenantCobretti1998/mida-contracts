@@ -1,5 +1,5 @@
 import re
-from typing import Any, Type, List, Union
+from typing import Any, Type, List, Union, Dict
 import os
 import shutil
 import flask
@@ -175,12 +175,38 @@ class SearchEngine(ValidatorWrapper):
         } for contract in contracts]
         return contract_list, total_count
 
-    def search_related_contracts_api(self) -> Union[list[InstrumentedAttribute], list[None]]:
+    def search_related_companies_api(self) -> Union[list[InstrumentedAttribute], list[None]]:
         query = self.db_session.query(Companies).filter(Companies.company_name.ilike(f"%{self.search}%"))
         if query:
             companies = [company.company_name for company in query]
             return companies
         return []
+
+    def search_related_contracts_api(self) -> Union[list[dict[str, int]] | list[None]]:
+        company = self.db_session.query(Companies).filter_by(company_name=self.search).first()
+        if company:
+            contracts = [
+                {
+                    "id": contract.id,
+                    "contract_number": contract.contract_number
+                } for contract in company.contracts
+            ]
+            return contracts
+        return []
+
+    def search_related_contract_api(self) -> Union[dict[any] | dict[None]]:
+        contract = self.db_session.query(Contract).filter_by(id=self.search).first()
+        if contract:
+            contract = dict(
+                id=contract.id,
+                contract_number=contract.contract_number,
+                date=contract.date,
+                amount=contract.amount,
+                adv_payer=contract.adv_payer,
+                pdf_file=None
+            )
+            return contract
+        return {}
 
 
 class EditContract(ValidatorWrapper):
@@ -562,3 +588,14 @@ class EditCompany(EditContract):
                 return False, "An error occurred with the database. Please try again later"
         self.db_session.commit()
         return True, "The contract was updated successfully"
+
+
+class ActsManager(ValidatorWrapper):
+    def __init__(self, db_session: Session):
+        super().__init__(db_session)
+
+    def create_act(self, acts_info_dict: dict) -> None:
+        act = Acts(**acts_info_dict)
+        self.db_session.add(act)
+        self.db_session.commit()
+
