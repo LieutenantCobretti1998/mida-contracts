@@ -29,5 +29,15 @@ class Contract(Base):
     company = relationship("Companies", back_populates="contracts")
     adv_payer = Column("adv_payer", BOOLEAN, nullable=False, default=False)
     pdf_file_path = Column(VARCHAR, nullable=False)
+    acts = relationship('Acts', back_populates='contract', cascade='all, delete, delete-orphan')
 
 
+class Acts(Base):
+    __tablename__ = 'acts'
+    id = Column(Integer, primary_key=True)
+    act_number = Column(VARCHAR(16), nullable=False)
+    date = Column(DATE, nullable=False)
+    contract_id = Column(Integer, ForeignKey('contracts.id'), nullable=False)
+    amount = Column(DECIMAL(), nullable=False)
+    contract = relationship("Contract", back_populates="acts")
+    pdf_file_path = Column(VARCHAR, nullable=False)
