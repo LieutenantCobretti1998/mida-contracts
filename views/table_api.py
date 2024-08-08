@@ -1,10 +1,11 @@
 from flask import Blueprint, jsonify, request
 from database.db_init import db
 from database.models import *
-from database.validators import SearchEngine, CompanySearchEngine
+from database.validators import SearchEngine, CompanySearchEngine, ActsSearchEngine
 
 api_contracts_bp = Blueprint('api_contracts', __name__)
 api_companies_bp = Blueprint('api_companies', __name__)
+api_acts_bp = Blueprint('api_acts', __name__)
 # Dictionary of tuples
 column_map_contracts = {
     "Company Name": ("company_name", Companies),
@@ -19,6 +20,12 @@ column_map_companies = {
     "Company Name": ("company_name", Companies),
     "Voen": ("voen", Companies),
     "Related Contracts": ("related_contracts", None)
+}
+
+column_map_acts = {
+    "Act Number": ("act_number", Acts),
+    "Act Amount": ("amount", Acts),
+    "Date": ("date", Acts),
 }
 
 
@@ -110,4 +117,23 @@ def get_search_for_act_companies(search):
 def get_search_for_act_contracts(search):
     search_engine = CompanySearchEngine(db.session, search)
     response = search_engine.search_related_contracts_api()
+    return jsonify(response)
+
+
+# Acts api routes
+@api_acts_bp.route('/related_acts/<int:contract_id>', methods=['GET'])
+def get_related_acts(contract_id):
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('limit', 10, type=int)
+    offset = (page - 1) * per_page
+    order_by = request.args.get('order_by', 'Date')
+    direction = request.args.get('dir', 'desc')
+    mapping_results = column_map_acts.get(order_by, ("id", Acts))
+    search_engine = ActsSearchEngine(db.session, contract_id)
+    act_list, total_count = search_engine.get_all_results_api(per_page, offset, direction, mapping_results)
+    response = {
+        "data": act_list,
+        "total_count": total_count
+    }
+    print(response)
     return jsonify(response)
