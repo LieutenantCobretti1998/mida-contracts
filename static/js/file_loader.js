@@ -39,7 +39,10 @@ export default function pdfReader(file=null, save_button=null, edit_mode=false, 
     }
 }
 
-document.getElementById("pdf_file").addEventListener("change", (event) => {
+function pdfLoader () {
+    const pdf_id = document.querySelector(".table__pdf-upload").id
+    const pdf = document.getElementById(pdf_id);
+    pdf.addEventListener("change", (event) => {
     const file = event.target.files[0];
     const button_element = document.querySelector(".save-btn");
     if(!file) {
@@ -55,3 +58,5 @@ document.getElementById("pdf_file").addEventListener("change", (event) => {
     button_element.style.backgroundColor = "#EEEDEB";
     pdfReader(file, button_element);
 });
+}
+pdfLoader();
