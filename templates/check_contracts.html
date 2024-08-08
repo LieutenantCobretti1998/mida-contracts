@@ -60,8 +60,6 @@
     <script type="text/javascript">
         const csrf_token = "{{ csrf_token() }}"
         const search_mode = "{{ search_mode }}"
-        let pdf_url_base = "{{ url_for('all_contracts.preview_pdf', contract_id = 0 ) }}";
-        pdf_url_base = pdf_url_base.replace(/\/0$/, "/");
 
         let delete_url_base = "{{ url_for('all_contracts.delete_contract', contract_id = 0) }}"
         delete_url_base = delete_url_base.replace(/\/0$/, "/");

@@ -82,10 +82,9 @@ def update_contract(contract_id):
 @check_contracts_bp.route('/preview_pdf/<int:contract_id>', methods=['GET'])
 def preview_pdf(contract_id):
     search_engine = SearchEngine(db.session, contract_id)
-    contract_result = search_engine.search_company_with_contract()
+    search_result = search_engine.search_company_with_contract()
     try:
-        if contract_result and contract_result.pdf_file_path:
-            return send_file(contract_result.pdf_file_path)
+        return send_file(search_result.pdf_file_path)
     except FileNotFoundError:
         abort(404)
 
