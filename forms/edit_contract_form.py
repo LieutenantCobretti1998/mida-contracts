@@ -1,4 +1,3 @@
-from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from wtforms import StringField, SubmitField, DateField, DecimalField
 from wtforms.fields.choices import RadioField
@@ -10,7 +9,7 @@ from forms.custom_validators import *
 class EditContractForm(CreateContractForm):
     company = StringField(
         validators=[Length(min=1, max=16, message=symbol_error_message),
-                    Optional(strip_whitespace=False),
+                    Optional(),
                     whitespace_check])
     voen = StringField(
         validators=[Length(min=10, max=10, message=voen_number_enough_error), check_voen,
