@@ -22,17 +22,27 @@ def save_act():
     form = CreateAct()
     filtered_act_number = filter_act_number(form.act_number.data)
     act_manager = ActsManager(db.session)
-    if form.validate_on_submit():
+    if form.validate():
         try:
+            file = form.pdf_file_act.data
+            filename = secure_filename(file.filename)
+            file_path = add_contract_pdf(current_app.config['UPLOAD_FOLDER_ACTS'], filtered_act_number, filename)
             act_info = dict(
                 act_number=filtered_act_number,
-                pdf_file_path="/test/jopa/",
+                pdf_file_path=file_path,
                 date=form.act_date.data,
                 amount=form.act_amount.data,
                 contract_id=form.contract_id.data
             )
             act_manager.create_act(act_info)
+            file.save(file_path)
+            flash("The act is saved successfully!", "success")
             return redirect(url_for('create_act.create_act'))
 
-        except OperationalError as e:
-            return render_template('create_act.html', form=form, error=e)
+        except OperationalError:
+            flash("Something went wrong. transaction was restored", "error")
+            db.session.rollback()
+            return render_template('create_act.html', form=form)
+    else:
+        flash("Validation Error. Please check all fields", "error")
+    return render_template('add_contract.html', form=form)
