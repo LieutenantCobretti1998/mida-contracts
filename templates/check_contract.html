@@ -71,7 +71,7 @@
 
                     <td>
                         <p>
-                            {{ search_result.amount }}
+                            {{ search_result.amount | round(2) }}
                         </p>
                     </td>
                 </tr>
@@ -110,6 +110,7 @@
                 </tr>
             </tbody>
         </table>
+        <div id="results"></div>
         {% block pop_up_message %}
             {% with messages = get_flashed_messages(with_categories=True) %}
                     {% if messages %}
@@ -159,3 +160,21 @@
             {% endwith %}
         {% endblock pop_up_message %}
 {% endblock content_part %}
+{% block javascript %}
+    <script type="text/javascript">
+        const csrf_token = "{{ csrf_token() }}";
+        const search_mode = "{{ search_mode }}";
+        const contract_id = "{{ search_result.id }}";
+        let pdf_url_base = "{{ url_for('all_acts.preview_pdf', act_id = 0 ) }}";
+        pdf_url_base = pdf_url_base.replace(/\/0$/, "/");
+
+        let delete_url_base = "{{ url_for('all_acts.delete_act', act_id = 0) }}";
+        delete_url_base = delete_url_base.replace(/\/0$/, "/");
+
+        let view_url_base = "{{ url_for('all_acts.get_act', act_id = 0) }}";
+        view_url_base = view_url_base.replace(/\/0$/, "/");
+    </script>
+    <script type="module" src="{{ url_for('static', filename='js/delete.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename="js/redirection.js") }}"></script>
+    <script src="{{ url_for('static', filename='js/tableForActs.bundle.js') }}"></script>
+{% endblock javascript %}
