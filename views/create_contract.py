@@ -29,7 +29,6 @@ def save_contract():
     if form.validate():
         try:
             file = form.pdf_file.data
-            voen = form.voen.data
             filename = secure_filename(file.filename)
             file_path = add_contract_pdf(current_app.config['UPLOAD_FOLDER'], filtered_company_name, filename)
             company = contract_manager.get_or_create_company(filtered_company_name, filtered_voen)
