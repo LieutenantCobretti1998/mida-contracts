@@ -2,9 +2,21 @@
 
 export default function openPopUpMenu(url, csrf_token) {
        const main_container = document.querySelector(".main_container");
+       let delete_type;
+       switch (true) {
+           case url.includes("delete_company"):
+               delete_type = "Company";
+               break;
+           case url.includes("delete_contract"):
+               delete_type = "Contract";
+               break;
+           case url.includes("delete_act"):
+               delete_type = "Act";
+               break;
+       }
        main_container.insertAdjacentHTML("afterend",
            `<div class="confirmation_dialog">
-                    <h1>Are you sure you want to delete this ${url.includes("delete_company") ? 'Company': 'Contract'} ?</h1>
+                    <h1>Are you sure you want to delete this ${delete_type} ?</h1>
                     <div class="popup_buttons">
                         <button type="button" class="yes">Yes</button>
                         <button type="button" class="no">No</button>
