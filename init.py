@@ -12,13 +12,17 @@ def create_app() -> Flask:
     app.config["SECRET_KEY"] = APP_SECRET_KEY
     app.config["SQLALCHEMY_DATABASE_URI"] = TEST_DB_URI
     app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+    app.config["UPLOAD_FOLDER_ACTS"] = UPLOAD_FOLDER_ACTS
     from views.create_contract import create_contract_bp
     app.register_blueprint(create_contract_bp, url_prefix="/contracts")
     from views.check_contracts import check_contracts_bp
     app.register_blueprint(check_contracts_bp, url_prefix="/contracts")
-    from views.table_api import api_contracts_bp, api_companies_bp
+    from views.check_acts import check_acts_bp
+    app.register_blueprint(check_acts_bp, url_prefix="/acts")
+    from views.table_api import api_contracts_bp, api_companies_bp, api_acts_bp
     app.register_blueprint(api_contracts_bp, url_prefix="/api")
     app.register_blueprint(api_companies_bp, url_prefix="/api")
+    app.register_blueprint(api_acts_bp, url_prefix="/api")
     from views.create_company import create_company_bp
     app.register_blueprint(create_company_bp, url_prefix="/companies")
     from views.check_companies import check_companies_bp
