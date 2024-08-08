@@ -18,7 +18,7 @@
                     </td>
 
                     <td>
-                        {{ form.company_name(list="companies_list", class="table__input rounded", placeholder="COMPANIES") }}
+                        {{ form.company_name(list="companies_list", class="table__input rounded", placeholder="COMPANIES", id="default_input") }}
                         <datalist id="companies_list"></datalist>
                         <ul class="error-list">
                             {% for error in form.company_name.errors %}
@@ -48,7 +48,7 @@
                     </td>
                     <td>
                         <div>
-                            {{ form.act_number(id="default_input", class="table__input rounded", placeholder="ACT NUMBER") }}
+                            {{ form.act_number(class="table__input rounded", placeholder="ACT NUMBER") }}
                             <ul class="error-list">
                             {% for error in form.act_number.errors %}
                                 <li class="error-list__message">{{ error }}</li>
@@ -147,7 +147,6 @@
             </tr>
         </tbody>
     </table>
-
     {% block pop_up_message %}
             {% with messages = get_flashed_messages(with_categories=True) %}
                     {% if messages %}
