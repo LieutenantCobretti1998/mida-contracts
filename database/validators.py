@@ -252,7 +252,8 @@ class EditContract(ValidatorWrapper):
 
         old_file_path = os.path.normpath(old_file_path)
         old_file_pattern = r'(?<=\\contracts\\)[^\\]+(?=\\)'
-        new_file_path = os.path.join(str(company_upload_path), os.path.basename(re.sub(old_file_pattern, new_company_name, old_file_path)))
+        new_file_path = os.path.join(str(company_upload_path),
+                                     os.path.basename(re.sub(old_file_pattern, new_company_name, old_file_path)))
         os.rename(old_file_path, new_file_path)
         new_file_path = os.path.normpath(new_file_path)
         return new_file_path
@@ -345,7 +346,6 @@ class EditContract(ValidatorWrapper):
                     else:
                         setattr(contract_to_update, key, value)
 
-            self.db_session.commit()
             return True, f"Contract updated successfully"
         except sqlalchemy.exc.DBAPIError as e:
             self.db_session.rollback()
@@ -378,7 +378,6 @@ class CompanyManager(ContractManager):
 
     def delete_company(self, company_id: int) -> bool:
         """
-
         :param company_id:
         :return: bool
         """
@@ -564,7 +563,7 @@ class EditCompany(EditContract):
             The main update logic after company's edit. it will check all the possibilities of updating or refuse the
             company to update based on different situations
         """
-        company_to_update = self.db_session.query(Companies).filter_by(id=self.id).first()
+        company_to_update = self.db_session.query(Companies).filter_by(id=self.company_id).first()
         if not company_to_update:
             return False, f"Contract was not found in database"
         company_to_update_dict = {column.name: getattr(company_to_update, column.name) for column in
@@ -598,4 +597,100 @@ class ActsManager(ValidatorWrapper):
         act = Acts(**acts_info_dict)
         self.db_session.add(act)
         self.db_session.commit()
+
+    def delete_pdf_file(self, act_id: int) -> None:
+        act = self.db_session.query(Contract).filter_by(id=act_id).first()
+        if act:
+            try:
+                act_pdf_path = str(act.pdf_file_path)
+                os.remove(act_pdf_path)
+            except FileNotFoundError:
+                raise FileNotFoundError("Pdf file is not found")
+
+    def delete_act(self, act_id: int) -> bool:
+        """
+            :param act_id:
+            :return: bool
+        """
+        act = self.db_session.query(Acts).filter_by(id=act_id).first()
+        if act:
+            try:
+                self.delete_pdf_file(act_id)
+                self.db_session.delete(act)
+                return True
+            except DBAPIError:
+                return False
+            except FileNotFoundError:
+                return False
+        return False
+
+
+class ActsSearchEngine(SearchEngine):
+    def __init__(self, db_session: Session, search: str = None):
+        super().__init__(db_session, search)
+
+    def get_all_results_api(self, per_page: int, offset: int, sort_dir: str, mapping: tuple) -> tuple[
+        list[dict[str, InstrumentedAttribute | Any]], int]:
+        """
+                :param mapping:
+                :param sort_dir:
+                :param offset:
+                :param per_page:
+                :return: list[dict[str, InstrumentedAttribute | Any]]
+                This method is for put all results of the related acts in the table
+                """
+        query = self.db_session.query(Acts).filter_by(contract_id=self.search)
+
+        query = self.asc_or_desc(query, sort_dir, mapping)
+        total_count = query.count()
+        acts = query.offset(offset).limit(per_page).all()
+        acts_list = [{
+            "id": act.id,
+            "act_number": act.act_number,
+            "date": act.date,
+            "amount": float(act.amount),
+        } for act in acts]
+        return acts_list, total_count
+
+    def search_act(self):
+        query = self.db_session.query(Acts).filter_by(id=self.search).first()
+        if query:
+            return query
+
+        raise NoResultFound
+
+
+class EditAct(EditContract):
+    def __init__(self, db_session: Session, act_id: int):
+        super().__init__(db_session, act_id)
+        self.act_id = act_id
+
+    def update_data(self, changes: dict, pdf_file: flask = None, *args, **kwargs) -> tuple[bool, str]:
+        """
+            The main update logic after contract's edit. it will check all the possibilities of updating or refuse the
+            contract to update based on different situations
+        """
+        act_to_update = self.db_session.query(Acts).filter_by(id=self.act_id).first()
+
+        if not act_to_update:
+            return False, f"Act was not found in database"
+        company_to_update_dict = {column.name: getattr(act_to_update, column.name) for column in
+                                  act_to_update.__table__.columns}
+        for key, value in changes.items():
+            try:
+                if value != company_to_update_dict[key]:
+                    if key == "pdf_file_path" and value is not None:
+                        try:
+                            new_pdf_path = self.change_pdf_itself(company_to_update_dict[key], value)
+                            setattr(act_to_update, key, new_pdf_path)
+                            pdf_file.save(new_pdf_path)
+                        except FileNotFoundError:
+                            return False, "There is the file path problem. It was corrupted or not existed."
+                    setattr(act_to_update, key, value)
+                else:
+                    continue
+            except sqlalchemy.exc.DBAPIError:
+                self.db_session.rollback()
+                return False, "An error occurred with the database. Please try again later"
+        return True, "The contract was updated successfully"
 
