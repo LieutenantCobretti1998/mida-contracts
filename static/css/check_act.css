@@ -1,0 +1,379 @@
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+}
+
+html {
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  font-size: 62.5%;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  font-weight: 600;
+  font-size: 1.5rem;
+  color: #222f3e;
+}
+
+.main_container {
+  display: flex;
+  min-height: 100vh;
+}
+.main_container__nav {
+  position: fixed;
+  height: 100vh;
+  width: 12vw;
+  flex: 0 1 auto;
+  background-color: #222f3e;
+  display: flex;
+  gap: 2rem;
+  flex-direction: column;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+.main_container__nav__logo {
+  padding-right: 0.5rem;
+  max-width: 20rem;
+}
+.main_container__nav__parameters {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-left: 0.9rem;
+}
+.main_container__nav__parameters__main_menu {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  justify-content: center;
+}
+.main_container__nav__parameters__main_menu__container {
+  align-items: center;
+  display: flex;
+  gap: 1.5rem;
+  pointer-events: none;
+}
+.main_container__nav__parameters__main_menu :hover {
+  cursor: pointer;
+}
+.main_container__nav__parameters__main_menu > span {
+  align-self: center;
+}
+.main_container__nav__parameters__main_menu__svg {
+  align-self: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #97c0c0;
+}
+.main_container .menu_text {
+  color: white;
+  transition: color 0.2s ease-in-out;
+}
+.main_container .menu_text:hover {
+  color: #36c7c7;
+}
+
+.toggle-menu-button {
+  border: none;
+  color: inherit;
+  background: none;
+  pointer-events: visible;
+}
+.toggle-menu-button__text {
+  color: white;
+  font-size: 1.5rem;
+  transition: color 0.2s ease-in-out;
+}
+.toggle-menu-button__text:hover {
+  color: #36c7c7;
+}
+
+.submenu-icon svg {
+  transition: transform 0.5s linear;
+  width: 1.5rem;
+  color: #97c0c0;
+}
+
+.rotated-down {
+  animation: rotateArrowDown 0.5s linear forwards;
+}
+
+.rotated-up {
+  animation: rotateArrowUp 0.5s linear forwards;
+}
+
+.submenu-companies__sub-options,
+.submenu-contracts__sub-options {
+  text-align: center;
+  background-color: #18476a;
+  flex-direction: column;
+  gap: 0.8vh;
+  text-decoration: none;
+  font-size: 0.9em;
+  color: white;
+  list-style: none;
+  overflow: hidden;
+  transition: all 0.1s ease-in-out;
+}
+.submenu-companies__sub-options:hover,
+.submenu-contracts__sub-options:hover {
+  color: #36c7c7;
+}
+
+.hidden {
+  display: none;
+  opacity: 0;
+  height: 0;
+  transition: height 0.1s ease, opacity 0.8s ease;
+}
+
+.collapsing {
+  display: flex;
+  opacity: 0;
+  transition: height 0.1s ease, opacity 0.8s ease;
+}
+
+.show {
+  height: auto;
+  display: flex;
+  opacity: 1;
+  transition: height 0.1s ease, opacity 0.8s ease;
+}
+
+.active {
+  color: #FFBB70;
+  text-decoration: #A3D8FF;
+  pointer-events: none !important;
+  cursor: default !important;
+}
+
+.home:active,
+.home:link,
+.home:visited {
+  cursor: pointer;
+  pointer-events: visible;
+  font-weight: normal;
+  color: white;
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+}
+.home:active:hover,
+.home:link:hover,
+.home:visited:hover {
+  color: #36c7c7;
+}
+
+.remove-pointer {
+  cursor: default !important;
+}
+
+@keyframes FadeInOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes rotateArrowUp {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(180deg);
+  }
+}
+@keyframes rotateArrowDown {
+  from {
+    transform: rotate(180deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+.main_container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5vw;
+  background-color: #EEEDEB;
+}
+
+#caption {
+  margin-bottom: 5rem;
+  font-size: 2.5rem;
+}
+
+#results {
+  margin: 0 11vw 2vw 19vw;
+}
+
+.gridjs-wrapper,
+.gridjs-footer {
+  border-radius: 0 !important;
+}
+
+.table {
+  border-collapse: collapse;
+  width: 70%;
+  background-color: white;
+  table-layout: fixed;
+  text-align: left;
+  max-height: 1rem;
+  margin: 2vw 2vw 2vw 19vw;
+  padding: 2vw;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.26);
+}
+.table tbody > tr {
+  font-size: 1.9rem;
+}
+.table tbody > tr > td {
+  border: 1px solid #9d9d9e;
+  padding: 2rem;
+}
+
+.error {
+  padding-left: 1rem;
+  transform: translateX(25%);
+  position: absolute;
+  z-index: 5000;
+  width: 70%;
+  height: 5em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  border-radius: 10px;
+  opacity: 1;
+  gap: 1rem;
+  animation: FadeInOut 7s ease-in-out forwards;
+}
+.error > svg {
+  fill: green;
+  width: 5em;
+}
+.error__text {
+  font-size: 1.5rem;
+  color: #222f3e;
+}
+.error__description > strong {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.pdf-btn,
+.edit-btn {
+  width: 80px;
+  height: 40px;
+  background-color: green;
+  color: white;
+  border-radius: 1rem;
+  transition: background-color 0.2s ease-in-out;
+}
+.pdf-btn:hover,
+.edit-btn:hover {
+  cursor: pointer;
+  background-color: darkgreen;
+}
+
+.pdf-btn {
+  background-color: #1649f3;
+}
+.pdf-btn:hover {
+  cursor: pointer;
+  background-color: #032287;
+}
+
+#edit {
+  text-align: end;
+  padding: 1.5rem;
+}
+
+.confirmation_dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 5rem;
+  border-radius: 3rem;
+  border-spacing: 0 50px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-40%, -60%); /* Start scaled down */
+  border: 1px solid #ccc;
+  padding: 20px;
+  background-color: #FEFAF6;
+  z-index: 2000; /* Ensures the dialog appears above other content */
+}
+
+.backdrop {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Dark semi-transparent background */
+  z-index: 1000; /* Ensure it is below the dialog */
+}
+
+.popup_buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.yes,
+.no {
+  font-size: 1.9rem;
+  width: 80px;
+  height: 40px;
+  border-radius: 1rem;
+  background-color: #FEFAF6;
+  cursor: pointer;
+  border-color: rgba(0, 0, 0, 0.3);
+  transition: background-color 0.2s ease-in-out;
+}
+
+.yes {
+  background-color: green;
+  color: white;
+}
+.yes:hover {
+  background-color: darkgreen;
+}
+
+.no {
+  background-color: red;
+  color: white;
+}
+.no:hover {
+  background-color: #9b1515;
+}
+
+.view-btn,
+.delete-btn {
+  width: 80px;
+  height: 40px;
+  background-color: #0f6b6b;
+  color: white;
+  border-radius: 1rem;
+  transition: background-color 0.2s ease-in-out;
+}
+.view-btn:hover,
+.delete-btn:hover {
+  cursor: pointer;
+  background-color: #043a3a;
+}
+
+.delete-btn {
+  background-color: red;
+}
+.delete-btn:hover {
+  cursor: pointer;
+  background-color: #9b1515;
+}
+
+/*# sourceMappingURL=check_act.css.map */
