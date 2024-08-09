@@ -58,8 +58,10 @@
 {% endblock content_part %}
 {% block javascript %}
     <script type="text/javascript">
-        const csrf_token = "{{ csrf_token() }}"
-        const search_mode = "{{ search_mode }}"
+        const csrf_token = "{{ csrf_token() }}";
+        const search_mode = "{{ search_mode }}" === "True";
+        const company_voen = "{{ voen }}";
+        console.log(search_mode)
 
         let delete_url_base = "{{ url_for('all_contracts.delete_contract', contract_id = 0) }}"
         delete_url_base = delete_url_base.replace(/\/0$/, "/");
