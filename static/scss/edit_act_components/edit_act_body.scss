@@ -8,6 +8,11 @@
    margin-bottom: 5rem;
    font-size: $font-size-big;
 }
+
+select {
+  width: 100%;
+}
+
 .table {
   border-radius: 8px;
   border-collapse: collapse;

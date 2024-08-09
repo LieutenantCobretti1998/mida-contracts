@@ -208,6 +208,10 @@ body {
   font-size: 2.5rem;
 }
 
+select {
+  width: 100%;
+}
+
 .table {
   border-radius: 8px;
   border-collapse: collapse;
