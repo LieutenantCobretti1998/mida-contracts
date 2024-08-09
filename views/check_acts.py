@@ -46,14 +46,15 @@ def update_act(act_id):
     form = EditActForm()
     if form.validate_on_submit():
         file = form.pdf_file_act.data
+        print(file)
         filename = ""
         if file:
             filename = secure_filename(make_unique(f"{file.filename}"))
         data_dict = dict(
             act_number=filter_act_number(form.act_number.data) if form.act_number.data else original_data.act_number,
-            pdf_file_path=filename if form.pdf_file_act else None,
-            date=form.act_date.data if form.act_date else original_data.act_date,
-            amount=form.act_amount.data if form.act_amount else original_data.act_amount,
+            pdf_file_path=filename if file else None,
+            date=form.act_date.data if form.act_date.data else original_data.date,
+            amount=form.act_amount.data if form.act_amount.data else original_data.amount,
             contract_id=form.contract_id.data if form.contract_id.data else original_data.contract_id,
         )
         success, message = edit_engine.update_data(data_dict, form.pdf_file_act.data)
@@ -64,7 +65,7 @@ def update_act(act_id):
         else:
             db.session.rollback()
             flash(message, "warning")
-            return redirect(url_for('all_contracts.edit_contract', act_id=act_id))
+            return redirect(url_for('all_acts.edit_act', act_id=act_id))
     else:
         flash("Validation Error. Please check all fields", "error")
         return render_template('edit_act.html', form=form, act_id=act_id, search_result=search_result)
