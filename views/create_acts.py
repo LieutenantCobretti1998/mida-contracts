@@ -26,7 +26,7 @@ def save_act():
         try:
             file = form.pdf_file_act.data
             filename = secure_filename(file.filename)
-            file_path = add_contract_pdf(current_app.config['UPLOAD_FOLDER_ACTS'], filtered_act_number, filename)
+            file_path = add_contract_pdf(current_app.config['UPLOAD_FOLDER_ACTS'], filename)
             act_info = dict(
                 act_number=filtered_act_number,
                 pdf_file_path=file_path,
