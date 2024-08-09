@@ -93,7 +93,7 @@
                     </td>
 
                     <td>
-                        {{ form.is_adv_payer }}
+                        {{ form.is_adv_payer(checked=search_result.adv_payer) }}
                         <ul class="error-list">
                             {% for error in form.is_adv_payer.errors %}
                                 <li class="error-list__message">{{ error }}</li>
