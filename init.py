@@ -13,6 +13,7 @@ def create_app() -> Flask:
     app.config["SQLALCHEMY_DATABASE_URI"] = TEST_DB_URI
     app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
     app.config["UPLOAD_FOLDER_ACTS"] = UPLOAD_FOLDER_ACTS
+    app.config["MAX_CONTENT_LENGTH"] = 50 * 1000 * 1000
     from views.create_contract import create_contract_bp
     app.register_blueprint(create_contract_bp, url_prefix="/contracts")
     from views.check_contracts import check_contracts_bp
