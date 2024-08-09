@@ -263,10 +263,13 @@ class EditContract(ValidatorWrapper):
         """
         :param previous_pdf_file_path:
         :param new_pdf_file_name:
-        :return: str
+        :return: str:
+        Help to change pdf in the main folder logic of upload files of contracts
         """
+        print(f"previous_path: {previous_pdf_file_path}")
         new_pdf_path = os.path.join(os.path.dirname(previous_pdf_file_path), new_pdf_file_name)
         new_pdf_path = os.path.normpath(new_pdf_path)
+        print(f"new_pdf_path: {new_pdf_path}")
         os.remove(previous_pdf_file_path)
         return new_pdf_path
 
@@ -599,10 +602,10 @@ class ActsManager(ValidatorWrapper):
         self.db_session.commit()
 
     def delete_pdf_file(self, act_id: int) -> None:
-        act = self.db_session.query(Contract).filter_by(id=act_id).first()
+        act = self.db_session.query(Acts).filter_by(id=act_id).first()
         if act:
             try:
-                act_pdf_path = str(act.pdf_file_path)
+                act_pdf_path = act.pdf_file_path
                 os.remove(act_pdf_path)
             except FileNotFoundError:
                 raise FileNotFoundError("Pdf file is not found")
@@ -618,9 +621,9 @@ class ActsManager(ValidatorWrapper):
                 self.delete_pdf_file(act_id)
                 self.db_session.delete(act)
                 return True
-            except DBAPIError:
+            except DBAPIError as e:
                 return False
-            except FileNotFoundError:
+            except FileNotFoundError as e:
                 return False
         return False
 
@@ -667,26 +670,34 @@ class EditAct(EditContract):
 
     def update_data(self, changes: dict, pdf_file: flask = None, *args, **kwargs) -> tuple[bool, str]:
         """
-            The main update logic after contract's edit. it will check all the possibilities of updating or refuse the
-            contract to update based on different situations
+        :param changes:
+        :param pdf_file:
+        :param args:
+        :param kwargs:
+        :return: tuple[bool, str]:
+        The main update logic after contract's edit. it will check all the possibilities of updating or refuse the
+        contract to update based on different situations
         """
         act_to_update = self.db_session.query(Acts).filter_by(id=self.act_id).first()
 
         if not act_to_update:
             return False, f"Act was not found in database"
-        company_to_update_dict = {column.name: getattr(act_to_update, column.name) for column in
+        act_to_update_dict = {column.name: getattr(act_to_update, column.name) for column in
                                   act_to_update.__table__.columns}
         for key, value in changes.items():
             try:
-                if value != company_to_update_dict[key]:
-                    if key == "pdf_file_path" and value is not None:
+                if value != act_to_update_dict[key] and value is not None:
+                    print(f"value: {value}")
+                    print(f"key: {key}")
+                    if key == "pdf_file_path":
                         try:
-                            new_pdf_path = self.change_pdf_itself(company_to_update_dict[key], value)
+                            new_pdf_path = self.change_pdf_itself(act_to_update_dict[key], value)
                             setattr(act_to_update, key, new_pdf_path)
                             pdf_file.save(new_pdf_path)
                         except FileNotFoundError:
                             return False, "There is the file path problem. It was corrupted or not existed."
-                    setattr(act_to_update, key, value)
+                    else:
+                        setattr(act_to_update, key, value)
                 else:
                     continue
             except sqlalchemy.exc.DBAPIError:
