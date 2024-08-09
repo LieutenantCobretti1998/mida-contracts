@@ -135,5 +135,4 @@ def get_related_acts(contract_id):
         "data": act_list,
         "total_count": total_count
     }
-    print(response)
     return jsonify(response)
