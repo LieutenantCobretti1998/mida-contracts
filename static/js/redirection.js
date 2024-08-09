@@ -42,7 +42,7 @@ function viewPdf(contract_id) {
  * @param {string} csrf_token
  */
 function deleteFullUrl(id, csrf_token) {
-    const url_for_deletion = `${delete_url_base}${id}`
+    const url_for_deletion = `${delete_url_base}${id}`;
     openPopUpMenu(url_for_deletion, csrf_token);
 }
 
