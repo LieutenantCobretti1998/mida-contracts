@@ -1,7 +1,5 @@
-import flask_wtf
 from flask import Blueprint, render_template, request, session, url_for, jsonify, flash, abort, redirect
 from sqlalchemy.exc import NoResultFound
-
 from forms.edit_company_form import EditCompanyForm
 from forms.filters import *
 from database.db_init import db
@@ -72,8 +70,8 @@ def update_company(company_id):
             flash(message, "warning")
             return redirect(url_for('all_companies.get_company', company_id=company_id))
     else:
-        errors = {field.name: field.errors for field in form}
-        return jsonify(errors=errors)
+        flash("Validation Error. Please check all fields", "error")
+        return render_template("edit_company.html", form=form, company_id=company_id, search_result=original_data)
 
 
 @check_companies_bp.route('/delete_company/<int:company_id>', methods=['DELETE'])
