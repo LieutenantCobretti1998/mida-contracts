@@ -37,6 +37,7 @@ class ContractManager(ValidatorWrapper):
         if contract:
             try:
                 self.delete_pdf_file(contract_id)
+                self.delete_related_acts_pdf_file(contract_id)
                 self.db_session.delete(contract)
                 return True
             except DBAPIError:
@@ -44,6 +45,23 @@ class ContractManager(ValidatorWrapper):
             except FileNotFoundError:
                 return False
         return False
+
+    @staticmethod
+    def delete_act(act) -> None:
+        """
+        :param act: str
+        :return:
+        Function for deleting each act of contract
+        """
+        act_path = act.pdf_file_path
+        print(act_path)
+        os.remove(act_path)
+
+    def delete_related_acts_pdf_file(self, contract_id: int) -> None:
+        contract = self.db_session.query(Contract).filter_by(id=contract_id).first()
+        related_acts = contract.acts
+        for act in related_acts:
+            self.delete_act(act)
 
     def get_or_create_company(self, company_name: str, voen: str, *args, **kwargs) -> None | Type[
         Companies] | Companies:
@@ -383,11 +401,15 @@ class CompanyManager(ContractManager):
         """
         :param company_id:
         :return: bool
+        delete company method which also delete all the files from related to contracts and acts related to contracts
         """
         company = self.db_session.query(Companies).filter_by(id=company_id).first()
+        contracts = company.contracts
         if company:
             try:
                 self.delete_pdf_folder(str(company.company_name))
+                for contract in contracts:
+                    self.delete_related_acts_pdf_file(contract.id)
                 self.db_session.delete(company)
                 return True
             except DBAPIError:
@@ -683,7 +705,7 @@ class EditAct(EditContract):
         if not act_to_update:
             return False, f"Act was not found in database"
         act_to_update_dict = {column.name: getattr(act_to_update, column.name) for column in
-                                  act_to_update.__table__.columns}
+                              act_to_update.__table__.columns}
         for key, value in changes.items():
             try:
                 if value != act_to_update_dict[key] and value is not None:
@@ -704,4 +726,3 @@ class EditAct(EditContract):
                 self.db_session.rollback()
                 return False, "An error occurred with the database. Please try again later"
         return True, "The contract was updated successfully"
-
