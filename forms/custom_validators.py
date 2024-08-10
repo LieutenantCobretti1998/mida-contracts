@@ -40,6 +40,7 @@ def add_contract_pdf(directory: str, pdf_filename: str, company_name: str = None
     :param company_name:
     :param pdf_filename:
     :return: str
+    Help to construct file path for uploaded pdf by users
     """
     if company_name:
         # If company_name is provided, create a folder for the company
@@ -52,6 +53,7 @@ def add_contract_pdf(directory: str, pdf_filename: str, company_name: str = None
     else:
         # If no company_name is provided, save in the given directory
         unique_filename = make_unique(f"{pdf_filename}")
-        file_path = os.path.join(directory, unique_filename)
+        directory_folder = os.path.normpath(directory)
+        file_path = os.path.join(directory_folder, unique_filename)
 
     return file_path
