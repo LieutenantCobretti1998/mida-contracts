@@ -284,10 +284,8 @@ class EditContract(ValidatorWrapper):
         :return: str:
         Help to change pdf in the main folder logic of upload files of contracts
         """
-        print(f"previous_path: {previous_pdf_file_path}")
         new_pdf_path = os.path.join(os.path.dirname(previous_pdf_file_path), new_pdf_file_name)
         new_pdf_path = os.path.normpath(new_pdf_path)
-        print(f"new_pdf_path: {new_pdf_path}")
         os.remove(previous_pdf_file_path)
         return new_pdf_path
 
@@ -726,3 +724,88 @@ class EditAct(EditContract):
                 self.db_session.rollback()
                 return False, "An error occurred with the database. Please try again later"
         return True, "The contract was updated successfully"
+
+
+class CategoriesManager(ValidatorWrapper):
+    def __init__(self, db_session: Session):
+        super().__init__(db_session)
+
+    def add_category(self, category_name: str) -> None:
+        """
+        :param category_name:
+        :return:
+        """
+        category = Category(category_name=category_name)
+        self.db_session.add(category)
+        self.db_session.commit()
+
+    def all_categories(self) -> list[dict[str]]:
+        """
+        :return list[Any]:
+        """
+        categories = self.db_session.query(Category).all()
+        category_list = [{
+            "id": category.id,
+            "category_name": category.category_name
+        } for category in categories]
+        return category_list
+
+    def delete_category(self, category_id: int) -> None:
+        """
+        :param category_id:
+        :return:
+        """
+        query = self.db_session.query(Category).filter_by(id=category_id).first()
+        if query:
+            self.db_session.delete(query)
+            self.db_session.commit()
+
+
+class CategoriesSearchEngine(SearchEngine):
+    def __init__(self, db_session: Session, search: str = None):
+        super().__init__(db_session, search)
+
+    def search_query_api(self, per_page: int, offset: int, sort_dir: str, mapping: tuple) -> (
+            tuple)[list[dict[str, InstrumentedAttribute | Any]], int]:
+        """
+                :param per_page:
+                :param offset:
+                :param sort_dir:
+                :param mapping:
+                :return:
+                """
+
+        query = (self.db_session
+        .query(Category)
+        .filter(
+            Category.category_name.ilike(f"%{self.search}%"),
+        ))
+
+        query = self.asc_or_desc(query, sort_dir, mapping)
+        total_count = query.count()
+        categories = query.offset(offset).limit(per_page).all()
+        category_list = [{
+            "id": category.id,
+            "category_name": category.category_name,
+        } for category in categories]
+        return category_list, total_count
+
+    def get_all_results_api(self, per_page: int, offset: int, sort_dir: str, mapping: tuple) -> tuple[
+        list[dict[str, InstrumentedAttribute | Any]], int]:
+        """
+                :param mapping:
+                :param sort_dir:
+                :param offset:
+                :param per_page:
+                :return: list[dict[str, InstrumentedAttribute | Any]]
+                This method is for put all results of the contract in the table
+                """
+        query = (self.db_session.query(Category))
+        query = self.asc_or_desc(query, sort_dir, mapping)
+        total_count = query.count()
+        categories = query.offset(offset).limit(per_page).all()
+        category_list = [{
+            "id": category.id,
+            "category_name": category.category_name,
+        } for category in categories]
+        return category_list, total_count
