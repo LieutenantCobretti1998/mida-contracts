@@ -20,16 +20,19 @@ def create_app() -> Flask:
     app.register_blueprint(check_contracts_bp, url_prefix="/contracts")
     from views.check_acts import check_acts_bp
     app.register_blueprint(check_acts_bp, url_prefix="/acts")
-    from views.table_api import api_contracts_bp, api_companies_bp, api_acts_bp
+    from views.table_api import api_contracts_bp, api_companies_bp, api_acts_bp, api_categories_bp
     app.register_blueprint(api_contracts_bp, url_prefix="/api")
     app.register_blueprint(api_companies_bp, url_prefix="/api")
     app.register_blueprint(api_acts_bp, url_prefix="/api")
+    app.register_blueprint(api_categories_bp, url_prefix="/api")
     from views.create_company import create_company_bp
     app.register_blueprint(create_company_bp, url_prefix="/companies")
     from views.check_companies import check_companies_bp
     app.register_blueprint(check_companies_bp, url_prefix="/companies")
     from views.create_acts import create_act_bp
     app.register_blueprint(create_act_bp, url_prefix="/acts")
+    from views.parameters import parameter_bp
+    app.register_blueprint(parameter_bp, url_prefix="/parameters")
     # initialize of flask app and db
     db.init_app(app)
     migrate = Migrate()
