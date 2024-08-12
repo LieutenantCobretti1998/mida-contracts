@@ -25,6 +25,8 @@ class Contract(Base):
     contract_number = Column(VARCHAR(16), nullable=False)
     date = Column(DATE, nullable=False)
     company_id = Column(Integer, ForeignKey('companies.id'), nullable=False)
+    category_id = Column(Integer, ForeignKey('categories.id'), nullable=False)
+    category = relationship('Category', back_populates='contracts')
     amount = Column(DECIMAL(), nullable=False)
     company = relationship("Companies", back_populates="contracts")
     adv_payer = Column("adv_payer", BOOLEAN, nullable=False, default=False)
@@ -41,3 +43,10 @@ class Acts(Base):
     amount = Column(DECIMAL(), nullable=False)
     contract = relationship("Contract", back_populates="acts")
     pdf_file_path = Column(VARCHAR, nullable=False)
+
+
+class Category(Base):
+    __tablename__ = 'categories'
+    id = Column(Integer, primary_key=True)
+    category_name = Column(VARCHAR(), nullable=False)
+    contracts = relationship('Contract', back_populates='category')
