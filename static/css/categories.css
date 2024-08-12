@@ -47,6 +47,7 @@ body {
 }
 .main_container {
   gap: 2.5rem;
+  background-color: #EEEDEB;
 }
 .main_container__nav {
   position: static;
@@ -71,6 +72,7 @@ body {
 
 .save-btn,
 .delete-btn {
+  border: none;
   width: 80px;
   height: 40px;
   background-color: green;
@@ -125,13 +127,13 @@ body {
 
 .yes,
 .no {
+  border: none;
   font-size: 1.9rem;
   width: 80px;
   height: 40px;
   border-radius: 1rem;
   background-color: #FEFAF6;
   cursor: pointer;
-  border-color: rgba(0, 0, 0, 0.3);
   transition: background-color 0.2s ease-in-out;
 }
 
