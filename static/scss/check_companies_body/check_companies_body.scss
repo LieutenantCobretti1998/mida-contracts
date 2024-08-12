@@ -111,18 +111,6 @@
   }
 }
 
-.delete {
-  & > path {
-    transition: stroke .2s ease-in;
-    stroke: $color-dark-red
-  }
-
-  &:hover {
-    & > path {
-      stroke: $color-red;
-    }
-  }
-}
 
 .view-btn,
 .delete-btn {
