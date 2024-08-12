@@ -5,13 +5,16 @@ export default function openPopUpMenu(url, csrf_token) {
        let delete_type;
        switch (true) {
            case url.includes("delete_company"):
-               delete_type = "Company";
+               delete_type = "company";
                break;
            case url.includes("delete_contract"):
-               delete_type = "Contract";
+               delete_type = "contract";
                break;
            case url.includes("delete_act"):
-               delete_type = "Act";
+               delete_type = "act";
+               break;
+           case url.includes("remove_category"):
+               delete_type = "category";
                break;
        }
        main_container.insertAdjacentHTML("afterend",
