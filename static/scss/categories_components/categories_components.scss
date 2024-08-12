@@ -1,5 +1,6 @@
 .main_container {
   gap: 2.5rem;
+  background-color: $color-main-background;
 
   &__nav {
     position: static;
@@ -25,6 +26,7 @@
 
 .save-btn,
 .delete-btn{
+  border: none;
   width: 80px;
   height: 40px;
   background-color: $color-green;
@@ -80,13 +82,13 @@
 
 .yes,
 .no {
+  border: none;
   font-size: $font-size-medium;
   width: 80px;
   height: 40px;
   border-radius: 1rem;
   background-color: $color-table-background;
   cursor: pointer;
-  border-color: rgba(0, 0, 0, 0.3);
   transition: background-color .2s ease-in-out;
 }
 
