@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+from sqlalchemy.exc import SQLAlchemyError
 from database.db_init import db
 from database.models import *
 from database.validators import (SearchEngine, CompanySearchEngine, ActsSearchEngine, CategoriesManager,
@@ -15,7 +16,8 @@ column_map_contracts = {
     "Contract Number": ("contract_number", Contract),
     "Date": ("date", Contract),
     "Amount": ("amount", Contract),
-    "Adv Payer": ("adv_payer", Contract)
+    "Adv Payer": ("adv_payer", Contract),
+    "Category": ("category_id", Contract),
 }
 
 column_map_companies = {
@@ -170,28 +172,30 @@ def add_category():
         categories_manager.add_category(new_category.get("category"))
         # Return a success response if the category was added successfully
         return jsonify({
-            "success": True,
             "message": "Category added successfully!"
         }), 200
 
-    except Exception as e:
+    except SQLAlchemyError:
         # Log the exception if needed
-        print(f"Error adding category: {e}")
         # Return an error response if something went wrong
         return jsonify({
-            "success": False,
-            "message": "An error occurred while adding the category."
+            "message": "An error occurred while adding the category. Something wrong with the database"
         }), 500
 
 
 @api_categories_bp.route('/all_categories/remove_category/<int:category_id>', methods=['DELETE'])
 def delete_category(category_id):
     categories_manager = CategoriesManager(db.session)
-    categories_manager.delete_category(category_id)
-    return jsonify({
-        "success": True,
-        "message": "Category deleted successfully!"
-    }), 200
+    try:
+        categories_manager.delete_category(category_id)
+        return jsonify({
+            "status": "success",
+            "message": "Category deleted successfully!"
+        }), 200
+    except SQLAlchemyError:
+        return jsonify({
+            "message": "An error occurred while deleting category. Something wrong with the database"
+        }), 500
 
 
 @api_categories_bp.route('/all_categories/<string:search>', methods=['GET'])
@@ -209,3 +213,18 @@ def get_search_for_categories(search):
         "total_count": total_count
     }
     return jsonify(response)
+
+
+@api_categories_bp.route('/all_categories/update_category/<int:category_id>', methods=['UPDATE'])
+def update_category(category_id):
+    categories_manager = CategoriesManager(db.session)
+    try:
+        categories_manager.delete_category(category_id)
+        return jsonify({
+            "status": "success",
+            "message": "Category deleted successfully!"
+        }), 200
+    except SQLAlchemyError:
+        return jsonify({
+            "message": "An error occurred while deleting category. Something wrong with the database"
+        }), 500

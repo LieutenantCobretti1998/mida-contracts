@@ -14,7 +14,9 @@ create_contract_bp = Blueprint('create_contract', __name__)
 # Our create_contract routes
 @create_contract_bp.route('/create_contract', methods=["GET", 'POST'])
 def create_contract():
+    categories = ContractManager(db.session).search_categories()
     form = CreateContractForm()
+    form.categories.choices = [(category.id, category.category_name) for category in categories]
     return render_template("add_contract.html", form=form)
 
 
@@ -25,8 +27,14 @@ def save_contract():
     filtered_voen = filter_voen(form.voen.data)
     filtered_contract = filter_contract_number(form.contract_number.data)
     contract_manager = ContractManager(db.session)
+    categories = contract_manager.search_categories()
     adv_payer = True if form.is_adv_payer.data else False
     if form.validate():
+        selected_category_id = form.categories.data
+        valid_category = next((cat for cat in categories if cat.id == selected_category_id), None)
+        if valid_category is None:
+            flash('Invalid category selected. Please choose a valid option.', 'error')
+            return render_template("add_contract.html", form=form)
         try:
             file = form.pdf_file.data
             filename = secure_filename(file.filename)
@@ -38,7 +46,8 @@ def save_contract():
                 amount=float(form.amount.data),
                 company_id=company.id,
                 adv_payer=adv_payer,
-                pdf_file_path=file_path
+                pdf_file_path=file_path,
+                category_id=form.categories.data
             )
             db.session.add(contract)
             db.session.commit()
@@ -48,6 +57,7 @@ def save_contract():
 
         except ValueError as e:
             flash(str(e), "warning")
+            db.session.rollback()
         except OperationalError:
             flash("Something went wrong. transaction was restored", "error")
             db.session.rollback()

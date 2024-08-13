@@ -11,7 +11,7 @@ from sqlalchemy.exc import NoResultFound, SQLAlchemyError, DBAPIError
 from sqlalchemy.orm import InstrumentedAttribute
 from database.models import *
 from abc import ABC
-from database.models import Companies
+from database.models import Companies, Category
 
 
 class ValidatorWrapper(ABC):
@@ -22,6 +22,13 @@ class ValidatorWrapper(ABC):
 class ContractManager(ValidatorWrapper):
     def __init__(self, db_session: Session):
         super().__init__(db_session)
+
+    def search_categories(self) -> list[Type[Category]]:
+        """
+        :return: list[Type[Category]]
+        """
+        categories = self.db_session.query(Category).all()
+        return categories
 
     def delete_pdf_file(self, contract_id: int) -> None:
         contract = self.db_session.query(Contract).filter_by(id=contract_id).first()
@@ -62,7 +69,6 @@ class ContractManager(ValidatorWrapper):
         related_acts = contract.acts
         for act in related_acts:
             self.delete_act(act)
-
     def get_or_create_company(self, company_name: str, voen: str, *args, **kwargs) -> None | Type[
         Companies] | Companies:
         if not company_name:
@@ -125,10 +131,21 @@ class SearchEngine(ValidatorWrapper):
         :return: None
         This method is for avoiding duplication of the sorting the columns
         """
-        if sort_direction == "asc":
-            return query.order_by(asc(getattr(mapping[1], mapping[0])))
+        if mapping[0] == "category_id":
+            # Join the Category table directly with the Contract table
+            query = query.join(Category, Category.id == Contract.category_id)
+
+            # Sort by category_name instead of category_id
+            if sort_direction == "asc":
+                return query.order_by(asc(Category.category_name))
+            else:
+                return query.order_by(desc(Category.category_name))
         else:
-            return query.order_by(desc(getattr(mapping[1], mapping[0])))
+            # For other columns, sort normally
+            if sort_direction == "asc":
+                return query.order_by(asc(getattr(mapping[1], mapping[0])))
+            else:
+                return query.order_by(desc(getattr(mapping[1], mapping[0])))
 
     # APIs for the table
     def get_all_results_api(self, per_page: int, offset: int, sort_dir: str, mapping: tuple) -> tuple[
@@ -154,7 +171,8 @@ class SearchEngine(ValidatorWrapper):
             "contract_number": contract.contract_number,
             "date": contract.date,
             "amount": float(contract.amount),
-            "adv_payer": bool(contract.adv_payer)
+            "adv_payer": bool(contract.adv_payer),
+            "category": contract.category.category_name
         } for contract in contracts]
         return contract_list, total_count
 
@@ -171,10 +189,12 @@ class SearchEngine(ValidatorWrapper):
         query = (self.db_session
         .query(Contract)
         .join(Companies, Companies.id == Contract.company_id)
+        .join(Category, Category.id == Contract.category_id)
         .filter(or_(
             Companies.company_name.ilike(f"%{self.search}%"),
             Companies.voen.ilike(f"%{self.search}%"),
             Contract.contract_number.ilike(f"%{self.search}%"),
+            Category.category_name.ilike(f"%{self.search}%"),
         )))
 
         query = self.asc_or_desc(query, sort_dir, mapping)
@@ -189,7 +209,8 @@ class SearchEngine(ValidatorWrapper):
             "contract_number": contract.contract_number,
             "date": contract.date,
             "amount": contract.amount,
-            "adv_payer": bool(contract.adv_payer)
+            "adv_payer": bool(contract.adv_payer),
+            "category": contract.category.category_name
         } for contract in contracts]
         return contract_list, total_count
 
@@ -735,9 +756,13 @@ class CategoriesManager(ValidatorWrapper):
         :param category_name:
         :return:
         """
-        category = Category(category_name=category_name)
-        self.db_session.add(category)
-        self.db_session.commit()
+        try:
+            category = Category(category_name=category_name)
+            self.db_session.add(category)
+            self.db_session.commit()
+        except SQLAlchemyError:
+            self.db_session.rollback()
+            raise SQLAlchemyError
 
     def all_categories(self) -> list[dict[str]]:
         """
@@ -757,8 +782,12 @@ class CategoriesManager(ValidatorWrapper):
         """
         query = self.db_session.query(Category).filter_by(id=category_id).first()
         if query:
-            self.db_session.delete(query)
-            self.db_session.commit()
+            try:
+                self.db_session.delete(query)
+                self.db_session.commit()
+            except SQLAlchemyError:
+                self.db_session.rollback()
+                raise SQLAlchemyError
 
 
 class CategoriesSearchEngine(SearchEngine):

@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, DateField, DecimalField, RadioField
 from flask_wtf.file import FileRequired, FileAllowed, FileField
+from wtforms.fields.choices import SelectField
 from wtforms.fields.simple import BooleanField
 from wtforms.validators import DataRequired, NumberRange, Length, Optional
 from forms.custom_validators import *
@@ -25,6 +26,8 @@ class CreateContractForm(FlaskForm):
                           )
 
     is_adv_payer = BooleanField("Is_Adv Payer", validators=[Optional()])
+
+    categories = SelectField("categories", validate_choice=False, coerce=int, validators=[DataRequired(message=empty_field)])
 
     pdf_file = FileField("Upload pdf", validators=[FileRequired(message=empty_field),
                                                    FileAllowed(["pdf"], pdf_files_only)]
