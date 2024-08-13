@@ -1,0 +1,209 @@
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+}
+
+html {
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  font-size: 62.5%;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  font-weight: 600;
+  font-size: 1.5rem;
+  color: #222f3e;
+}
+
+@keyframes FadeInOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes rotateArrowUp {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(180deg);
+  }
+}
+@keyframes rotateArrowDown {
+  from {
+    transform: rotate(180deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+.main_container {
+  gap: 2.5rem;
+  background-color: #EEEDEB;
+}
+.main_container__nav {
+  position: static;
+}
+
+#results {
+  width: 50%;
+}
+
+.categories {
+  display: flex;
+  flex-direction: column;
+  margin-top: 5rem;
+  gap: 3rem;
+}
+
+.header {
+  font-size: 4rem;
+}
+
+.category-search {
+  align-items: center;
+  display: flex;
+  gap: 2rem;
+}
+
+.save-btn,
+.delete-btn,
+.edit-btn,
+.cancel-btn {
+  border: none;
+  width: 80px;
+  height: 40px;
+  background-color: green;
+  color: white;
+  border-radius: 1rem;
+  transition: background-color 0.2s ease-in-out;
+}
+.save-btn:hover,
+.delete-btn:hover,
+.edit-btn:hover,
+.cancel-btn:hover {
+  cursor: pointer;
+  background-color: darkgreen;
+}
+
+.delete-btn {
+  background-color: red;
+}
+.delete-btn:hover {
+  cursor: pointer;
+  background-color: #9b1515;
+}
+
+.edit-btn {
+  background-color: #1649f3;
+}
+.edit-btn:hover {
+  cursor: pointer;
+  background-color: #032287;
+}
+
+.cancel-btn {
+  background-color: #fba94e;
+}
+.cancel-btn:hover {
+  cursor: pointer;
+  background-color: #d37200;
+}
+
+.confirmation_dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 5rem;
+  border-radius: 3rem;
+  border-spacing: 0 50px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-40%, -60%); /* Start scaled down */
+  border: 1px solid #ccc;
+  padding: 20px;
+  background-color: #FEFAF6;
+  z-index: 2000; /* Ensures the dialog appears above other content */
+}
+
+.backdrop {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Dark semi-transparent background */
+  z-index: 1000; /* Ensure it is below the dialog */
+}
+
+.popup_buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.yes,
+.no {
+  border: none;
+  font-size: 1.9rem;
+  width: 80px;
+  height: 40px;
+  border-radius: 1rem;
+  background-color: #FEFAF6;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.yes {
+  background-color: green;
+  color: white;
+}
+.yes:hover {
+  background-color: darkgreen;
+}
+
+.no {
+  background-color: red;
+  color: white;
+}
+.no:hover {
+  background-color: #9b1515;
+}
+
+.error {
+  padding-left: 1rem;
+  transform: translateX(-118%);
+  position: absolute;
+  z-index: 5000;
+  width: 70%;
+  height: 5em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  border-radius: 10px;
+  opacity: 1;
+  gap: 1rem;
+  animation: FadeInOut 7s ease-in-out forwards;
+}
+.error > svg {
+  fill: green;
+  width: 5em;
+}
+.error__text {
+  font-size: 1.5rem;
+  color: #222f3e;
+}
+.error__description > strong {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+/*# sourceMappingURL=edit_category.css.map */

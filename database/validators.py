@@ -670,7 +670,7 @@ class ActsManager(ValidatorWrapper):
 
 
 class ActsSearchEngine(SearchEngine):
-    def __init__(self, db_session: Session, search: str = None):
+    def __init__(self, db_session: Session, search: str | int = None):
         super().__init__(db_session, search)
 
     def get_all_results_api(self, per_page: int, offset: int, sort_dir: str, mapping: tuple) -> tuple[
@@ -791,7 +791,7 @@ class CategoriesManager(ValidatorWrapper):
 
 
 class CategoriesSearchEngine(SearchEngine):
-    def __init__(self, db_session: Session, search: str = None):
+    def __init__(self, db_session: Session, search: str | int = None):
         super().__init__(db_session, search)
 
     def search_query_api(self, per_page: int, offset: int, sort_dir: str, mapping: tuple) -> (
@@ -838,3 +838,25 @@ class CategoriesSearchEngine(SearchEngine):
             "category_name": category.category_name,
         } for category in categories]
         return category_list, total_count
+
+    def search_category(self):
+        query = self.db_session.query(Category).filter_by(id=self.search).first()
+        if query:
+            return query
+
+        raise NoResultFound
+
+
+class EditCategory(EditContract):
+    def __init__(self, db_session: Session, category_id: int):
+        super().__init__(db_session, category_id)
+        self.category_id = category_id
+
+    def category_update(self, new_category_name: str) -> bool:
+        category = self.db_session.query(Category).filter_by(id=self.category_id).first()
+        if category:
+            category.category_name = new_category_name
+            self.db_session.commit()
+            return True
+        self.db_session.rollback()
+        raise NoResultFound
