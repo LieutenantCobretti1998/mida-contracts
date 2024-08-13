@@ -126,13 +126,13 @@ body {
 
 .yes,
 .no {
+  border: none;
   font-size: 1.9rem;
   width: 80px;
   height: 40px;
   border-radius: 1rem;
   background-color: #FEFAF6;
   cursor: pointer;
-  border-color: rgba(0, 0, 0, 0.3);
   transition: background-color 0.2s ease-in-out;
 }
 
@@ -154,6 +154,7 @@ body {
 
 .view-btn,
 .delete-btn {
+  border: none;
   width: 80px;
   height: 40px;
   background-color: #0f6b6b;

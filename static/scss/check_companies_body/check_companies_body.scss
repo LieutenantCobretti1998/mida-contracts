@@ -13,7 +13,7 @@
 
 .error {
   padding-left: 1rem;
-  transform: translateX(25%);
+  transform: translateX(-25%);
   position: absolute;
   z-index: 5000;
   width: 70%;
@@ -114,6 +114,7 @@
 
 .view-btn,
 .delete-btn {
+  border: none;
   width: 80px;
   height: 40px;
   background-color: $color-button-check;

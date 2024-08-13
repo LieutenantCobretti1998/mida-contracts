@@ -166,7 +166,7 @@ body {
 }
 
 .active {
-  color: #FFBB70;
+  color: #fba94e;
   text-decoration: #A3D8FF;
   pointer-events: none !important;
   cursor: default !important;

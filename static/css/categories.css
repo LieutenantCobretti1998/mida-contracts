@@ -64,6 +64,10 @@ body {
   gap: 3rem;
 }
 
+.header {
+  font-size: 4rem;
+}
+
 .category-search {
   align-items: center;
   display: flex;
@@ -71,7 +75,9 @@ body {
 }
 
 .save-btn,
-.delete-btn {
+.delete-btn,
+.edit-btn,
+.cancel-btn {
   border: none;
   width: 80px;
   height: 40px;
@@ -81,7 +87,9 @@ body {
   transition: background-color 0.2s ease-in-out;
 }
 .save-btn:hover,
-.delete-btn:hover {
+.delete-btn:hover,
+.edit-btn:hover,
+.cancel-btn:hover {
   cursor: pointer;
   background-color: darkgreen;
 }
@@ -92,6 +100,22 @@ body {
 .delete-btn:hover {
   cursor: pointer;
   background-color: #9b1515;
+}
+
+.edit-btn {
+  background-color: #1649f3;
+}
+.edit-btn:hover {
+  cursor: pointer;
+  background-color: #032287;
+}
+
+.cancel-btn {
+  background-color: #fba94e;
+}
+.cancel-btn:hover {
+  cursor: pointer;
+  background-color: #d37200;
 }
 
 .confirmation_dialog {
@@ -151,6 +175,35 @@ body {
 }
 .no:hover {
   background-color: #9b1515;
+}
+
+.error {
+  padding-left: 1rem;
+  transform: translateX(-118%);
+  position: absolute;
+  z-index: 5000;
+  width: 70%;
+  height: 5em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  border-radius: 10px;
+  opacity: 1;
+  gap: 1rem;
+  animation: FadeInOut 7s ease-in-out forwards;
+}
+.error > svg {
+  fill: green;
+  width: 5em;
+}
+.error__text {
+  font-size: 1.5rem;
+  color: #222f3e;
+}
+.error__description > strong {
+  font-size: 2.5rem;
+  font-weight: 700;
 }
 
 /*# sourceMappingURL=categories.css.map */

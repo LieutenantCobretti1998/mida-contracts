@@ -84,13 +84,13 @@
 
 .yes,
 .no {
+  border: none;
   font-size: $font-size-medium;
   width: 80px;
   height: 40px;
   border-radius: 1rem;
   background-color: $color-table-background;
   cursor: pointer;
-  border-color: rgba(0, 0, 0, 0.3);
   transition: background-color .2s ease-in-out;
 }
 
@@ -114,6 +114,7 @@
 
 .view-btn,
 .delete-btn {
+  border: none;
   width: 80px;
   height: 40px;
   background-color: $color-button-check;

@@ -90,6 +90,7 @@
 }
 
 .save-btn {
+  border: none;
   width: 80px;
   height: 40px;
   background-color: $color-green;
@@ -136,4 +137,8 @@
 #td-save {
   text-align: end;
    padding: 1.5rem;
+}
+
+select {
+  width: 100%;
 }
