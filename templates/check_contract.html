@@ -11,90 +11,65 @@
             <tbody class="main-table-part">
                 <tr>
                     <td class="table__text">
-                        <p>
-                            Company
-                        </p>
+                        <p>Company</p>
                     </td>
                     <td>
-                        <p>
-                            {{ search_result.company.company_name }}
-                        </p>
+                        <p>{{ search_result.company.company_name }}</p>
                     </td>
                 </tr>
                 <tr>
                     <td class="table__text">
-                       <p>
-                           Voen
-                       </p>
+                       <p>Voen</p>
                     </td>
                     <td>
-                       <p>
-                            {{ search_result.company.voen }}
-                        </p>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="table__text">
-                         <p>
-                           Contract Number
-                       </p>
-                    </td>
-
-                    <td>
-                        <p>
-                            {{ search_result.contract_number }}
-                        </p>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="table__text">
-                      <p>
-                          Date
-                      </p>
-                    </td>
-
-                    <td>
-                       <p>
-                           {{ search_result.date }}
+                       <p>{{ search_result.company.voen }}
                        </p>
                     </td>
                 </tr>
 
                 <tr>
                     <td class="table__text">
-                       <p>
-                           Amount
-                       </p>
+                         <p>Contract Number</p>
                     </td>
 
                     <td>
-                        <p>
-                            {{ search_result.amount | round(2) }}
-                        </p>
+                        <p>{{ search_result.contract_number }}</p>
                     </td>
                 </tr>
 
                 <tr>
                     <td class="table__text">
-                        <p>
-                            Adv Payer
-                        </p>
+                      <p>Date</p>
                     </td>
 
                     <td>
-                        <p>
-                            {% if search_result.adv_payer %} Yes {% else %} No {% endif %}
-                        </p>
+                       <p>{{ search_result.date }}</p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="table__text">
+                       <p>Amount</p>
+                    </td>
+
+                    <td>
+                        <p>{{ search_result.amount | round(2) }}</p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="table__text">
+                        <p>Adv Payer</p>
+                    </td>
+
+                    <td>
+                        <p>{% if search_result.adv_payer %} Yes {% else %} No {% endif %}</p>
                     </td>
                 </tr>
 
                 <tr>
                     <td>
-                        <p>
-                            Contract's PDF
-                        </p>
+                        <p>Contract's PDF</p>
                     </td>
 
                     <td id="pdf">

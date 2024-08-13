@@ -6,14 +6,15 @@
 
 {% block content_part %}
     <section class="categories">
-        <h1>Categories</h1>
+        <h1 class="header">Categories</h1>
         <div class="category-search">
-            <label for="category">Add the category</label>
-            <input type="text" id="category">
-            <input type="submit" class="save-btn", id="save" value="save">
+            {{ form.category.label(for='default_input') }}
+            {{ form.category(id='default_input') }}
+            {{ form.save(class='save-btn') }}
         </div>
-        <div id="results"></div>
+        <div id="results" class="category-table"></div>
     </section>
+    <section id="message-container"></section>
 {% block pop_up_message %}
             {% with messages = get_flashed_messages(with_categories=True) %}
                     {% if messages %}
@@ -69,9 +70,11 @@
 
         let delete_url_base = "{{ url_for('api_categories.delete_category', category_id = 0) }}";
         delete_url_base = delete_url_base.replace(/\/0$/, "/");
+
+        let edit_url_base = "{{ url_for('') }}"
     </script>
-    <script type="module" src="{{ url_for('static', filename='js/delete.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/form_focus.js') }}"></script>
     <script type="module" src="{{ url_for('static', filename="js/redirection.js") }}"></script>
-    <script type="module" src="{{ url_for('static', filename='js/tableForCategories.bundle.js') }}">
-    </script>
+    <script type="module" src="{{ url_for('static', filename='js/tableForCategories.bundle.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/delete.js') }}"></script>
 {% endblock javascript %}
