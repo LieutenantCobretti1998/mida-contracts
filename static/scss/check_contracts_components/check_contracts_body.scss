@@ -11,7 +11,6 @@
   border-radius: 0 !important;
 }
 
-
 .error {
   padding-left: 1rem;
   transform: translateX(25%);
@@ -84,13 +83,13 @@
 
 .yes,
 .no {
-  border: none;
   font-size: $font-size-medium;
   width: 80px;
   height: 40px;
   border-radius: 1rem;
   background-color: $color-table-background;
   cursor: pointer;
+  border-color: rgba(0, 0, 0, 0.3);
   transition: background-color .2s ease-in-out;
 }
 
@@ -111,6 +110,7 @@
     background-color: $color-dark-red;
   }
 }
+
 
 .view-btn,
 .delete-btn {
@@ -134,14 +134,5 @@
   &:hover {
     cursor: pointer;
     background-color: $color-dark-red;
-  }
-}
-
-.pdf-btn {
-  background-color: $color-blue;
-
-  &:hover {
-    cursor: pointer;
-    background-color: $color-dark-blue;
   }
 }

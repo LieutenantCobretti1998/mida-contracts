@@ -126,13 +126,13 @@ body {
 
 .yes,
 .no {
-  border: none;
   font-size: 1.9rem;
   width: 80px;
   height: 40px;
   border-radius: 1rem;
   background-color: #FEFAF6;
   cursor: pointer;
+  border-color: rgba(0, 0, 0, 0.3);
   transition: background-color 0.2s ease-in-out;
 }
 
@@ -174,14 +174,6 @@ body {
 .delete-btn:hover {
   cursor: pointer;
   background-color: #9b1515;
-}
-
-.pdf-btn {
-  background-color: #1649f3;
-}
-.pdf-btn:hover {
-  cursor: pointer;
-  background-color: #032287;
 }
 
 /*# sourceMappingURL=all.css.map */

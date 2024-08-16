@@ -46,7 +46,7 @@
 }
 
 .focused {
-  scale: (1.1);
+  scale: (1.05);
 }
 
 .error-list {
@@ -124,7 +124,7 @@
 }
 
 #is_adv_payer {
-  padding: 10px;
+  margin: 10px;
   & > li {
     list-style: none;
 
@@ -140,5 +140,6 @@
 }
 
 select {
+  margin: 10px;
   width: 100%;
 }

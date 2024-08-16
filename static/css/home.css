@@ -89,7 +89,7 @@ body {
 }
 
 .focused {
-  scale: 1.1;
+  scale: 1.05;
 }
 
 .error-list {
@@ -162,7 +162,7 @@ body {
 }
 
 #is_adv_payer {
-  padding: 10px;
+  margin: 10px;
 }
 #is_adv_payer > li {
   list-style: none;
@@ -177,6 +177,7 @@ body {
 }
 
 select {
+  margin: 10px;
   width: 100%;
 }
 

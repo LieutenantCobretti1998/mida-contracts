@@ -19,10 +19,12 @@
 }
 
 .header {
+  width: fit-content;
   font-size: 4rem;
 }
 
 .category-search {
+  width: fit-content;
   align-items: center;
   display: flex;
   gap: 2rem;
@@ -165,4 +167,11 @@
     font-size: $font-size-big;
     font-weight: $roboto-font-weight-bold;
   }
+}
+
+#default_input,
+#category {
+  height: 3rem;
+  padding-left: 5px;
+  border-radius: .35rem;
 }

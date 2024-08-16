@@ -47,7 +47,7 @@
 }
 
 .focused {
-  scale: (1.1);
+  scale: (1.05);
 }
 
 .error-list {
@@ -138,4 +138,8 @@
 #td-save {
   text-align: end;
    padding: 1.5rem;
+}
+
+select {
+  width: 100%;
 }

@@ -1,21 +1,15 @@
 .main_container {
   position: relative;
   display: flex;
-  gap: 7vw;
+  flex-direction: column;
+  gap: 1.5vw;
   background-color: $color-main-background;
-
 }
 #caption {
    margin-bottom: 5rem;
    font-size: $font-size-big;
 }
-
-select {
-  width: 100%;
-}
-
 .table {
-  border-radius: 8px;
   border-collapse: collapse;
   width: 70%;
   background-color: $color-white;
@@ -53,7 +47,7 @@ select {
 }
 
 .focused {
-  scale: (1.1);
+  scale: (1.05);
 }
 
 .error-list {
@@ -144,4 +138,32 @@ select {
 #td-save {
   text-align: end;
    padding: 1.5rem;
+}
+
+datalist {
+  max-width: 250px !important;
+  max-height: 250px !important;
+  overflow-y: scroll;
+}
+
+select {
+  width: 100%;
+}
+
+.hidden {
+  display: none;
+}
+
+.pdf-btn {
+  width: 80px;
+  height: 40px;
+  background-color: $color-blue;
+  color: white;
+  border-radius: 1rem;
+  transition: background-color .2s ease-in-out;
+
+  &:hover {
+    cursor: pointer;
+    background-color: $color-dark-blue;
+  }
 }

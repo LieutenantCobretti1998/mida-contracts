@@ -48,7 +48,8 @@ body {
 .main_container {
   position: relative;
   display: flex;
-  gap: 7vw;
+  flex-direction: column;
+  gap: 1.5vw;
   background-color: #EEEDEB;
 }
 
@@ -57,12 +58,7 @@ body {
   font-size: 2.5rem;
 }
 
-select {
-  width: 100%;
-}
-
 .table {
-  border-radius: 8px;
   border-collapse: collapse;
   width: 70%;
   background-color: white;
@@ -94,7 +90,7 @@ select {
 }
 
 .focused {
-  scale: 1.1;
+  scale: 1.05;
 }
 
 .error-list {
@@ -179,6 +175,33 @@ select {
 #td-save {
   text-align: end;
   padding: 1.5rem;
+}
+
+datalist {
+  max-width: 250px !important;
+  max-height: 250px !important;
+  overflow-y: scroll;
+}
+
+select {
+  width: 100%;
+}
+
+.hidden {
+  display: none;
+}
+
+.pdf-btn {
+  width: 80px;
+  height: 40px;
+  background-color: #1649f3;
+  color: white;
+  border-radius: 1rem;
+  transition: background-color 0.2s ease-in-out;
+}
+.pdf-btn:hover {
+  cursor: pointer;
+  background-color: #032287;
 }
 
 /*# sourceMappingURL=edit_act.css.map */

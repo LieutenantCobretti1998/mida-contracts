@@ -90,7 +90,7 @@ body {
 }
 
 .focused {
-  scale: 1.1;
+  scale: 1.05;
 }
 
 .error-list {
@@ -175,6 +175,10 @@ body {
 #td-save {
   text-align: end;
   padding: 1.5rem;
+}
+
+select {
+  width: 100%;
 }
 
 /*# sourceMappingURL=edit_contract.css.map */
