@@ -117,7 +117,7 @@
 
             </tbody>
         </table>
-
+    </form>
         <table class="table">
             <tbody class="contract-details">
                 <tr>
@@ -136,6 +136,11 @@
                 </tr>
 
                 <tr>
+                    <td class="table__text">remained amount</td>
+                    <td id="remained_amount">No Data</td>
+                </tr>
+
+                <tr>
                     <td class="table__text">adv payer</td>
                     <td id="adv_payer">No Data</td>
                 </tr>
@@ -146,7 +151,6 @@
                 </tr>
             </tbody>
         </table>
-    </form>
         {% block pop_up_message %}
             {% with messages = get_flashed_messages(with_categories=True) %}
                     {% if messages %}

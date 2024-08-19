@@ -137,6 +137,11 @@
             </tr>
 
             <tr>
+                <td class="table__text">remained amount</td>
+                <td id="remained_amount">No Data</td>
+            </tr>
+
+            <tr>
                 <td class="table__text">adv payer</td>
                 <td id="adv_payer">No Data</td>
             </tr>
@@ -197,6 +202,9 @@
         {% endblock pop_up_message %}
 {% endblock content_part %}
 {% block javascript %}
+    <script type="text/javascript">
+        const type_of_page = "acts";
+    </script>
     <script src="{{ url_for('static', filename='js/form_focus.js') }}"></script>
     <script type="module" src="{{ url_for('static', filename='js/file_loader.js') }}"></script>
     <script src="{{ url_for('static', filename='js/act_search.js') }}"></script>

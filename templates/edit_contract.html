@@ -104,6 +104,16 @@
 
                 <tr>
                     <td class="table__text">
+                        {{ form.categories.label() }}
+                    </td>
+
+                    <td>
+                        {{ form.categories }}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="table__text">
                         {{ form.pdf_file.label() }}
                     </td>
                     <td>
@@ -182,5 +192,5 @@
 {% block javascript %}
     <script src="{{ url_for('static', filename='js/form_focus.js') }}"></script>
     <script type="module" src="{{ url_for('static', filename='js/edit-listener.js') }}"></script>
-    <script src={{ url_for('static', filename='js/add_contract.js') }}></script>
+{#    <script src={{ url_for('static', filename='js/add_contract.js') }}></script>#}
 {% endblock javascript %}

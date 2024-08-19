@@ -8,12 +8,14 @@
 {% block content_part %}
     <section class="categories">
         <h1 class="header">Edit Category</h1>
-        <div class="category-search">
-
-            {{ form.category.label(for='default_input') }}
-            {{ form.category(id='default_input', placeholder=search_result.category_name) }}
-            {{ form.save(class='save-btn') }}
-        </div>
+        <form action="{{ url_for('parameters.update_category', category_id=id) }}" method="post">
+            <div class="category-search">
+                {{ form.csrf_token() }}
+                {{ form.category.label(for='default_input') }}
+                {{ form.category(id='default_input', placeholder=search_result.category_name) }}
+                {{ form.save(class='save-btn') }}
+            </div>
+        </form>
     </section>
 {% block pop_up_message %}
             {% with messages = get_flashed_messages(with_categories=True) %}
