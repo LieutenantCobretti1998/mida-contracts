@@ -129,9 +129,21 @@ function updateContractList(data, contracts_list) {
     const handle_selection_change = function () {
         const selected_option = this.options[this.selectedIndex];
         const data_id = selected_option.getAttribute("data-id");
+        const act_amount_el = document.querySelector("#act_amount");
+        const addition_amount_el = document.querySelector("#addition_amount");
+        const remained_amount_el = document.querySelector("#remained_amount");
         getContractInfo(data_id).then(data => {
-            if (data) {
+            if (data && type_of_page === "acts") {
                 updateContractDetails(data);
+                act_amount_el.addEventListener("input", () => {
+                    calculateRemainedMoney(remained_amount_el, data.remained_amount, act_amount_el);
+                })
+            } else {
+                updateContractDetails(data);
+                const total_contract_amount_el = document.querySelector("#amount");
+                addition_amount_el.addEventListener("input", () => {
+                    calculateAdditionalMoney(remained_amount_el, data.remained_amount, addition_amount_el, total_contract_amount_el, data.amount);
+                })
             }
         })
     }
@@ -169,6 +181,10 @@ function updateContractDetails(data) {
                         case "amount":
                             element.innerText = parseFloat(data[key]).toFixed(2);
                             break;
+                        case "remained_amount":
+                            const remained_amount_el = document.querySelector("#remained_amount");
+                            remained_amount_el.innerText = parseFloat(data[key]).toFixed(2);
+                            break;
                         case "date":
                             element.innerText = new Date(data[key]).toLocaleDateString();
                             break;
@@ -179,6 +195,7 @@ function updateContractDetails(data) {
                             element.innerHTML = "";
                             const button = document.createElement("button");
                             button.classList.add("pdf-btn");
+                            button.type = "button";
                             button.textContent = "View";
                             button.addEventListener("click", function (event) {
                                 window.open(`/contracts/preview_pdf/${data["id"]}`)
@@ -189,6 +206,43 @@ function updateContractDetails(data) {
                             element.innerText = data[key];
                 }
             }
+}
+
+/**
+ *
+ * @param {HTMLElement} remained_amount_el
+ * @param {string} remain_contract_amount
+ * @param {HTMLElement} act_amount_el
+ */
+function calculateRemainedMoney(remained_amount_el, remain_contract_amount, act_amount_el) {
+    if (act_amount_el.value === "") {
+         remained_amount_el.innerText = Number.parseFloat(remain_contract_amount).toFixed(2);
+        return;
+    }
+    const remained_amount = Number.parseFloat(remain_contract_amount) - Number.parseFloat(act_amount_el.value);
+    remained_amount_el.innerText = remained_amount.toFixed(2);
+}
+
+
+/**
+ *
+ * @param {HTMLElement} remained_amount_el
+ * @param {string} remain_contract_amount
+ * @param {HTMLElement} addition_amount_el
+ * @param {HTMLElement} total_amount_el
+ * @param {string} total_amount
+ */
+function calculateAdditionalMoney(remained_amount_el, remain_contract_amount, addition_amount_el,
+                                  total_amount_el, total_amount) {
+    if (addition_amount_el.value === "") {
+         remained_amount_el.innerText = Number.parseFloat(remain_contract_amount).toFixed(2);
+         total_amount_el.innerText = Number.parseFloat(total_amount).toFixed(2);
+        return;
+    }
+    const remained_amount = Number.parseFloat(remain_contract_amount) + Number.parseFloat(addition_amount_el.value);
+    const new_total_amount = Number.parseFloat(total_amount) + Number.parseFloat(addition_amount_el.value);
+    remained_amount_el.innerText = remained_amount.toFixed(2);
+    total_amount_el.innerText = new_total_amount.toFixed(2);
 }
 
 
