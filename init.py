@@ -31,6 +31,8 @@ def create_app() -> Flask:
     app.register_blueprint(check_companies_bp, url_prefix="/companies")
     from views.create_acts import create_act_bp
     app.register_blueprint(create_act_bp, url_prefix="/acts")
+    from views.create_additions import create_addition_bp
+    app.register_blueprint(create_addition_bp, url_prefix="/additions")
     from views.parameters import parameter_bp
     app.register_blueprint(parameter_bp, url_prefix="/parameters")
     # initialize of flask app and db
