@@ -13,10 +13,10 @@ class EditActForm(CreateAct):
                                                     NumberRange(min=1, max=1000000000, message=amount_error_message)]
                               )
     company_name = StringField("select a company",
-                               validators=[Optional(),
+                               validators=[
                                            Length(min=1, max=16, message=symbol_error_message),
                                            ])
-    contracts_list = SelectField("related contracts", validators=[Optional()],
+    contracts_list = SelectField("related contracts",
                                  default="Choose the contract", validate_choice=False)
     pdf_file_act = FileField("Upload pdf", validators=[Optional(),
                                                        FileAllowed(["pdf"], pdf_files_only)]

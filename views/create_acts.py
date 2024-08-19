@@ -1,10 +1,10 @@
-from flask import Blueprint, render_template, redirect, flash, url_for, current_app
+from flask import Blueprint, render_template, redirect, flash, url_for, current_app, abort
 from werkzeug.utils import secure_filename
-from sqlalchemy.exc import OperationalError
+from sqlalchemy.exc import OperationalError, NoResultFound, DBAPIError
 from forms.create_act_form import CreateAct
-from database.validators import ActsManager
+from database.validators import ActsManager, ActsSearchEngine
 from database.db_init import db
-from forms.custom_validators import add_contract_pdf
+from forms.custom_validators import add_contract_pdf, check_amount
 from forms.filters import filter_act_number
 
 create_act_bp = Blueprint('create_act', __name__)
@@ -22,7 +22,21 @@ def save_act():
     form = CreateAct()
     filtered_act_number = filter_act_number(form.act_number.data)
     act_manager = ActsManager(db.session)
+    search_engine = ActsSearchEngine(db.session)
     if form.validate():
+        try:
+            total_amount = search_engine.search_related_contract_amount(form.contract_id.data)
+            remained_amount = check_amount(form.act_amount.data, total_amount)
+            search_engine.decrease_amount(form.contract_id.data, remained_amount)
+
+        except NoResultFound:
+            abort(404)
+        except (DBAPIError, OperationalError):
+            flash("Something went wrong in the database", "error")
+            return render_template('create_act.html', form=form)
+        except ValueError:
+            flash("Act's amount is bigger than the total contract's amount. Please check act amount field", "warning")
+            return render_template('create_act.html', form=form)
         try:
             file = form.pdf_file_act.data
             filename = secure_filename(file.filename)
@@ -37,6 +51,7 @@ def save_act():
             act_manager.create_act(act_info)
             file.save(file_path)
             flash("The act is saved successfully!", "success")
+            db.session.commit()
             return redirect(url_for('create_act.create_act'))
 
         except OperationalError:
@@ -45,4 +60,4 @@ def save_act():
             return render_template('create_act.html', form=form)
     else:
         flash("Validation Error. Please check all fields", "error")
-    return render_template('add_contract.html', form=form)
+    return render_template('create_act.html', form=form)
