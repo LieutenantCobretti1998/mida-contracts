@@ -1,9 +1,10 @@
 from flask import Blueprint, jsonify, request
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError, NoResultFound
 from database.db_init import db
 from database.models import *
 from database.validators import (SearchEngine, CompanySearchEngine, ActsSearchEngine, CategoriesManager,
-                                 CategoriesSearchEngine)
+                                 CategoriesSearchEngine, EditCategory)
+from forms.edit_category import EditCategoryForm
 
 api_contracts_bp = Blueprint('api_contracts', __name__)
 api_companies_bp = Blueprint('api_companies', __name__)
@@ -16,6 +17,7 @@ column_map_contracts = {
     "Contract Number": ("contract_number", Contract),
     "Date": ("date", Contract),
     "Amount": ("amount", Contract),
+    "Remained Amount": ("remained_amount", Contract),
     "Adv Payer": ("adv_payer", Contract),
     "Category": ("category_id", Contract),
 }
@@ -185,6 +187,7 @@ def add_category():
 
 @api_categories_bp.route('/all_categories/remove_category/<int:category_id>', methods=['DELETE'])
 def delete_category(category_id):
+
     categories_manager = CategoriesManager(db.session)
     try:
         categories_manager.delete_category(category_id)
@@ -215,16 +218,26 @@ def get_search_for_categories(search):
     return jsonify(response)
 
 
-@api_categories_bp.route('/all_categories/update_category/<int:category_id>', methods=['UPDATE'])
-def update_category(category_id):
-    categories_manager = CategoriesManager(db.session)
+@api_categories_bp.route('/all_categories/update_category', methods=['PUT'])
+def update_category():
+    category_to_update = request.json.get('category_name')
+    category_id = request.json.get("id")
+    if len(category_to_update) > 30:
+        return jsonify({
+            "message": "Category is too long. Dont play with front validation:)"
+        }), 400
+    categories_manager = EditCategory(db.session, category_id)
     try:
-        categories_manager.delete_category(category_id)
+        categories_manager.category_update(category_to_update)
         return jsonify({
             "status": "success",
-            "message": "Category deleted successfully!"
+            "message": "Category updated successfully!"
         }), 200
     except SQLAlchemyError:
         return jsonify({
             "message": "An error occurred while deleting category. Something wrong with the database"
         }), 500
+    except NoResultFound:
+        return jsonify({
+            "message": "No such category exists. Why are you change the id ?))))"
+        }), 400
