@@ -1,5 +1,5 @@
 "use strict";
-
+import {grid as categories_grid} from "./tableForCategories.bundle.js";
 export default function openPopUpMenu(url, csrf_token) {
        const main_container = document.querySelector(".main_container");
        let delete_type;
@@ -12,9 +12,6 @@ export default function openPopUpMenu(url, csrf_token) {
                break;
            case url.includes("delete_act"):
                delete_type = "act";
-               break;
-           case url.includes("remove_category"):
-               delete_type = "category";
                break;
        }
        main_container.insertAdjacentHTML("afterend",
@@ -29,7 +26,10 @@ export default function openPopUpMenu(url, csrf_token) {
         main_container.insertAdjacentHTML("afterend", `<div class="backdrop"></div>`)
         // Attach event listeners directly to buttons
         const confirmationDialog = document.querySelector(".confirmation_dialog");
-        confirmationDialog.querySelector(".yes").addEventListener("click", () => deleteContract(url, csrf_token));
+        confirmationDialog.querySelector(".yes").addEventListener("click", () => {
+            deleteContract(url, csrf_token);
+            closePopUpMenu();
+        });
         confirmationDialog.querySelector(".no").addEventListener("click", closePopUpMenu);
 
 }
@@ -51,13 +51,8 @@ function deleteContract(url, csrf_token) {
         }
     })
         .then(response => {response.json()
-        .then(data => {
-            if (data.status === "success") {
-                window.location.reload();
-            }
-            else {
-                window.location.reload();
-            }
+        .then(() => {
+            window.location.reload();
         })
     })
 }
