@@ -7,7 +7,7 @@ import sqlalchemy
 from flask import current_app
 from flask_sqlalchemy.session import Session
 from sqlalchemy import or_, desc, asc, func, and_
-from sqlalchemy.exc import NoResultFound, SQLAlchemyError, DBAPIError
+from sqlalchemy.exc import NoResultFound, SQLAlchemyError, DBAPIError, OperationalError
 from sqlalchemy.orm import InstrumentedAttribute
 from database.models import *
 from abc import ABC
@@ -171,6 +171,7 @@ class SearchEngine(ValidatorWrapper):
             "contract_number": contract.contract_number,
             "date": contract.date,
             "amount": float(contract.amount),
+            "related_amount": float(contract.remained_amount),
             "adv_payer": bool(contract.adv_payer),
             "category": contract.category.category_name
         } for contract in contracts]
@@ -208,7 +209,8 @@ class SearchEngine(ValidatorWrapper):
             "voen": contract.company.voen,
             "contract_number": contract.contract_number,
             "date": contract.date,
-            "amount": contract.amount,
+            "amount": float(contract.amount),
+            "related_amount": float(contract.remained_amount),
             "adv_payer": bool(contract.adv_payer),
             "category": contract.category.category_name
         } for contract in contracts]
@@ -230,6 +232,7 @@ class SearchEngine(ValidatorWrapper):
                     "contract_number": contract.contract_number
                 } for contract in company.contracts
             ]
+
             return contracts
         return []
 
@@ -241,6 +244,7 @@ class SearchEngine(ValidatorWrapper):
                 contract_number=contract.contract_number,
                 date=contract.date,
                 amount=contract.amount,
+                remained_amount=contract.remained_amount,
                 adv_payer=contract.adv_payer,
                 pdf_file=None
             )
@@ -311,16 +315,18 @@ class EditContract(ValidatorWrapper):
         return new_pdf_path
 
     # Helpers methods for update logic
-
     #  Main update logic is here
     def update_data(self, changes: dict, pdf_file: flask) -> tuple[bool, str]:
         """
-            The main update logic after contract's edit. it will check all the possibilities of updating or refuse the
+        :param changes:
+        :param pdf_file:
+        :return: tuple[bool, str]
+        The main update logic after contract's edit. it will check all the possibilities of updating or refuse the
             contract to update based on different situations
         """
         update_status = {'company_and_voen_updated': False}
         contract_to_update = self.db_session.query(Contract).join(Contract.company).filter(
-            Contract.id == int(self.id)).first()
+            Contract.id == int(self.id)).with_for_update().first()
         if not contract_to_update:
             self.db_session.close()
             return False, f"Contract was not found in database"
@@ -354,7 +360,7 @@ class EditContract(ValidatorWrapper):
                                             "There is the file path problem. It was corrupted or not existed."
                                             "Please, load a new pdf first")
                                 else:
-                                    return False, (f"There is no such company in the database: {value}.Please go to the"
+                                    return False, (f"There is no such company in the database or remained amount is corrupted: {value}.Please go to the"
                                                    f" create contract form page")
                             case "voen":
                                 existed_voen_id = self.is_voen_exists(value)
@@ -640,7 +646,6 @@ class ActsManager(ValidatorWrapper):
     def create_act(self, acts_info_dict: dict) -> None:
         act = Acts(**acts_info_dict)
         self.db_session.add(act)
-        self.db_session.commit()
 
     def delete_pdf_file(self, act_id: int) -> None:
         act = self.db_session.query(Acts).filter_by(id=act_id).first()
@@ -655,18 +660,33 @@ class ActsManager(ValidatorWrapper):
         """
             :param act_id:
             :return: bool
+            The method which is help to delete the act
         """
         act = self.db_session.query(Acts).filter_by(id=act_id).first()
         if act:
             try:
+                related_contract = act.contract.id
                 self.delete_pdf_file(act_id)
+                self.add_amount_to_contract(related_contract, act.amount)
                 self.db_session.delete(act)
                 return True
-            except DBAPIError as e:
+            except DBAPIError:
                 return False
-            except FileNotFoundError as e:
+            except FileNotFoundError:
+                return False
+            except NoResultFound:
+                return False
+            except AttributeError:
                 return False
         return False
+
+    def add_amount_to_contract(self, contract_id: int, act_amount: float):
+        contract = self.db_session.query(Contract).filter_by(id=contract_id).first()
+        if contract:
+            new_remained_amount = contract.remained_amount + act_amount
+            contract.remained_amount = new_remained_amount
+        else:
+            raise NoResultFound
 
 
 class ActsSearchEngine(SearchEngine):
@@ -703,6 +723,67 @@ class ActsSearchEngine(SearchEngine):
 
         raise NoResultFound
 
+    def search_related_contract_amount(self, contract_id: int) -> float:
+        """
+        :param contract_id:
+        :return:
+        """
+        contract = self.db_session.query(Contract).filter_by(id=contract_id).first()
+        if contract:
+            return contract.remained_amount
+        raise NoResultFound
+
+    def decrease_amount(self, contract_id: int, remained_amount: float) -> None:
+        """
+        :param contract_id:
+        :param remained_amount:
+        :return None:
+        """
+        contract = self.db_session.query(Contract).filter_by(id=contract_id).first()
+        if contract:
+            try:
+                contract.remained_amount = remained_amount
+            except DBAPIError:
+                raise DBAPIError
+            except OperationalError:
+                raise OperationalError
+        else:
+            raise NoResultFound
+
+    def decrease_or_increase_difference_amount(self, contract_id: int, remained_amount: float) -> None:
+        """
+        :param contract_id:
+        :param remained_amount:
+        :return None:
+        """
+        contract = self.db_session.query(Contract).filter_by(id=contract_id).first()
+        if contract:
+            try:
+                contract.remained_amount -= remained_amount
+            except DBAPIError:
+                raise DBAPIError
+            except OperationalError:
+                raise OperationalError
+        else:
+            raise NoResultFound
+
+    def add_amount(self, contract_id: int, difference: float):
+        """
+        :param contract_id:
+        :param difference:
+        :return:
+        """
+        contract = self.db_session.query(Contract).filter_by(id=contract_id).first()
+        if contract:
+            try:
+                contract.remained_amount -= difference
+            except DBAPIError:
+                raise DBAPIError
+            except OperationalError:
+                raise OperationalError
+        else:
+            raise NoResultFound
+
 
 class EditAct(EditContract):
     def __init__(self, db_session: Session, act_id: int):
@@ -728,8 +809,6 @@ class EditAct(EditContract):
         for key, value in changes.items():
             try:
                 if value != act_to_update_dict[key] and value is not None:
-                    print(f"value: {value}")
-                    print(f"key: {key}")
                     if key == "pdf_file_path":
                         try:
                             new_pdf_path = self.change_pdf_itself(act_to_update_dict[key], value)
