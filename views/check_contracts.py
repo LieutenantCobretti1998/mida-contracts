@@ -1,6 +1,8 @@
 from flask import Blueprint, render_template, redirect, url_for, jsonify, flash, send_file, abort
 from sqlalchemy.exc import NoResultFound
 from werkzeug.utils import secure_filename
+
+from forms.custom_validators import calculate_amount
 from forms.filters import *
 from forms.edit_contract_form import EditContractForm
 from database.db_init import db
@@ -31,8 +33,13 @@ def get_contract(contract_id):
 def edit_contract(contract_id):
     try:
         form = EditContractForm()
+        contract_manager = ContractManager(db.session)
+        categories = contract_manager.search_categories()
+        form.categories.choices = [(category.id, category.category_name) for category in categories]
         search_engine = SearchEngine(db.session, contract_id)
         search_result = search_engine.search_company_with_contract()
+        form.categories.default = search_result.category_id
+        form.process()
         return render_template("edit_contract.html",
                                search_result=search_result,
                                contract_id=contract_id,
@@ -45,14 +52,34 @@ def edit_contract(contract_id):
 def update_contract(contract_id):
     search_engine = SearchEngine(db.session, contract_id)
     edit_engine = EditContract(db.session, contract_id)
-    search_result = search_engine.search_company_with_contract()
+    contract_manager = ContractManager(db.session)
+    categories = contract_manager.search_categories()
     original_data = search_engine.search_company_with_contract()
     form = EditContractForm()
+    form.categories.choices = [(category.id, category.category_name) for category in categories]
+    form.categories.default = original_data.category_id
+    selected_category_id = form.categories.data
+    valid_category = next((cat for cat in categories if cat.id == selected_category_id), None)
+    if valid_category is None:
+        flash('Invalid category selected. Please choose a valid option.', 'error')
+        return redirect(url_for('all_contracts.edit_contract', contract_id=contract_id))
     if form.validate_on_submit():
+        new_remained_amount = None
         file = form.pdf_file.data
         filename = ""
         if file:
             filename = secure_filename(make_unique(f"{file.filename}"))
+        if (original_data.amount != form.amount.data) and form.amount.data:
+            try:
+                new_remained_amount = calculate_amount(original_data.amount, form.amount.data,
+                                                       original_data.remained_amount)
+            except ValueError:
+                flash(
+                    "The amount can be less than the original one. Delete the acts in order to increase the remained amount.",
+                    "warning")
+                return render_template('edit_contract.html', form=form, contract_id=contract_id,
+                                       search_result=original_data)
+
         data_dict = dict(
             company_name=filter_string_fields(
                 form.company.data) if form.company.data else original_data.company.company_name,
@@ -61,8 +88,10 @@ def update_contract(contract_id):
                 form.contract_number.data) if form.contract_number.data else original_data.contract_number,
             date=form.date.data if form.date.data else original_data.date,
             amount=float(form.amount.data) if form.amount.data else original_data.amount,
+            remained_amount=new_remained_amount if not None else original_data.remained_amount,
             adv_payer=True if form.is_adv_payer.data else False,
             pdf_file_path=filename if form.pdf_file.data else None,
+            category_id=form.categories.data if form.categories.data else original_data.category_id,
 
         )
         success, message = edit_engine.update_data(data_dict, form.pdf_file.data)
@@ -73,10 +102,10 @@ def update_contract(contract_id):
         else:
             db.session.rollback()
             flash(message, "warning")
-            return redirect(url_for('all_contracts.edit_contract', contract_id=contract_id))
+            return render_template('edit_contract.html', form=form, contract_id=contract_id, search_result=original_data)
     else:
         flash("Validation Error. Please check all fields", "error")
-        return render_template('edit_contract.html', form=form, contract_id=contract_id, search_result=search_result)
+        return render_template('edit_contract.html', form=form, contract_id=contract_id, search_result=original_data)
 
 
 @check_contracts_bp.route('/preview_pdf/<int:contract_id>', methods=['GET'])

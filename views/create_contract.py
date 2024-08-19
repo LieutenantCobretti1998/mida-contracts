@@ -28,7 +28,8 @@ def save_contract():
     filtered_contract = filter_contract_number(form.contract_number.data)
     contract_manager = ContractManager(db.session)
     categories = contract_manager.search_categories()
-    adv_payer = True if form.is_adv_payer.data else False
+    form.categories.choices = [(category.id, category.category_name) for category in categories]
+    print(form.is_adv_payer.data)
     if form.validate():
         selected_category_id = form.categories.data
         valid_category = next((cat for cat in categories if cat.id == selected_category_id), None)
@@ -44,8 +45,9 @@ def save_contract():
                 contract_number=filtered_contract,
                 date=form.date.data,
                 amount=float(form.amount.data),
+                remained_amount=float(form.amount.data),
                 company_id=company.id,
-                adv_payer=adv_payer,
+                adv_payer=form.is_adv_payer.data,
                 pdf_file_path=file_path,
                 category_id=form.categories.data
             )
