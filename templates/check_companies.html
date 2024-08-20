@@ -8,7 +8,7 @@
 {% block class_all_company_li %}remove-pointer{% endblock class_all_company_li %}
 
 {% block content_part %}
-    <div id="results"></div>
+    <div id="results" class="results-table"></div>
     {% block pop_up_message %}
             {% with messages = get_flashed_messages(with_categories=True) %}
                     {% if messages %}

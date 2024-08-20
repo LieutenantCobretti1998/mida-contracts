@@ -201,6 +201,9 @@
         {% endblock pop_up_message %}
 {% endblock content_part %}
 {% block javascript %}
+    <script type="text/javascript">
+        const type_of_page = "acts";
+    </script>
     <script src="{{ url_for('static', filename='js/form_focus.js') }}"></script>
     <script type="module" src="{{ url_for('static', filename='js/file_loader.js') }}"></script>
     <script type="module" src="{{ url_for('static', filename='js/edit-listener-act.js') }}"></script>
