@@ -716,6 +716,35 @@ class ActsSearchEngine(SearchEngine):
         } for act in acts]
         return acts_list, total_count
 
+    def search_query_api(self, per_page: int, offset: int, sort_dir: str, mapping: tuple) -> (
+            tuple)[list[dict[str, InstrumentedAttribute | Any]], int]:
+        """
+        :param per_page:
+        :param offset:
+        :param sort_dir:
+        :param mapping:
+        :return:
+        """
+        query = (self.db_session
+        .query(Acts)
+        .join(Contract, Contract.id == Acts.contract_id)
+        .filter(or_(
+            Acts.act_number.ilike(f"%{self.search}%"),
+            Acts.amount.ilike(f"%{self.search}%"),
+            Acts.date.ilike(f"%{self.search}%"),
+        )))
+
+        query = self.asc_or_desc(query, sort_dir, mapping)
+        total_count = query.count()
+        acts = query.offset(offset).limit(per_page).all()
+        acts_list = [{
+            "id": act.id,
+            "act_number": act.act_number,
+            "date": act.date,
+            "amount": float(act.amount),
+        } for act in acts]
+        return acts_list, total_count
+
     def search_act(self):
         query = self.db_session.query(Acts).filter_by(id=self.search).first()
         if query:
@@ -938,4 +967,131 @@ class EditCategory(EditContract):
             self.db_session.commit()
             return True
         self.db_session.rollback()
+        raise NoResultFound
+
+
+class AdditionManager(ActsManager):
+    def __init__(self, db_session: Session):
+        super().__init__(db_session)
+
+    def create_addition(self, addition_info_dict: dict) -> None:
+        addition = Additions(**addition_info_dict)
+        self.db_session.add(addition)
+
+    def delete_pdf_file(self, addition_id: int) -> None:
+        addition = self.db_session.query(Additions).filter_by(id=addition_id).first()
+        if addition:
+            try:
+                act_pdf_path = addition.pdf_file_path
+                os.remove(act_pdf_path)
+            except FileNotFoundError:
+                raise FileNotFoundError("Pdf file is not found")
+
+    def decrease_amount_from_contract(self, contract_id: int, addition_amount: float):
+        contract = self.db_session.query(Contract).filter_by(id=contract_id).first()
+        if contract:
+            new_remained_amount = contract.remained_amount - addition_amount
+            contract.amount -= addition_amount
+            contract.remained_amount = new_remained_amount
+        else:
+            raise NoResultFound
+
+    def delete_addition(self, addition_id: int) -> bool:
+        """
+            :param act_id:
+            :return: bool
+            The method which is help to delete the addition
+        """
+        addition = self.db_session.query(Additions).filter_by(id=addition_id).first()
+        if addition:
+            try:
+                related_contract = addition.contract.id
+                self.delete_pdf_file(addition_id)
+                self.decrease_amount_from_contract(related_contract, addition.amount)
+                self.db_session.delete(addition)
+                return True
+            except DBAPIError:
+                return False
+            except FileNotFoundError:
+                return False
+            except NoResultFound:
+                return False
+            except AttributeError:
+                return False
+        return False
+
+
+class AdditionSearchEngine(ActsSearchEngine):
+    def __init__(self, db_session: Session, search: str | int = None):
+        super().__init__(db_session, search)
+
+    def increase_amount(self, contract_id: int, addition: float) -> None:
+        contract = self.db_session.query(Contract).filter_by(id=contract_id).first()
+        if contract:
+            try:
+                contract.remained_amount += addition
+                contract.amount += addition
+            except DBAPIError:
+                raise DBAPIError
+            except OperationalError:
+                raise OperationalError
+        else:
+            raise NoResultFound
+
+    def get_all_results_api(self, per_page: int, offset: int, sort_dir: str, mapping: tuple) -> tuple[
+        list[dict[str, InstrumentedAttribute | Any]], int]:
+        """
+        :param per_page:
+        :param offset:
+        :param sort_dir:
+        :param mapping:
+        :return:
+        """
+        query = self.db_session.query(Additions).filter_by(contract_id=self.search)
+
+        query = self.asc_or_desc(query, sort_dir, mapping)
+        total_count = query.count()
+        additions = query.offset(offset).limit(per_page).all()
+        addition_list = [{
+            "id": addition.id,
+            "addition_number": addition.addition_number,
+            "date": addition.date,
+            "amount": float(addition.amount),
+        } for addition in additions]
+        return addition_list, total_count
+
+    def search_query_api(self, per_page: int, offset: int, sort_dir: str, mapping: tuple) -> (
+            tuple)[list[dict[str, InstrumentedAttribute | Any]], int]:
+        """
+        :param per_page:
+        :param offset:
+        :param sort_dir:
+        :param mapping:
+        :return:
+        """
+        query = (self.db_session
+        .query(Additions)
+        .join(Contract, Contract.id == Additions.contract_id)
+        .filter(or_(
+            Additions.addition_number.ilike(f"%{self.search}%"),
+            Additions.amount.ilike(f"%{self.search}%"),
+            Additions.date.ilike(f"%{self.search}%"),
+        )))
+
+        query = self.asc_or_desc(query, sort_dir, mapping)
+        total_count = query.count()
+        additions = query.offset(offset).limit(per_page).all()
+        addition_list = [{
+            "id": addition.id,
+            "addition_number": addition.addition_number,
+            "date": addition.date,
+            "amount": float(addition.amount),
+        } for addition in additions]
+        return addition_list, total_count
+
+    def search_addition(self):
+        query = self.db_session.query(Additions).filter_by(id=self.search).first()
+        if query:
+            return query
+
         raise NoResultFound

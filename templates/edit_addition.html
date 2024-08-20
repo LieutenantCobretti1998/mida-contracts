@@ -1,15 +1,15 @@
 {% extends 'base.html' %}
-{% block title %} Add an act {% endblock title %}
-{% block style %} <link rel="stylesheet" href="{{ url_for('static', filename='css/add_act.css') }}"> {% endblock style %}
-{% block class_create_addition %}active{% endblock class_create_addition %}
-{% block class_create_addition_li %}remove-pointer{% endblock class_create_addition_li %}
+{% block title %} Edit Act {% endblock title %}
+{% block style %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edit_act.css') }}">
+{% endblock style %}
 {% block content_part %}
-    <form action="{{ url_for('create_addition.save_addition') }}" method="post" enctype="multipart/form-data">
+    <form action="{{ url_for('all_acts.update_act', act_id=addition_id) }}"  method="post" enctype="multipart/form-data">
         {{ form.csrf_token() }}
         {{ form.contract_id }}
-        <table  class="table">
+        <table  class="table" data-edit-mode="true">
             <caption id="caption">
-                <h1>Add a new addition</h1>
+                <h1>Edit Addition</h1>
             </caption>
             <tbody class="table__body">
                 <tr>
@@ -18,7 +18,7 @@
                     </td>
 
                     <td>
-                        {{ form.company_name(list="companies_list", class="table__input rounded", placeholder="COMPANIES", id="default_input") }}
+                        {{ form.company_name(list="companies_list", class="table__input rounded", placeholder=search_result.contract.company.company_name, id="default_input") }}
                         <datalist id="companies_list"></datalist>
                         <ul class="error-list">
                             {% for error in form.company_name.errors %}
@@ -48,7 +48,7 @@
                     </td>
                     <td>
                         <div>
-                            {{ form.addition_number(class="table__input rounded", placeholder="ACT NUMBER") }}
+                            {{ form.addition_number(class="table__input rounded", placeholder=search_result.addition_number) }}
                             <ul class="error-list">
                             {% for error in form.addition_number.errors %}
                                 <li class="error-list__message">{{ error }}</li>
@@ -63,7 +63,7 @@
                     </td>
                     <td>
                         <div>
-                            {{ form.addition_amount(class="table__input rounded", placeholder="AMOUNT")  }}
+                            {{ form.addition_amount(class="table__input rounded", placeholder="%.2f"|format(search_result.amount))  }}
                             <ul class="error-list">
                             {% for error in form.addition_amount.errors %}
                                 <li class="error-list__message">{{ error }}</li>
@@ -79,7 +79,7 @@
                     </td>
 
                     <td>
-                        {{ form.addition_date(class="table__input rounded", placeholder="DATE") }}
+                        {{ form.addition_date(class="table__input rounded") }}
                         <ul class="error-list">
                             {% for error in form.addition_date.errors %}
                                 <li class="error-list__message">{{ error }}</li>
@@ -118,41 +118,40 @@
             </tbody>
         </table>
     </form>
+        <table class="table">
+            <tbody class="contract-details">
+                <tr>
+                    <td class="table__text">contract number</td>
+                    <td id="contract_number">No Data</td>
+                </tr>
 
-    <table class="table">
-        <tbody class="contract-details">
-            <tr>
-                <td class="table__text">contract number</td>
-                <td id="contract_number">No Data</td>
-            </tr>
+                 <tr>
+                    <td class="table__text">date</td>
+                    <td id="date">No Data</td>
+                </tr>
 
-             <tr>
-                <td class="table__text">date</td>
-                <td id="date">No Data</td>
-            </tr>
+                <tr>
+                    <td class="table__text">amount</td>
+                    <td id="amount">No Data</td>
+                </tr>
 
-            <tr>
-                <td class="table__text">amount</td>
-                <td id="amount">No Data</td>
-            </tr>
+                <tr>
+                    <td class="table__text">remained amount</td>
+                    <td id="remained_amount">No Data</td>
+                </tr>
 
-            <tr>
-                <td class="table__text">remained amount</td>
-                <td id="remained_amount">No Data</td>
-            </tr>
+                <tr>
+                    <td class="table__text">adv payer</td>
+                    <td id="adv_payer">No Data</td>
+                </tr>
 
-            <tr>
-                <td class="table__text">adv payer</td>
-                <td id="adv_payer">No Data</td>
-            </tr>
-
-            <tr>
-                <td class="table__text">pdf file</td>
-                <td id="pdf_file">No Data</td>
-            </tr>
-        </tbody>
-    </table>
-    {% block pop_up_message %}
+                <tr>
+                    <td class="table__text">pdf file</td>
+                    <td id="pdf_file">No Data</td>
+                </tr>
+            </tbody>
+        </table>
+        {% block pop_up_message %}
             {% with messages = get_flashed_messages(with_categories=True) %}
                     {% if messages %}
                         <div class="error">
@@ -202,10 +201,8 @@
         {% endblock pop_up_message %}
 {% endblock content_part %}
 {% block javascript %}
-    <script type="text/javascript">
-        const type_of_page = "additions";
-    </script>
     <script src="{{ url_for('static', filename='js/form_focus.js') }}"></script>
     <script type="module" src="{{ url_for('static', filename='js/file_loader.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/edit-listener-act.js') }}"></script>
     <script src="{{ url_for('static', filename='js/act_search.js') }}"></script>
 {% endblock javascript %}

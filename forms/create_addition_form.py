@@ -17,7 +17,7 @@ class CreateAddition(FlaskForm):
                                            ])
     contracts_list = SelectField("related contracts", validators=[DataRequired(message=empty_field)],
                                  default="Choose the contract", validate_choice=False)
-    pdf_file_addition = FileField("Upload pdf", validators=[FileRequired(message=empty_field),
+    pdf_file_act = FileField("Upload pdf", validators=[FileRequired(message=empty_field),
                                                        FileAllowed(["pdf"], pdf_files_only)]
                              )
     contract_id = HiddenField("contract_id")
