@@ -12,6 +12,7 @@ from sqlalchemy.orm import InstrumentedAttribute
 from database.models import *
 from abc import ABC
 from database.models import Companies, Category
+from forms.custom_validators import check_amount
 
 
 class ValidatorWrapper(ABC):
@@ -819,6 +820,27 @@ class EditAct(EditContract):
         super().__init__(db_session, act_id)
         self.act_id = act_id
 
+    def change_amount(self, old_contract_id: int, new_contract_id: int, act_amount: float) -> None:
+        """
+        :param old_contract_id:
+        :param new_contract_id:
+        :param act_amount:
+        :return:
+        Proper change of the amount during contract changes
+        """
+        old_contract = self.db_session.query(Contract).filter_by(id=old_contract_id).first()
+        new_contract = self.db_session.query(Contract).filter_by(id=new_contract_id).first()
+        if not old_contract and not new_contract:
+            raise NoResultFound
+        print(act_amount)
+        print(new_contract.remained_amount)
+        try:
+            check_amount(act_amount, new_contract.remained_amount)
+            old_contract.remained_amount += act_amount
+            new_contract.remained_amount -= act_amount
+        except ValueError:
+            raise ValueError
+
     def update_data(self, changes: dict, pdf_file: flask = None, *args, **kwargs) -> tuple[bool, str]:
         """
         :param changes:
@@ -830,12 +852,13 @@ class EditAct(EditContract):
         contract to update based on different situations
         """
         act_to_update = self.db_session.query(Acts).filter_by(id=self.act_id).first()
-
         if not act_to_update:
             return False, f"Act was not found in database"
         act_to_update_dict = {column.name: getattr(act_to_update, column.name) for column in
                               act_to_update.__table__.columns}
         for key, value in changes.items():
+            act_amount = changes["act_amount"]
+
             try:
                 if value != act_to_update_dict[key] and value is not None:
                     if key == "pdf_file_path":
@@ -845,6 +868,21 @@ class EditAct(EditContract):
                             pdf_file.save(new_pdf_path)
                         except FileNotFoundError:
                             return False, "There is the file path problem. It was corrupted or not existed."
+                    elif key == "contract_id":
+                        try:
+                            setattr(act_to_update, key, value)
+                            old_contract = act_to_update_dict["contract_id"]
+                            act_amount = changes["act_amount"]
+                            print(act_amount)
+
+                            self.change_amount(old_contract, value, act_amount)
+                        except NoResultFound:
+                            return False, "There is no such contract in db."
+                        except ValueError:
+                            return False, "The contract's you want to link the act is smaller than act's amount."
+                        except (DBAPIError, OperationalError):
+                            self.db_session.rollback()
+                            return False, "An error occurred with the database. Please try again later"
                     else:
                         setattr(act_to_update, key, value)
                 else:
@@ -852,7 +890,7 @@ class EditAct(EditContract):
             except sqlalchemy.exc.DBAPIError:
                 self.db_session.rollback()
                 return False, "An error occurred with the database. Please try again later"
-        return True, "The contract was updated successfully"
+        return True, "The act was updated successfully"
 
 
 class CategoriesManager(ValidatorWrapper):
