@@ -1,5 +1,4 @@
 "use strict";
-import {grid as categories_grid} from "./tableForCategories.bundle.js";
 export default function openPopUpMenu(url, csrf_token) {
        const main_container = document.querySelector(".main_container");
        let delete_type;

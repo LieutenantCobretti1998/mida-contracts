@@ -1,0 +1,17 @@
+{
+  "name": "mida-contracts",
+  "type": "module",
+  "version": "1.0.0",
+  "dependencies": {
+    "gridjs": "^6.2.0"
+  },
+  "scripts": {
+    "watch-other": "webpack --config webpack.config.js"
+  },
+  "devDependencies": {
+    "css-loader": "^7.1.2",
+    "style-loader": "^4.0.0",
+    "webpack": "^5.93.0",
+    "webpack-cli": "^5.1.4"
+  }
+}
