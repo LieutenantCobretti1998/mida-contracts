@@ -23,7 +23,6 @@ def get_act(act_id):
     except NoResultFound:
         abort(404)
 
-
 @check_acts_bp.route('/act/<int:act_id>', methods=['GET'])
 def edit_act(act_id):
     try:
@@ -46,18 +45,19 @@ def update_act(act_id):
     form = EditActForm()
 
     if form.validate_on_submit():
-        try:
-            difference = check_act_amount_difference(form.act_amount.data, original_data.amount)
-            check_amount(form.act_amount.data, original_data.amount)
-            search_engine.decrease_or_increase_difference_amount(form.contract_id.data, difference)
-        except NoResultFound:
-            abort(404)
-        except (DBAPIError, OperationalError):
-            flash("Something went wrong in the database", "error")
-            return render_template('edit_act.html', form=form, act_id=act_id, search_result=original_data)
-        except ValueError:
-            flash("Act's amount is bigger than the total contract's amount. Please check act amount field", "warning")
-            return render_template('edit_act.html', form=form, act_id=act_id, search_result=original_data)
+        if form.act_amount.data:
+            try:
+                difference = check_act_amount_difference(form.act_amount.data, original_data.amount)
+                check_amount(form.act_amount.data, original_data.amount)
+                search_engine.decrease_or_increase_difference_amount(form.contract_id.data, difference)
+            except NoResultFound:
+                abort(404)
+            except (DBAPIError, OperationalError):
+                flash("Something went wrong in the database", "error")
+                return render_template('edit_act.html', form=form, act_id=act_id, search_result=original_data)
+            except ValueError:
+                flash("Act's amount is bigger than the total contract's amount. Please check act amount field", "warning")
+                return render_template('edit_act.html', form=form, act_id=act_id, search_result=original_data)
         file = form.pdf_file_act.data
         filename = ""
         if file:
@@ -104,7 +104,7 @@ def delete_act(act_id):
             'status': 'success',
         }), 200
     else:
-        flash("Could not delete the contract. Something went wrong on the server side. Maybe data is outdated", "error")
+        flash("Could not delete the act. Something went wrong on the server side. Maybe data is outdated", "error")
         db.session.rollback()
         return jsonify({
             'status': 'error',

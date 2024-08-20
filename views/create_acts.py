@@ -34,6 +34,7 @@ def save_act():
         except (DBAPIError, OperationalError):
             flash("Something went wrong in the database", "error")
             return render_template('create_act.html', form=form)
+
         except ValueError:
             flash("Act's amount is bigger than the total contract's amount. Please check act amount field", "warning")
             return render_template('create_act.html', form=form)
@@ -54,10 +55,11 @@ def save_act():
             db.session.commit()
             return redirect(url_for('create_act.create_act'))
 
-        except OperationalError:
+        except (OperationalError, DBAPIError):
             flash("Something went wrong. transaction was restored", "error")
             db.session.rollback()
             return render_template('create_act.html', form=form)
     else:
         flash("Validation Error. Please check all fields", "error")
     return render_template('create_act.html', form=form)
+
