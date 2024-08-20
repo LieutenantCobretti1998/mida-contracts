@@ -99,4 +99,3 @@ def calculate_amount(original_amount: float, new_amount: float, old_remained_amo
     if new_remained_amount < 0:
         raise ValueError
     return new_remained_amount
-
