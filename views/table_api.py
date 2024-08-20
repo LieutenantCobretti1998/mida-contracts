@@ -3,13 +3,13 @@ from sqlalchemy.exc import SQLAlchemyError, NoResultFound
 from database.db_init import db
 from database.models import *
 from database.validators import (SearchEngine, CompanySearchEngine, ActsSearchEngine, CategoriesManager,
-                                 CategoriesSearchEngine, EditCategory)
-from forms.edit_category import EditCategoryForm
+                                 CategoriesSearchEngine, EditCategory, AdditionSearchEngine)
 
 api_contracts_bp = Blueprint('api_contracts', __name__)
 api_companies_bp = Blueprint('api_companies', __name__)
 api_acts_bp = Blueprint('api_acts', __name__)
 api_categories_bp = Blueprint('api_categories', __name__)
+api_additions_bp = Blueprint('api_additions', __name__)
 # Dictionary of tuples
 column_map_contracts = {
     "Company Name": ("company_name", Companies),
@@ -32,6 +32,12 @@ column_map_acts = {
     "Act Number": ("act_number", Acts),
     "Act Amount": ("amount", Acts),
     "Date": ("date", Acts),
+}
+
+column_map_additions = {
+    "Addition Number": ("addition_number", Additions),
+    "Addition Amount": ("amount", Additions),
+    "Date": ("date", Additions),
 }
 
 column_map_categories = {
@@ -148,6 +154,59 @@ def get_related_acts(contract_id):
     return jsonify(response)
 
 
+@api_acts_bp.route('/related_acts/<int:contract_id>/<string:search>', methods=['GET'])
+def get_search_related_acts(contract_id, search):
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('limit', 10, type=int)
+    offset = (page - 1) * per_page
+    order_by = request.args.get('order_by', 'Date')
+    direction = request.args.get('dir', 'desc')
+    mapping_results = column_map_acts.get(order_by, ("id", Acts))
+    search_engine = ActsSearchEngine(db.session, search)
+    acts_list, total_count = search_engine.search_query_api(per_page, offset, direction, mapping_results)
+    response = {
+        "data": acts_list,
+        "total_count": total_count
+    }
+    return jsonify(response)
+
+
+# Additions
+@api_additions_bp.route('/related_additions/<int:contract_id>', methods=['GET'])
+def get_related_additions(contract_id):
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('limit', 10, type=int)
+    offset = (page - 1) * per_page
+    order_by = request.args.get('order_by', 'Date')
+    direction = request.args.get('dir', 'desc')
+    mapping_results = column_map_additions.get(order_by, ("id", Additions))
+    search_engine = AdditionSearchEngine(db.session, contract_id)
+    addition_list, total_count = search_engine.get_all_results_api(per_page, offset, direction, mapping_results)
+    response = {
+        "data": addition_list,
+        "total_count": total_count
+    }
+    return jsonify(response)
+
+
+@api_acts_bp.route('/related_additions/<int:contract_id>/<string:search>', methods=['GET'])
+def get_search_related_additions(contract_id, search):
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('limit', 10, type=int)
+    offset = (page - 1) * per_page
+    order_by = request.args.get('order_by', 'Date')
+    direction = request.args.get('dir', 'desc')
+    mapping_results = column_map_additions.get(order_by, ("id", Additions))
+    search_engine = AdditionSearchEngine(db.session, search)
+    addition_list, total_count = search_engine.search_query_api(per_page, offset, direction, mapping_results)
+    response = {
+        "data": addition_list,
+        "total_count": total_count
+    }
+    return jsonify(response)
+
+
+# Categories
 @api_categories_bp.route('/all_categories', methods=['GET'])
 def categories():
     page = request.args.get('page', 1, type=int)
@@ -187,7 +246,6 @@ def add_category():
 
 @api_categories_bp.route('/all_categories/remove_category/<int:category_id>', methods=['DELETE'])
 def delete_category(category_id):
-
     categories_manager = CategoriesManager(db.session)
     try:
         categories_manager.delete_category(category_id)
