@@ -3,20 +3,29 @@ import openPopUpMenu from "./delete.js";
 
 function attachEventHandlers() {
     document.addEventListener('DOMContentLoaded', () => {
-        const gridContainer = document.getElementById("results"); // The parent element of your grid
-        gridContainer.addEventListener("click", (event) => {
+        const gridContainer = document.querySelectorAll(".results-table");
+        gridContainer.forEach(grid => {
+            grid.addEventListener("click", (event) => {
             const contract_id = event.target.getAttribute("data-id");
             const category_name = event.target.getAttribute("data-value");
             const data_voen = event.target.getAttribute("data-voen");
             const csrf_token = event.target.getAttribute("data-csrf-token");
+            console.log("hello")
             switch (true) {
                 case event.target.classList.contains("pdf-btn"):
                      viewPdf(Number(contract_id));
                      break;
                 case event.target.classList.contains("delete-btn"):
+                    if (event.target.classList.contains("additions")) {
+                        deleteFullUrl(contract_id, csrf_token, true);
+                        break;
+                    }
                     deleteFullUrl(contract_id, csrf_token);
                     break;
                 case event.target.classList.contains("view-btn"):
+                    if(event.target.classList.contains("additions")) {
+                        viewContractOrCompany(contract_id, true);
+                    }
                     viewContractOrCompany(contract_id);
                     break;
                 case event.target.classList.contains("related-btn"):
@@ -27,6 +36,8 @@ function attachEventHandlers() {
                     break;
             }
         });
+        })
+
     });
 }
 attachEventHandlers();
@@ -44,18 +55,20 @@ function viewPdf(contract_id) {
  *
  * @param {number} id
  * @param {string} csrf_token
+ * @param {boolean} addition
  */
-function deleteFullUrl(id, csrf_token) {
-    const url_for_deletion = `${delete_url_base}${id}`;
+function deleteFullUrl(id, csrf_token, addition= false) {
+    const url_for_deletion = `${!addition ? delete_url_base: delete_url_base_addition}${id}`;
     openPopUpMenu(url_for_deletion, csrf_token);
 }
 
 /**
  *
  * @param {number} id
+ * @param {boolean} addition
  */
-function viewContractOrCompany(id) {
-   window.open(`${view_url_base}${id}`);
+function viewContractOrCompany(id, addition= false) {
+  !addition ? window.open(`${view_url_base}${id}`): window.open(`${view_url_base_addition}${id}`);
 }
 
 
