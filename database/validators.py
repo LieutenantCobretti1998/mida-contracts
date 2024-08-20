@@ -820,7 +820,7 @@ class EditAct(EditContract):
         super().__init__(db_session, act_id)
         self.act_id = act_id
 
-    def change_amount(self, old_contract_id: int, new_contract_id: int, act_amount: float) -> None:
+    def change_amount(self, old_contract_id: int, new_contract_id: int, act_amount: float, old_act_amount: float) -> None:
         """
         :param old_contract_id:
         :param new_contract_id:
@@ -832,11 +832,10 @@ class EditAct(EditContract):
         new_contract = self.db_session.query(Contract).filter_by(id=new_contract_id).first()
         if not old_contract and not new_contract:
             raise NoResultFound
-        print(act_amount)
-        print(new_contract.remained_amount)
+
         try:
             check_amount(act_amount, new_contract.remained_amount)
-            old_contract.remained_amount += act_amount
+            old_contract.remained_amount += old_act_amount
             new_contract.remained_amount -= act_amount
         except ValueError:
             raise ValueError
@@ -857,8 +856,6 @@ class EditAct(EditContract):
         act_to_update_dict = {column.name: getattr(act_to_update, column.name) for column in
                               act_to_update.__table__.columns}
         for key, value in changes.items():
-            act_amount = changes["act_amount"]
-
             try:
                 if value != act_to_update_dict[key] and value is not None:
                     if key == "pdf_file_path":
@@ -872,10 +869,10 @@ class EditAct(EditContract):
                         try:
                             setattr(act_to_update, key, value)
                             old_contract = act_to_update_dict["contract_id"]
-                            act_amount = changes["act_amount"]
-                            print(act_amount)
+                            old_act_amount = act_to_update_dict["amount"]
+                            new_act_amount = changes["amount"]
 
-                            self.change_amount(old_contract, value, act_amount)
+                            self.change_amount(old_contract, value, new_act_amount, old_act_amount)
                         except NoResultFound:
                             return False, "There is no such contract in db."
                         except ValueError:

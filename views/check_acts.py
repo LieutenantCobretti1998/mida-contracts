@@ -43,9 +43,11 @@ def update_act(act_id):
     edit_engine = EditAct(db.session, act_id)
     original_data = search_engine.search_act()
     form = EditActForm()
+    print(form.contract_id)
+    print(original_data.contract_id)
 
     if form.validate_on_submit():
-        if form.act_amount.data:
+        if form.act_amount.data and form.contract_id == original_data.contract_id:
             try:
                 difference = check_act_amount_difference(form.act_amount.data, original_data.amount)
                 check_amount(form.act_amount.data, original_data.amount)
