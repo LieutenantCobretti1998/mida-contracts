@@ -95,7 +95,8 @@
                 </tr>
             </tbody>
         </table>
-        <div id="results"></div>
+        <div id="results-additions" class="results-table"></div>
+        <div id="results" class="results-table"></div>
         {% block pop_up_message %}
             {% with messages = get_flashed_messages(with_categories=True) %}
                     {% if messages %}
@@ -156,10 +157,17 @@
         let delete_url_base = "{{ url_for('all_acts.delete_act', act_id = 0) }}";
         delete_url_base = delete_url_base.replace(/\/0$/, "/");
 
+        let delete_url_base_addition = "{{ url_for('all_additions.delete_addition', addition_id = 0) }}";
+        delete_url_base_addition = delete_url_base_addition.replace(/\/0$/, "/");
+
         let view_url_base = "{{ url_for('all_acts.get_act', act_id = 0) }}";
         view_url_base = view_url_base.replace(/\/0$/, "/");
+
+        let view_url_base_addition = "{{ url_for('all_additions.get_addition', addition_id = 0) }}";
+        view_url_base_addition = view_url_base_addition.replace(/\/0$/, "/");
     </script>
     <script type="module" src="{{ url_for('static', filename='js/delete.js') }}"></script>
     <script type="module" src="{{ url_for('static', filename="js/redirection.js") }}"></script>
     <script src="{{ url_for('static', filename='js/tableForActs.bundle.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/tableForAdditions.bundle.js') }}"></script>
 {% endblock javascript %}
