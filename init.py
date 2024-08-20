@@ -13,6 +13,7 @@ def create_app() -> Flask:
     app.config["SQLALCHEMY_DATABASE_URI"] = TEST_DB_URI
     app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
     app.config["UPLOAD_FOLDER_ACTS"] = UPLOAD_FOLDER_ACTS
+    app.config["UPLOAD_FOLDER_ADDITIONS"] = UPLOAD_FOLDER_ADDITIONS
     app.config["MAX_CONTENT_LENGTH"] = 50 * 1000 * 1000
     from views.create_contract import create_contract_bp
     app.register_blueprint(create_contract_bp, url_prefix="/contracts")
@@ -20,11 +21,12 @@ def create_app() -> Flask:
     app.register_blueprint(check_contracts_bp, url_prefix="/contracts")
     from views.check_acts import check_acts_bp
     app.register_blueprint(check_acts_bp, url_prefix="/acts")
-    from views.table_api import api_contracts_bp, api_companies_bp, api_acts_bp, api_categories_bp
+    from views.table_api import api_contracts_bp, api_companies_bp, api_acts_bp, api_categories_bp, api_additions_bp
     app.register_blueprint(api_contracts_bp, url_prefix="/api")
     app.register_blueprint(api_companies_bp, url_prefix="/api")
     app.register_blueprint(api_acts_bp, url_prefix="/api")
     app.register_blueprint(api_categories_bp, url_prefix="/api")
+    app.register_blueprint(api_additions_bp, url_prefix="/api")
     from views.create_company import create_company_bp
     app.register_blueprint(create_company_bp, url_prefix="/companies")
     from views.check_companies import check_companies_bp
@@ -33,6 +35,8 @@ def create_app() -> Flask:
     app.register_blueprint(create_act_bp, url_prefix="/acts")
     from views.create_additions import create_addition_bp
     app.register_blueprint(create_addition_bp, url_prefix="/additions")
+    from views.check_additions import check_additions_bp
+    app.register_blueprint(check_additions_bp, url_prefix="/additions")
     from views.parameters import parameter_bp
     app.register_blueprint(parameter_bp, url_prefix="/parameters")
     # initialize of flask app and db
