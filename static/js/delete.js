@@ -15,6 +15,9 @@ export default function openPopUpMenu(url, csrf_token) {
            case url.includes("delete_addition"):
                delete_type = "addition";
                break;
+           case url.includes("delete_category"):
+               delete_type = "category";
+               break;
        }
        main_container.insertAdjacentHTML("afterend",
            `<div class="confirmation_dialog">

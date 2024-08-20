@@ -66,7 +66,7 @@ const grid = new Grid( {
 grid.render(document.getElementById("results"));
 
 document.getElementById("save").addEventListener("click", () => {
-    const category_input = document.getElementById("category");
+    const category_input = document.getElementById("default_input");
     const category_name = category_input.value.trim();
     if(category_name === "") {
         alert("Please enter a category name, not an empty input :3");

@@ -24,6 +24,9 @@ const grid = new Grid({
                     name: "Amount"
                 },
                 {
+                    name: "Remained Amount"
+                },
+                {
                     name: "Adv Payer",
                     formatter: (_, row) => {
                         const advPayer = row.cells[6].data;
@@ -65,7 +68,7 @@ const grid = new Grid({
 
                         const col = columns[0];
                         const dir = col.direction === 1 ? "asc": "desc";
-                        let colName = ["Contract Id", "Company Name", "Voen", "Contract Number", "Date", "Amount", "Adv Payer"][col.index];
+                        let colName = ["Contract Id", "Company Name", "Voen", "Contract Number", "Date", "Amount", "Remained Amount", "Adv Payer"][col.index];
                         return `${prev}?order_by=${colName}&dir=${dir}`;
                     }
                 }
@@ -83,7 +86,8 @@ const grid = new Grid({
                     contract.voen,
                     contract.contract_number,
                     new Date(contract.date).toLocaleDateString(),
-                    parseFloat(contract.amount),
+                    parseFloat(contract.amount).toFixed(2),
+                    parseFloat(contract.remained_amount).toFixed(2),
                     Boolean(contract.adv_payer)
                 ]),
                 total: data => data.total_count

@@ -171,7 +171,7 @@ class SearchEngine(ValidatorWrapper):
             "contract_number": contract.contract_number,
             "date": contract.date,
             "amount": float(contract.amount),
-            "related_amount": float(contract.remained_amount),
+            "remained_amount": float(contract.remained_amount),
             "adv_payer": bool(contract.adv_payer),
             "category": contract.category.category_name
         } for contract in contracts]
@@ -210,7 +210,7 @@ class SearchEngine(ValidatorWrapper):
             "contract_number": contract.contract_number,
             "date": contract.date,
             "amount": float(contract.amount),
-            "related_amount": float(contract.remained_amount),
+            "remained_amount": float(contract.remained_amount),
             "adv_payer": bool(contract.adv_payer),
             "category": contract.category.category_name
         } for contract in contracts]

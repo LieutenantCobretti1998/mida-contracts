@@ -32,7 +32,7 @@ def save_addition():
             flash("Something went wrong in the database", "error")
             return render_template('create_addition.html', form=form)
         try:
-            file = form.pdf_file_addition.data
+            file = form.pdf_file_act.data
             filename = secure_filename(file.filename)
             file_path = add_contract_pdf(current_app.config['UPLOAD_FOLDER_ADDITIONS'], filename)
             addition_info = dict(
