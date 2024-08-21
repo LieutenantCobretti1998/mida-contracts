@@ -43,8 +43,6 @@ def update_act(act_id):
     edit_engine = EditAct(db.session, act_id)
     original_data = search_engine.search_act()
     form = EditActForm()
-    print(form.contract_id)
-    print(original_data.contract_id)
 
     if form.validate_on_submit():
         if form.act_amount.data and form.contract_id == original_data.contract_id:
@@ -79,7 +77,7 @@ def update_act(act_id):
         else:
             db.session.rollback()
             flash(message, "warning")
-            return redirect(url_for('all_acts.edit_act', act_id=act_id))
+            return render_template('edit_act.html', form=form, act_id=act_id, search_result=original_data)
     else:
         flash("Validation Error. Please check all fields", "error")
         return render_template('edit_act.html', form=form, act_id=act_id, search_result=original_data)
