@@ -151,7 +151,7 @@ body {
   gap: 5rem;
   border-radius: 3rem;
   border-spacing: 0 50px;
-  position: absolute;
+  position: fixed;
   left: 50%;
   top: 50%;
   transform: translate(-40%, -60%); /* Start scaled down */
