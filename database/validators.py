@@ -12,7 +12,7 @@ from sqlalchemy.orm import InstrumentedAttribute
 from database.models import *
 from abc import ABC
 from database.models import Companies, Category
-from forms.custom_validators import check_amount
+from forms.custom_validators import check_amount, NegativeAmountError
 
 
 class ValidatorWrapper(ABC):
@@ -31,21 +31,21 @@ class ContractManager(ValidatorWrapper):
         categories = self.db_session.query(Category).all()
         return categories
 
-    def delete_pdf_file(self, contract_id: int) -> None:
-        contract = self.db_session.query(Contract).filter_by(id=contract_id).first()
-        if contract:
-            try:
-                contract_pdf_path = str(contract.pdf_file_path)
-                os.remove(contract_pdf_path)
-            except FileNotFoundError:
-                raise FileNotFoundError("Pdf file is not found")
+    @staticmethod
+    def delete_pdf_file(contract: Type[Contract]) -> None:
+        try:
+            contract_pdf_path = str(contract.pdf_file_path)
+            os.remove(contract_pdf_path)
+        except FileNotFoundError:
+            raise FileNotFoundError("Pdf file is not found")
 
     def delete_contract(self, contract_id: int) -> bool:
         contract = self.db_session.query(Contract).filter_by(id=contract_id).first()
         if contract:
             try:
-                self.delete_pdf_file(contract_id)
-                self.delete_related_acts_pdf_file(contract_id)
+                self.delete_pdf_file(contract)
+                self.delete_related_acts_pdf_file(contract)
+                self.delete_related_additions_pdf_file(contract)
                 self.db_session.delete(contract)
                 return True
             except DBAPIError:
@@ -54,22 +54,43 @@ class ContractManager(ValidatorWrapper):
                 return False
         return False
 
-    @staticmethod
-    def delete_act(act) -> None:
+    def delete_related_additions_pdf_file(self, contract: Type[Contract]) -> None:
         """
-        :param act: str
+        :param contract: contract: Type[Contract]
+        :return:
+        """
+        related_additions = contract.additions
+        for act in related_additions:
+            self.delete_act(act)
+
+    @staticmethod
+    def delete_addition(addition: Type[Additions]) -> None:
+        """
+        :param addition: Type[Additions]
+        :return:
+        """
+        addition_path = str(addition.pdf_file_path)
+        os.remove(addition_path)
+
+    @staticmethod
+    def delete_act(act: Type[Acts]) -> None:
+        """
+        :param act: Type[Acts]
         :return:
         Function for deleting each act of contract
         """
-        act_path = act.pdf_file_path
-        print(act_path)
+        act_path = str(act.pdf_file_path)
         os.remove(act_path)
 
-    def delete_related_acts_pdf_file(self, contract_id: int) -> None:
-        contract = self.db_session.query(Contract).filter_by(id=contract_id).first()
+    def delete_related_acts_pdf_file(self, contract: Type[Contract]) -> None:
+        """
+        :param contract: Type[Contract]
+        :return:
+        """
         related_acts = contract.acts
         for act in related_acts:
             self.delete_act(act)
+
     def get_or_create_company(self, company_name: str, voen: str, *args, **kwargs) -> None | Type[
         Companies] | Companies:
         if not company_name:
@@ -361,8 +382,9 @@ class EditContract(ValidatorWrapper):
                                             "There is the file path problem. It was corrupted or not existed."
                                             "Please, load a new pdf first")
                                 else:
-                                    return False, (f"There is no such company in the database or remained amount is corrupted: {value}.Please go to the"
-                                                   f" create contract form page")
+                                    return False, (
+                                        f"There is no such company in the database or remained amount is corrupted: {value}.Please go to the"
+                                        f" create contract form page")
                             case "voen":
                                 existed_voen_id = self.is_voen_exists(value)
                                 if existed_voen_id:
@@ -435,7 +457,8 @@ class CompanyManager(ContractManager):
             try:
                 self.delete_pdf_folder(str(company.company_name))
                 for contract in contracts:
-                    self.delete_related_acts_pdf_file(contract.id)
+                    self.delete_related_acts_pdf_file(contract)
+                    self.delete_related_additions_pdf_file(contract)
                 self.db_session.delete(company)
                 return True
             except DBAPIError:
@@ -820,7 +843,8 @@ class EditAct(EditContract):
         super().__init__(db_session, act_id)
         self.act_id = act_id
 
-    def change_amount(self, old_contract_id: int, new_contract_id: int, act_amount: float, old_act_amount: float) -> None:
+    def change_amount(self, old_contract_id: int, new_contract_id: int, act_amount: float,
+                      old_act_amount: float) -> None:
         """
         :param old_contract_id:
         :param new_contract_id:
@@ -1124,9 +1148,99 @@ class AdditionSearchEngine(ActsSearchEngine):
         } for addition in additions]
         return addition_list, total_count
 
-    def search_addition(self):
+    def search_addition(self) -> Type[Additions]:
         query = self.db_session.query(Additions).filter_by(id=self.search).first()
         if query:
             return query
 
         raise NoResultFound
+
+
+class EditAddition(EditContract):
+    def __init__(self, db_session: Session, addition_id: int):
+        super().__init__(db_session, addition_id)
+        self.addition_id = addition_id
+
+    def change_old_contract(self, remained_amount: float, new_total_amount: float,  contract_id: int) -> None:
+        """
+        :param remained_amount:
+        :param new_total_amount:
+        :param contract_id:
+        :return: None
+        Just change the total and remained amount of old contract from where the addition was moved.
+        """
+        contract = self.db_session.query(Contract).filter_by(id=contract_id).first()
+        if contract:
+            contract.remained_amount = remained_amount
+            contract.amount = new_total_amount
+        raise NoResultFound
+
+    def change_amount(self, old_contract_id: int, new_contract_id: int, addition_amount: float,
+                      old_addition_amount: float) -> None:
+        """
+        :param old_contract_id:
+        :param new_contract_id:
+        :param addition_amount:
+        :param old_addition_amount:
+        :return:
+        Proper change of the amount during contract changes
+        """
+        old_contract = self.db_session.query(Contract).filter_by(id=old_contract_id).first()
+        new_contract = self.db_session.query(Contract).filter_by(id=new_contract_id).first()
+        if not old_contract and not new_contract:
+            raise NoResultFound
+        old_contract.remained_amount -= old_addition_amount
+        old_contract.amount -= old_addition_amount
+        if old_contract.remained_amount < 0:
+            raise NegativeAmountError
+        new_contract.remained_amount += addition_amount
+        new_contract.amount += addition_amount
+
+    def update_data(self, changes: dict, pdf_file: flask) -> tuple[bool, str]:
+        """
+        :param changes:
+        :param pdf_file:
+        :return: tuple[bool, str]
+        """
+        addition_to_update = self.db_session.query(Additions).filter_by(id=self.addition_id).first()
+        if not addition_to_update:
+            return False, f"Act was not found in database"
+        addition_to_update_dict = {column.name: getattr(addition_to_update, column.name) for column in
+                              addition_to_update.__table__.columns}
+        for key, value in changes.items():
+            try:
+                if value != addition_to_update_dict[key] and value is not None:
+                    if key == "pdf_file_path":
+                        try:
+                            new_pdf_path = self.change_pdf_itself(addition_to_update_dict[key], value)
+                            setattr(addition_to_update, key, new_pdf_path)
+                            pdf_file.save(new_pdf_path)
+                        except FileNotFoundError:
+                            return False, "There is the file path problem. It was corrupted or not existed."
+                    elif key == "contract_id":
+                        try:
+                            setattr(addition_to_update, key, value)
+                            old_contract = addition_to_update_dict["contract_id"]
+                            old_addition_amount = addition_to_update_dict["amount"]
+                            new_addition_amount = changes["amount"]
+
+                            self.change_amount(old_contract, value, new_addition_amount, old_addition_amount)
+                        except NoResultFound:
+                            return False, "There is no such contract in db."
+                        except NegativeAmountError:
+                            return False, "Please check acts and make necessary changes in order to make acts refer to contracts."
+                        except ValueError:
+                            return False, "The contract's you want to link the act is smaller than act's amount."
+                        except (DBAPIError, OperationalError):
+                            self.db_session.rollback()
+                            return False, "An error occurred with the database. Please try again later"
+                    else:
+                        setattr(addition_to_update, key, value)
+                else:
+                    continue
+            except sqlalchemy.exc.DBAPIError:
+                self.db_session.rollback()
+                return False, "An error occurred with the database. Please try again later"
+        return True, "The act was updated successfully"
+
+
