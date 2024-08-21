@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/edit_act.css') }}">
 {% endblock style %}
 {% block content_part %}
-    <form action="{{ url_for('all_acts.update_act', act_id=addition_id) }}"  method="post" enctype="multipart/form-data">
+    <form action="{{ url_for('all_additions.update_addition', addition_id=addition_id) }}"  method="post" enctype="multipart/form-data">
         {{ form.csrf_token() }}
         {{ form.contract_id }}
         <table  class="table" data-edit-mode="true">
@@ -201,6 +201,10 @@
         {% endblock pop_up_message %}
 {% endblock content_part %}
 {% block javascript %}
+    <script type="text/javascript">
+    const original_addition_amount = {{ search_result.amount }}
+    const type_of_page = "additions-edit";
+    </script>
     <script src="{{ url_for('static', filename='js/form_focus.js') }}"></script>
     <script type="module" src="{{ url_for('static', filename='js/file_loader.js') }}"></script>
     <script type="module" src="{{ url_for('static', filename='js/edit-listener-act.js') }}"></script>
