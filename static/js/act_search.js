@@ -138,9 +138,16 @@ function updateContractList(data, contracts_list) {
                 act_amount_el.addEventListener("input", () => {
                     calculateRemainedMoney(remained_amount_el, data.remained_amount, act_amount_el);
                 })
-            } else {
+            }
+            else if (data && type_of_page === "additions-edit" ) {
+                 updateContractDetails(data);
+                 const total_contract_amount_el = document.querySelector("#amount");
+                 addition_amount_el.addEventListener("input", () => {
+                    calculateAdditionalMoneyEditMode(remained_amount_el, data.remained_amount, addition_amount_el, total_contract_amount_el, data.amount);
+                })
+            }
+            else {
                 updateContractDetails(data);
-                const total_contract_amount_el = document.querySelector("#amount");
                 addition_amount_el.addEventListener("input", () => {
                     calculateAdditionalMoney(remained_amount_el, data.remained_amount, addition_amount_el, total_contract_amount_el, data.amount);
                 })
@@ -245,5 +252,40 @@ function calculateAdditionalMoney(remained_amount_el, remain_contract_amount, ad
     total_amount_el.innerText = new_total_amount.toFixed(2);
 }
 
+/**
+ *
+ * @param remained_amount_el
+ * @param remain_contract_amount
+ * @param addition_amount_el
+ * @param total_amount_el
+ * @param total_amount
+ */
+function calculateAdditionalMoneyEditMode(remained_amount_el, remain_contract_amount, addition_amount_el,
+                                  total_amount_el, total_amount) {
+    let remained_amount;
+    let new_total_amount;
+    if (addition_amount_el.value === "") {
+         remained_amount_el.innerText = Number.parseFloat(remain_contract_amount).toFixed(2);
+         total_amount_el.innerText = Number.parseFloat(total_amount).toFixed(2);
+         return;
+    }
+    const difference_amount = original_addition_amount -  Number.parseFloat(addition_amount_el.value);
+    switch (difference_amount > 0) {
+        case true:
+            remained_amount = Number.parseFloat(remain_contract_amount) - difference_amount;
+            new_total_amount = Number.parseFloat(total_amount) - difference_amount;
+            break;
+        case false:
+            remained_amount = Number.parseFloat(remain_contract_amount) + difference_amount * -1;
+            new_total_amount = Number.parseFloat(total_amount) + difference_amount * -1;
+            break;
+        default:
+            remained_amount_el.innerText = Number.parseFloat(remain_contract_amount).toFixed(2);
+            total_amount_el.innerText = Number.parseFloat(total_amount).toFixed(2);
+            return;
+    }
+    remained_amount_el.innerText = remained_amount.toFixed(2);
+    total_amount_el.innerText = new_total_amount.toFixed(2);
+}
 
 
