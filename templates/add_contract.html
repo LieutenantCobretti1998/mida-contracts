@@ -64,13 +64,28 @@
 
                 <tr>
                     <td class="table__text">
-                       {{ form.date.label() }}
+                       {{ form.start_date.label() }}
                     </td>
 
                     <td>
-                        {{ form.date(class="table__input date rounded", value="2016-11-24") }}
+                        {{ form.start_date(class="table__input date rounded") }}
                         <ul class="error-list">
-                            {% for error in form.date.errors %}
+                            {% for error in form.start_date.errors %}
+                                <li class="error-list__message">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="table__text">
+                       {{ form.end_date.label() }}
+                    </td>
+
+                    <td>
+                        {{ form.end_date(class="table__input date rounded") }}
+                        <ul class="error-list">
+                            {% for error in form.end_date.errors %}
                                 <li class="error-list__message">{{ error }}</li>
                             {% endfor %}
                         </ul>

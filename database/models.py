@@ -24,6 +24,7 @@ class Contract(Base):
     id = Column(Integer, primary_key=True)
     contract_number = Column(VARCHAR(16), nullable=False)
     date = Column(DATE, nullable=False)
+    end_date = Column(DATE, nullable=False)
     company_id = Column(Integer, ForeignKey('companies.id'), nullable=False)
     category_id = Column(Integer, ForeignKey('categories.id'), nullable=False)
     category = relationship('Category', back_populates='contracts')

@@ -17,7 +17,8 @@ class EditContractForm(CreateContractForm):
     contract_number = StringField(validators=[Length(min=1, max=16, message=symbol_error_message),
                                               Optional(),
                                               whitespace_check])
-    date = DateField(validators=[Optional(), is_date_valid])
+    start_date = DateField("start date", validators=[Optional(), is_date_valid])
+    end_date = DateField("end date", validators=[Optional(), is_date_valid])
     amount = DecimalField(validators=[NumberRange(min=1, max=1000000000, message=amount_error_message),
                                       Optional(),
                                       ])

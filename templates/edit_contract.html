@@ -59,13 +59,28 @@
 
                 <tr>
                     <td class="table__text">
-                       {{ form.date.label() }}
+                       {{ form.start_date.label() }}
                     </td>
 
                     <td>
-                       {{ form.date(placeholder=search_result.date, class="table__input rounded") | safe }}
+                       {{ form.start_date(placeholder=search_result.date, class="table__input rounded") | safe }}
                         <ul class="error-list">
-                            {% for error in form.date.errors %}
+                            {% for error in form.start_date.errors %}
+                                <li class="error-list__message">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="table__text">
+                       {{ form.end_date.label() }}
+                    </td>
+
+                    <td>
+                       {{ form.end_date(placeholder=search_result.end_date, class="table__input rounded") | safe }}
+                        <ul class="error-list">
+                            {% for error in form.end_date.errors %}
                                 <li class="error-list__message">{{ error }}</li>
                             {% endfor %}
                         </ul>

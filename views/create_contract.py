@@ -24,18 +24,25 @@ def create_contract():
 def save_contract():
     form = CreateContractForm()
     filtered_company_name = filter_string_fields(form.company.data)
+    start_date = form.start_date.data
+    end_date = form.end_date.data
     filtered_voen = filter_voen(form.voen.data)
     filtered_contract = filter_contract_number(form.contract_number.data)
     contract_manager = ContractManager(db.session)
     categories = contract_manager.search_categories()
     form.categories.choices = [(category.id, category.category_name) for category in categories]
-    print(form.is_adv_payer.data)
     if form.validate():
         selected_category_id = form.categories.data
         valid_category = next((cat for cat in categories if cat.id == selected_category_id), None)
         if valid_category is None:
             flash('Invalid category selected. Please choose a valid option.', 'error')
             return render_template("add_contract.html", form=form)
+        if start_date >= end_date:
+            flash('Start date must be before end date.', 'warning')
+            return render_template('add_contract.html', form=form)
+        elif end_date <= start_date:
+            flash('End date must be after start date.', 'warning')
+            return render_template('add_contract.html', form=form)
         try:
             file = form.pdf_file.data
             filename = secure_filename(file.filename)
@@ -43,7 +50,8 @@ def save_contract():
             company = contract_manager.get_or_create_company(filtered_company_name, filtered_voen)
             contract = Contract(
                 contract_number=filtered_contract,
-                date=form.date.data,
+                date=form.start_date.data,
+                end_date=form.end_date.data,
                 amount=float(form.amount.data),
                 remained_amount=float(form.amount.data),
                 company_id=company.id,

@@ -66,7 +66,29 @@ def update_contract(contract_id):
     if form.validate_on_submit():
         new_remained_amount = None
         file = form.pdf_file.data
+        original_start_date = original_data.date
+        original_end_date = original_data.end_date
+        new_start_date = form.start_date.data
+        new_end_date = form.end_date.data
+
+        start_date_changed = new_start_date is not None and new_start_date != original_start_date
+        end_date_changed = new_end_date is not None and new_end_date != original_end_date
         filename = ""
+        if start_date_changed and end_date_changed:
+            if new_start_date >= new_end_date:
+                flash("Start date cannot be after or the same as the end date.", "warning")
+                return render_template('edit_contract.html', form=form, contract_id=contract_id,
+                                       search_result=original_data)
+        elif start_date_changed:
+            if new_start_date >= original_end_date:
+                flash("Start date cannot be after or the same as the original end date.", "warning")
+                return render_template('edit_contract.html', form=form, contract_id=contract_id,
+                                       search_result=original_data)
+        elif end_date_changed:
+            if new_end_date <= original_start_date:
+                flash("End date cannot be before or the same as the original start date.", "warning")
+                return render_template('edit_contract.html', form=form, contract_id=contract_id,
+                                       search_result=original_data)
         if file:
             filename = secure_filename(make_unique(f"{file.filename}"))
         if (original_data.amount != form.amount.data) and form.amount.data:
