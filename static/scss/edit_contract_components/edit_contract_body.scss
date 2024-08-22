@@ -9,7 +9,6 @@
    font-size: $font-size-big;
 }
 .table {
-  border-radius: 8px;
   border-collapse: collapse;
   width: 70%;
   background-color: $color-white;
@@ -125,7 +124,7 @@
 }
 
 #is_adv_payer {
-  padding: 10px;
+  margin: 10px;
   & > li {
     list-style: none;
 
@@ -141,5 +140,6 @@
 }
 
 select {
+  margin: 10px;
   width: 100%;
 }

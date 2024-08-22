@@ -58,7 +58,6 @@ body {
 }
 
 .table {
-  border-radius: 8px;
   border-collapse: collapse;
   width: 70%;
   background-color: white;
@@ -163,7 +162,7 @@ body {
 }
 
 #is_adv_payer {
-  padding: 10px;
+  margin: 10px;
 }
 #is_adv_payer > li {
   list-style: none;
@@ -178,6 +177,7 @@ body {
 }
 
 select {
+  margin: 10px;
   width: 100%;
 }
 
