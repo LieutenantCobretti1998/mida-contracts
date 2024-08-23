@@ -149,6 +149,7 @@ function updateContractList(data, contracts_list) {
             else {
                 updateContractDetails(data);
                 addition_amount_el.addEventListener("input", () => {
+                    const total_contract_amount_el = document.querySelector("#amount");
                     calculateAdditionalMoney(remained_amount_el, data.remained_amount, addition_amount_el, total_contract_amount_el, data.amount);
                 })
             }
