@@ -10,6 +10,7 @@ export default {
     tableForActs: path.resolve(__dirname, './static/js/acts_table.js'),
     tableForCategories: path.resolve(__dirname, './static/js/categories_table.js'),
     tableForAdditions: path.resolve(__dirname, './static/js/addition_table.js'),
+    tablesForDashboard: path.resolve(__dirname, './static/js/dashboard_tables.js'),
   },
   output: {
     filename: "[name].bundle.js",
