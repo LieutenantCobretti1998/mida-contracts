@@ -1,0 +1,86 @@
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+}
+
+html {
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  font-size: 62.5%;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  font-weight: 600;
+  font-size: 1.5rem;
+  color: #222f3e;
+}
+
+@keyframes FadeInOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes rotateArrowUp {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(180deg);
+  }
+}
+@keyframes rotateArrowDown {
+  from {
+    transform: rotate(180deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+.main-container {
+  margin: 5vw 2vw 2vw 10vw;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.statistics {
+  margin-left: 1vw;
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+}
+.statistics > div {
+  background-color: #669ac5;
+  display: flex;
+  padding: 2rem;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 15vw;
+  height: 8vw;
+  color: white;
+  border-radius: 10px;
+}
+
+.option-name {
+  text-align: end;
+}
+
+#calculations-date,
+#calculations-amount {
+  margin: 1vw 2vw 2vw 4vw;
+}
+
+.gridjs-summary {
+  color: white;
+}
+
+/*# sourceMappingURL=dashboard.css.map */

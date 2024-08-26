@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %} Dashboard {% endblock title %}
+{% block style %} <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}"> {% endblock style %}
+
+{% block content_part %}
+    <section class="main-container">
+        <section class="statistics">
+            <div class="contract_amount">
+                <div class="option-name">
+                    <p>Contracts</p>
+                </div>
+                <div class="amount">
+                    <em>{{ results.get('total_contracts') }}</em>
+                </div>
+            </div>
+            <div class="companies">
+                 <div class="option-name">
+                    <p>Companies</p>
+                </div>
+                <div class="amount">
+                    <em>{{ results.get('total_companies') }}</em>
+                </div>
+            </div>
+            <div class="acts">
+                <div class="option-name">
+                    <p>Acts</p>
+                </div>
+                <div class="amount">
+                    <em>{{ results.get('total_acts') }}</em>
+                </div>
+            </div>
+            <div class="additions">
+                <div  class="option-name">
+                    <p>Additions</p>
+                </div>
+                <div class="amount">
+                    <em>{{ results.get('total_additions') }}</em>
+                </div>
+            </div>
+        </section>
+        <section id="calculations-date"></section>
+        <section id="calculations-amount"></section>
+
+    </section>
+{% endblock content_part %}
+{% block javascript %}
+    <script src="{{ url_for('static', filename='js/tablesForDashboard.bundle.js') }}"></script>
+{% endblock javascript %}

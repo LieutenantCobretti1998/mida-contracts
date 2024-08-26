@@ -3,13 +3,14 @@ from sqlalchemy.exc import SQLAlchemyError, NoResultFound
 from database.db_init import db
 from database.models import *
 from database.validators import (SearchEngine, CompanySearchEngine, ActsSearchEngine, CategoriesManager,
-                                 CategoriesSearchEngine, EditCategory, AdditionSearchEngine)
+                                 CategoriesSearchEngine, EditCategory, AdditionSearchEngine, DashBoard)
 
 api_contracts_bp = Blueprint('api_contracts', __name__)
 api_companies_bp = Blueprint('api_companies', __name__)
 api_acts_bp = Blueprint('api_acts', __name__)
 api_categories_bp = Blueprint('api_categories', __name__)
 api_additions_bp = Blueprint('api_additions', __name__)
+api_dashboard_bp = Blueprint('api_dashboard', __name__)
 # Dictionary of tuples
 column_map_contracts = {
     "Company Name": ("company_name", Companies),
@@ -299,3 +300,24 @@ def update_category():
         return jsonify({
             "message": "No such category exists. Why are you change the id ?))))"
         }), 400
+
+
+# Dashboard Tables
+@api_dashboard_bp.route('/contracts_ending', methods=['GET'])
+def contracts_ending():
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('limit', 10, type=int)
+    offset = (page - 1) * per_page
+    dashboard_instance = DashBoard(db.session)
+    response = dashboard_instance.get_card_inf_apiget_contracts_information_date_api(per_page, offset)
+    return jsonify(response)
+
+
+@api_dashboard_bp.route('/contracts_ending_amount', methods=['GET'])
+def contracts_ending():
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('limit', 10, type=int)
+    offset = (page - 1) * per_page
+    dashboard_instance = DashBoard(db.session)
+    response = dashboard_instance.get_contracts_information_amount_api(per_page, offset)
+    return jsonify(response)

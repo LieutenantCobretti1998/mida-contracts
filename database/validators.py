@@ -1,4 +1,5 @@
 import re
+from datetime import datetime, timedelta
 from typing import Any, Type, List, Union, Dict
 import os
 import shutil
@@ -1242,5 +1243,82 @@ class EditAddition(EditContract):
                 self.db_session.rollback()
                 return False, "An error occurred with the database. Please try again later"
         return True, "The act was updated successfully"
+
+
+class DashBoard(ValidatorWrapper):
+    def __init__(self, db_session: Session):
+        super().__init__(db_session)
+
+    @staticmethod
+    def check_days_left(contract_date: Contract.end_date, today_date: datetime.today) -> datetime.date:
+        """
+        :param contract_date
+        :param today_date:
+        :return datetime.date:
+        Calculates days left for ending contracts
+        """
+        return abs((today_date - contract_date).days)
+
+    def get_card_information(self) -> dict:
+        """
+        :return: dict
+        Get card information api for the tables in dashboard
+        """
+        total_contracts = self.db_session.query(Contract).count()
+        total_companies = self.db_session.query(Companies).count()
+        total_acts = self.db_session.query(Acts).count()
+        total_additions = self.db_session.query(Additions).count()
+        return {
+            "total_contracts": total_contracts,
+            "total_companies": total_companies,
+            "total_acts": total_acts,
+            "total_additions": total_additions,
+        }
+
+    def get_card_inf_apiget_contracts_information_date_api(self, per_page: int, offset: int) -> dict:
+        """
+        :param per_page:
+        :param offset:
+        :return: dict
+        Get card information api for the tables in dashboard
+        """
+        today = datetime.today().date()
+        end_date_threshold = today + timedelta(days=90)
+        contracts_in_ending = ((self.db_session.query(Contract)
+                               .filter(Contract.end_date <= end_date_threshold, Contract.end_date >= today))
+                               )
+        total_count = contracts_in_ending.count()
+        filtered_contracts = contracts_in_ending.offset(offset).limit(per_page)
+        return {
+            "total_count": total_count,
+            "contracts_to_end": [{
+                "offset": offset,
+                "contract_name": contract.contract_number,
+                "contract_days_left": self.check_days_left(contract.end_date, today)
+            } for contract in filtered_contracts]
+        }
+
+    def get_contracts_information_amount_api(self, per_page: int, offset: int) -> dict:
+        """
+        :param per_page:
+        :param offset:
+        :return: dict
+        Get card information api for the tables in dashboard
+        """
+        today = datetime.today().date()
+        end_date_threshold = today + timedelta(days=90)
+        contracts_in_ending = ((self.db_session.query(Contract)
+                               .filter(Contract.end_date <= end_date_threshold, Contract.end_date >= today))
+                               )
+        total_count = contracts_in_ending.count()
+        filtered_contracts = contracts_in_ending.offset(offset).limit(per_page)
+        return {
+            "total_count": total_count,
+            "contracts_to_end": [{
+                "offset": offset,
+                "contract_name": contract.contract_number,
+                "contract_days_left": self.check_days_left(contract.end_date, today)
+            } for contract in filtered_contracts]
+        }
 
 

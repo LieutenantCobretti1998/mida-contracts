@@ -1,0 +1,43 @@
+.main-container {
+  margin: 5vw 2vw 2vw 10vw;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.statistics {
+  margin-left: 1vw;
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+
+  & > div {
+    background-color: $color-cards-background;
+    display: flex;
+    padding: 2rem;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 15vw;
+    height: 8vw;
+    color: white;
+    border-radius: 10px;
+  }
+}
+
+.option-name {
+  text-align: end;
+}
+#calculations-date,
+#calculations-amount {
+  margin: 1vw 2vw 2vw 4vw;
+}
+.gridjs-summary {
+  color: $color-white;
+}
+//.contracts_date {
+//  display: flex;
+//  flex-direction: column;
+//  gap: 2.5rem;
+//  overflow-y: scroll;
+//}
+

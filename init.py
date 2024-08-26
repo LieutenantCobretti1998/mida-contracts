@@ -15,13 +15,16 @@ def create_app() -> Flask:
     app.config["UPLOAD_FOLDER_ACTS"] = UPLOAD_FOLDER_ACTS
     app.config["UPLOAD_FOLDER_ADDITIONS"] = UPLOAD_FOLDER_ADDITIONS
     app.config["MAX_CONTENT_LENGTH"] = 50 * 1000 * 1000
+    from views.dashboard import home_bp
+    app.register_blueprint(home_bp)
     from views.create_contract import create_contract_bp
     app.register_blueprint(create_contract_bp, url_prefix="/contracts")
     from views.check_contracts import check_contracts_bp
     app.register_blueprint(check_contracts_bp, url_prefix="/contracts")
     from views.check_acts import check_acts_bp
     app.register_blueprint(check_acts_bp, url_prefix="/acts")
-    from views.table_api import api_contracts_bp, api_companies_bp, api_acts_bp, api_categories_bp, api_additions_bp
+    from views.table_api import api_contracts_bp, api_companies_bp, api_acts_bp, api_categories_bp, api_additions_bp, api_dashboard_bp
+    app.register_blueprint(api_dashboard_bp, url_prefix="/api")
     app.register_blueprint(api_contracts_bp, url_prefix="/api")
     app.register_blueprint(api_companies_bp, url_prefix="/api")
     app.register_blueprint(api_acts_bp, url_prefix="/api")
