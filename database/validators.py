@@ -7,9 +7,11 @@ import flask
 import sqlalchemy
 from flask import current_app
 from flask_sqlalchemy.session import Session
-from sqlalchemy import or_, desc, asc, func, and_
+from sqlalchemy import or_, desc, asc, func, and_, cast, Float
 from sqlalchemy.exc import NoResultFound, SQLAlchemyError, DBAPIError, OperationalError
 from sqlalchemy.orm import InstrumentedAttribute
+
+from configuration import PERCENTAGE_AMOUNT
 from database.models import *
 from abc import ABC
 from database.models import Companies, Category
@@ -61,8 +63,8 @@ class ContractManager(ValidatorWrapper):
         :return:
         """
         related_additions = contract.additions
-        for act in related_additions:
-            self.delete_act(act)
+        for addition in related_additions:
+            self.delete_addition(addition)
 
     @staticmethod
     def delete_addition(addition: Type[Additions]) -> None:
@@ -1050,9 +1052,12 @@ class AdditionManager(ActsManager):
     def decrease_amount_from_contract(self, contract_id: int, addition_amount: float):
         contract = self.db_session.query(Contract).filter_by(id=contract_id).first()
         if contract:
-            new_remained_amount = contract.remained_amount - addition_amount
+            acts_amount = sum(act.amount for act in contract.acts)
+            new_contract_amount = contract.amount - addition_amount - acts_amount
+            if new_contract_amount < 0:
+                raise ValueError
             contract.amount -= addition_amount
-            contract.remained_amount = new_remained_amount
+            contract.remained_amount -= addition_amount
         else:
             raise NoResultFound
 
@@ -1066,8 +1071,8 @@ class AdditionManager(ActsManager):
         if addition:
             try:
                 related_contract = addition.contract.id
-                self.delete_pdf_file(addition_id)
                 self.decrease_amount_from_contract(related_contract, addition.amount)
+                self.delete_pdf_file(addition_id)
                 self.db_session.delete(addition)
                 return True
             except DBAPIError:
@@ -1078,6 +1083,8 @@ class AdditionManager(ActsManager):
                 return False
             except AttributeError:
                 return False
+            except ValueError:
+                raise ValueError
         return False
 
 
@@ -1288,11 +1295,12 @@ class DashBoard(ValidatorWrapper):
                                .filter(Contract.end_date <= end_date_threshold, Contract.end_date >= today))
                                )
         total_count = contracts_in_ending.count()
-        filtered_contracts = contracts_in_ending.offset(offset).limit(per_page)
+        filtered_contracts = contracts_in_ending.order_by(Contract.end_date.asc()).offset(offset).limit(per_page)
         return {
             "total_count": total_count,
             "contracts_to_end": [{
                 "offset": offset,
+                "company_name": contract.company.company_name,
                 "contract_name": contract.contract_number,
                 "contract_days_left": self.check_days_left(contract.end_date, today)
             } for contract in filtered_contracts]
@@ -1305,19 +1313,24 @@ class DashBoard(ValidatorWrapper):
         :return: dict
         Get card information api for the tables in dashboard
         """
-        today = datetime.today().date()
-        end_date_threshold = today + timedelta(days=90)
-        contracts_in_ending = ((self.db_session.query(Contract)
-                               .filter(Contract.end_date <= end_date_threshold, Contract.end_date >= today))
-                               )
-        total_count = contracts_in_ending.count()
-        filtered_contracts = contracts_in_ending.offset(offset).limit(per_page)
+        percentage = PERCENTAGE_AMOUNT
+        contracts = self.db_session.query(Contract,
+                                          (cast(Contract.remained_amount, Float) / cast(Contract.amount, Float) * 100)
+                                          .label('percentage_remained')).order_by(Contract.remained_amount.asc()).all()
+        filtered_contracts = []
+        for contract, remained_amount in contracts:
+            if remained_amount <= PERCENTAGE_AMOUNT:
+                filtered_contracts.append(contract)
+            continue
+        total_count = len(filtered_contracts)
+        filtered_contracts = filtered_contracts[offset: offset + per_page]
         return {
             "total_count": total_count,
             "contracts_to_end": [{
                 "offset": offset,
+                "company_name": contract.company.company_name,
                 "contract_name": contract.contract_number,
-                "contract_days_left": self.check_days_left(contract.end_date, today)
+                "contract_amount_left": contract.remained_amount
             } for contract in filtered_contracts]
         }
 

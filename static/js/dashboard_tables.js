@@ -2,6 +2,9 @@ import {Grid} from "gridjs";
 import 'gridJs/dist/theme/mermaid.css';
 const contract_end_date_grid = new Grid({
     style: {
+        table: {
+            'font-size': '1.5rem'
+        },
         td: {
             'backgroundColor': '#669ac5',
             'color': 'white',
@@ -21,6 +24,10 @@ const contract_end_date_grid = new Grid({
    columns: [
                 {
                     name: "#",
+                },
+
+                {
+                  name: "Company Name"
                 },
 
                 {
@@ -46,6 +53,7 @@ const contract_end_date_grid = new Grid({
                 url:  "/api/contracts_ending",
                 then: (data) => data.contracts_to_end.map((contract, index) => [
                     contract.offset + 1 + index,
+                    contract.company_name,
                     contract.contract_name,
                     contract.contract_days_left,
                 ]),
@@ -56,6 +64,9 @@ contract_end_date_grid.render(document.getElementById("calculations-date"));
 
 const contract_end_money_grid = new Grid({
     style: {
+        table: {
+            'font-size': '1.5rem'
+        },
         td: {
             'backgroundColor': '#669ac5',
             'color': 'white',
@@ -78,6 +89,10 @@ const contract_end_money_grid = new Grid({
                 },
 
                 {
+                    name: "Company Name",
+                },
+
+                {
                     name: "Contract Number"
                 },
                 {
@@ -97,11 +112,12 @@ const contract_end_money_grid = new Grid({
             },
 
             server: {
-                url:  "/api/contracts_ending",
+                url:  "/api/contracts_ending_amount",
                 then: (data) => data.contracts_to_end.map((contract, index) => [
                     contract.offset + 1 + index,
+                    contract.company_name,
                     contract.contract_name,
-                    contract.contract_days_left,
+                    parseFloat(contract.contract_amount_left).toFixed(2),
                 ]),
                 total: data => data.total_count
             },

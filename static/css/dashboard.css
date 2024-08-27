@@ -49,7 +49,11 @@ body {
   margin: 5vw 2vw 2vw 10vw;
   display: flex;
   flex-direction: column;
-  gap: 3rem;
+  gap: 4rem;
+}
+.main-container h1 {
+  font-size: 4rem;
+  align-self: center;
 }
 
 .statistics {
@@ -63,7 +67,7 @@ body {
   display: flex;
   padding: 2rem;
   flex-direction: column;
-  justify-content: space-between;
+  gap: 2.5rem;
   width: 15vw;
   height: 8vw;
   color: white;
@@ -72,11 +76,18 @@ body {
 
 .option-name {
   text-align: end;
+  font-size: 2rem;
+}
+
+.amount {
+  font-size: 3rem;
+  align-self: center;
 }
 
 #calculations-date,
 #calculations-amount {
   margin: 1vw 2vw 2vw 4vw;
+  margin-bottom: 0;
 }
 
 .gridjs-summary {
