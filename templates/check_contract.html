@@ -93,7 +93,7 @@
                     </td>
 
                     <td id="pdf">
-                        <button onclick="window.location.href='{{ url_for('all_contracts.preview_pdf', contract_id = contract_id) }}'" type="button" class="pdf-btn">View</button>
+                        <button onclick="window.open('{{ url_for('all_contracts.preview_pdf', contract_id = contract_id) }}')" type="button" class="pdf-btn">View</button>
                     </td>
                 </tr>
 

@@ -109,16 +109,22 @@ def preview_pdf(addition_id):
 @check_additions_bp.route('/delete_addition/<int:addition_id>', methods=['DELETE'])
 def delete_addition(addition_id):
     addition_manager = AdditionManager(db.session)
-    addition_on_delete = addition_manager.delete_addition(addition_id)
-    if addition_on_delete:
-        db.session.commit()
-        flash("Addition deleted successfully", "success")
-        return jsonify({
-            'status': 'success',
-        }), 200
-    else:
-        flash("Could not delete the addition. Something went wrong on the server side. Maybe data is outdated", "error")
-        db.session.rollback()
+    try:
+        addition_on_delete = addition_manager.delete_addition(addition_id)
+        if addition_on_delete:
+            db.session.commit()
+            flash("Addition deleted successfully", "success")
+            return jsonify({
+                'status': 'success',
+            }), 200
+        else:
+            flash("Could not delete the addition. Something went wrong on the server side. Maybe data is outdated", "error")
+            db.session.rollback()
+            return jsonify({
+                'status': 'error',
+            }), 500
+    except ValueError:
+        flash("Final Amount cannot be negative. Please delete some acts for that", "warning")
         return jsonify({
             'status': 'error',
         }), 500

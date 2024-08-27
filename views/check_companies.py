@@ -68,7 +68,7 @@ def update_company(company_id):
         else:
             db.session.rollback()
             flash(message, "warning")
-            return redirect(url_for('all_companies.get_company', company_id=company_id))
+            return render_template("edit_company.html", form=form, company_id=company_id, search_result=original_data)
     else:
         flash("Validation Error. Please check all fields", "error")
         return render_template("edit_company.html", form=form, company_id=company_id, search_result=original_data)
