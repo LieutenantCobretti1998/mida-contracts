@@ -25,6 +25,7 @@ function attachEventHandlers() {
                 case event.target.classList.contains("view-btn"):
                     if(event.target.classList.contains("additions")) {
                         viewContractOrCompany(contract_id, true);
+                        break;
                     }
                     viewContractOrCompany(contract_id);
                     break;
@@ -68,7 +69,7 @@ function deleteFullUrl(id, csrf_token, addition= false) {
  * @param {boolean} addition
  */
 function viewContractOrCompany(id, addition= false) {
-  !addition ? window.open(`${view_url_base}${id}`): window.open(`${view_url_base_addition}${id}`);
+   window.location.href = !addition ? `${view_url_base}${id}` : `${view_url_base_addition}${id}`;
 }
 
 
