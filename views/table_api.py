@@ -314,7 +314,7 @@ def contracts_ending():
 
 
 @api_dashboard_bp.route('/contracts_ending_amount', methods=['GET'])
-def contracts_ending():
+def contracts_ending_amount():
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('limit', 10, type=int)
     offset = (page - 1) * per_page
