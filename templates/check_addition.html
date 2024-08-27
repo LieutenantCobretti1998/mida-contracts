@@ -63,14 +63,14 @@
                     </td>
 
                     <td id="pdf">
-                        <button onclick="window.location.href='{{ url_for('all_additions.preview_pdf', addition_id = addition_id) }}'"  type="button" class="pdf-btn">View</button>
+                        <button onclick="window.open('{{ url_for('all_additions.preview_pdf', addition_id = addition_id) }}')"  type="button" class="pdf-btn">View</button>
                     </td>
                 </tr>
 
                 <tr>
                     <td></td>
                     <td id="edit">
-                         <button onclick="window.open('{{ url_for('all_additions.preview_pdf', addition_id=addition_id) }}')"   type="button" class="edit-btn">Edit</button>
+                         <button onclick="window.location.href='{{ url_for('all_additions.edit_addition', addition_id = addition_id) }}'"   type="button" class="edit-btn">Edit</button>
                     </td>
                 </tr>
             </tbody>

@@ -139,6 +139,13 @@ function updateContractList(data, contracts_list) {
                     calculateRemainedMoney(remained_amount_el, data.remained_amount, act_amount_el);
                 })
             }
+            else if (data && type_of_page === "acts-edit") {
+                updateContractDetails(data);
+                const total_contract_amount_el = document.querySelector("#amount");
+                act_amount_el.addEventListener("input", () => {
+                    calculateRemainedMoneyEditMode(remained_amount_el, data.remained_amount, act_amount_el, total_contract_amount_el, data.amount)
+                })
+            }
             else if (data && type_of_page === "additions-edit" ) {
                  updateContractDetails(data);
                  const total_contract_amount_el = document.querySelector("#amount");
@@ -228,6 +235,34 @@ function calculateRemainedMoney(remained_amount_el, remain_contract_amount, act_
         return;
     }
     const remained_amount = Number.parseFloat(remain_contract_amount) - Number.parseFloat(act_amount_el.value);
+    remained_amount_el.innerText = remained_amount.toFixed(2);
+}
+
+/**
+ *
+ * @param remained_amount_el
+ * @param remain_contract_amount
+ * @param act_amount_el
+ */
+function calculateRemainedMoneyEditMode(remained_amount_el, remain_contract_amount, act_amount_el) {
+    let remained_amount;
+    let new_total_amount;
+    if (act_amount_el.value === "") {
+         remained_amount_el.innerText = Number.parseFloat(remain_contract_amount).toFixed(2);
+         return;
+    }
+    const difference_amount = original_act_amount -  Number.parseFloat(act_amount_el.value);
+    switch (difference_amount > 0) {
+        case true:
+            remained_amount = Number.parseFloat(remain_contract_amount) + difference_amount;
+            break;
+        case false:
+            remained_amount = Number.parseFloat(remain_contract_amount) - difference_amount * -1;
+            break;
+        default:
+            remained_amount_el.innerText = Number.parseFloat(remain_contract_amount).toFixed(2);
+            return;
+    }
     remained_amount_el.innerText = remained_amount.toFixed(2);
 }
 
