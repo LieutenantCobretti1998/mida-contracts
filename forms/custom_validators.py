@@ -2,6 +2,8 @@ import os
 from wtforms.validators import ValidationError
 from forms.filters import *
 
+login_password_error_message = "Please provide a valid password."
+user_error_message = "Please provide a valid user or write a valid email."
 symbol_error_message = "Please enter an input between 1 and 16 characters."
 empty_field = "This field is required"
 empty_space_message = "Please enter a value instead of a pure space"

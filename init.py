@@ -2,6 +2,8 @@ from flask import Flask
 from configuration import *
 from flask_migrate import Migrate
 from database.db_init import db
+from extensions import login_manager
+
 
 # Initialization of the app
 
@@ -15,6 +17,8 @@ def create_app() -> Flask:
     app.config["UPLOAD_FOLDER_ACTS"] = UPLOAD_FOLDER_ACTS
     app.config["UPLOAD_FOLDER_ADDITIONS"] = UPLOAD_FOLDER_ADDITIONS
     app.config["MAX_CONTENT_LENGTH"] = 50 * 1000 * 1000
+    from views.login import login_bp
+    app.register_blueprint(login_bp)
     from views.dashboard import home_bp
     app.register_blueprint(home_bp)
     from views.create_contract import create_contract_bp
@@ -44,6 +48,8 @@ def create_app() -> Flask:
     app.register_blueprint(parameter_bp, url_prefix="/parameters")
     # initialize of flask app and db
     db.init_app(app)
+    login_manager.init_app(app)
+    login_manager.login_view = "login.login"
     migrate = Migrate()
     migrate.init_app(app, db, render_as_batch=True)
     with app.app_context():

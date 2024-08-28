@@ -1,6 +1,15 @@
 from sqlalchemy import Column, Integer, CHAR, DATE, ForeignKey, DECIMAL, VARCHAR, BOOLEAN
 from database.db_init import Base
 from sqlalchemy.orm import relationship
+from flask_login import UserMixin
+
+
+class User(UserMixin, Base):
+    __tablename__ = 'users'
+    id = Column(Integer, primary_key=True)
+    username = Column(VARCHAR(20), nullable=False)
+    password = Column(CHAR(), nullable=False)
+    role = Column(VARCHAR(20), nullable=False, default='user')
 
 
 class Companies(Base):

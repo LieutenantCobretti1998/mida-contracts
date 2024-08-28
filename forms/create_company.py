@@ -2,7 +2,6 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, EmailField, TelField, SubmitField
 from wtforms.validators import DataRequired, Length, Optional, Email, Regexp
 from forms.custom_validators import *
-import email_validator
 
 
 class CompanyForm(FlaskForm):
