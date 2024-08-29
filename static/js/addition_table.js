@@ -23,12 +23,11 @@ const grid = new Grid( {
             name: "Actions",
             formatter: (cell, row) => {
                         const addition_id = row.cells[0].data;
-                         return html(
-                               `<span style="display: flex; justify-content: space-between">` +
-                                    `<button type="button" class="view-btn additions" data-id=${addition_id}>View</button>` +
-                                    `<button data-csrf-token=${csrf_token} type="button" class="delete-btn additions" data-id=${addition_id}>Delete</button>`+
-                               `</span>`
-                           );
+                        let action_html = `<button type="button" class="view-btn additions" data-id=${addition_id}>View</button>`
+                        if(role === "admin") {
+                            action_html += `<button type="button" class="delete-btn additions" data-id=${addition_id}>Delete</button>`
+                        }
+                        return html(`<span style="display: flex; justify-content: space-between">${action_html}</span>`);
                     }
         }
     ],

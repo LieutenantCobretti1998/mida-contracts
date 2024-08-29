@@ -61,10 +61,9 @@
 {% block javascript %}
     <script type="text/javascript">
         const csrf_token = "{{ csrf_token() }}";
-
+        const role = "{{ current_user.role }}";
         let delete_url_base = "{{ url_for('all_companies.delete_company', company_id = 0) }}";
         delete_url_base = delete_url_base.replace(/\/0$/, "/");
-
         let view_url_base = "{{ url_for('all_companies.get_company', company_id = 0) }}"
         view_url_base = view_url_base.replace(/\/0$/, "/")
     </script>

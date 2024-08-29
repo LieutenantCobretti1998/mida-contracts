@@ -96,13 +96,14 @@
                         <button onclick="window.open('{{ url_for('all_contracts.preview_pdf', contract_id = contract_id) }}')" type="button" class="pdf-btn">View</button>
                     </td>
                 </tr>
-
-                <tr>
-                    <td></td>
-                    <td id="edit">
-                         <button onclick="window.location.href='{{ url_for('all_contracts.edit_contract', contract_id = contract_id) }}'" type="button" class="edit-btn">Edit</button>
-                    </td>
-                </tr>
+                {% if current_user.role == 'admin' or current_user.role == 'editor' %}
+                    <tr>
+                        <td></td>
+                        <td id="edit">
+                             <button onclick="window.location.href='{{ url_for('all_contracts.edit_contract', contract_id = contract_id) }}'" type="button" class="edit-btn">Edit</button>
+                        </td>
+                    </tr>
+                {% endif %}
             </tbody>
         </table>
         <div id="results-additions" class="results-table"></div>
@@ -161,6 +162,7 @@
         const csrf_token = "{{ csrf_token() }}";
         const search_mode = "{{ search_mode }}";
         const contract_id = "{{ search_result.id }}";
+        const role = "{{ current_user.role }}";
         let pdf_url_base = "{{ url_for('all_acts.preview_pdf', act_id = 0 ) }}";
         pdf_url_base = pdf_url_base.replace(/\/0$/, "/");
 

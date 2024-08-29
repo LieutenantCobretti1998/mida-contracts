@@ -67,12 +67,14 @@
                     </td>
                 </tr>
 
-                <tr>
-                    <td></td>
-                    <td id="edit">
-                         <button onclick="window.location.href='{{ url_for('all_acts.edit_act', act_id = act_id) }}'"   type="button" class="edit-btn">Edit</button>
-                    </td>
-                </tr>
+                {% if current_user.role == 'admin' or current_user.role == 'editor' %}
+                    <tr>
+                        <td></td>
+                        <td id="edit">
+                             <button onclick="window.location.href='{{ url_for('all_acts.edit_act', act_id = act_id) }}'"   type="button" class="edit-btn">Edit</button>
+                        </td>
+                    </tr>
+                {% endif %}
             </tbody>
         </table>
 {% block pop_up_message %}

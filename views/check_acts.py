@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, redirect, flash, url_for, abort, send_file, jsonify
+from flask_login import login_required
 from werkzeug.utils import secure_filename
 from sqlalchemy.exc import NoResultFound, DBAPIError, OperationalError
 from database.validators import ActsSearchEngine, EditAct, ActsManager
@@ -12,6 +13,7 @@ check_acts_bp = Blueprint('all_acts', __name__)
 
 # Our roots for acts
 @check_acts_bp.route('/act_overview/<int:act_id>', methods=['GET'])
+@login_required
 def get_act(act_id):
     try:
         search_engine = ActsSearchEngine(db.session, act_id)
@@ -23,7 +25,9 @@ def get_act(act_id):
     except NoResultFound:
         abort(404)
 
+
 @check_acts_bp.route('/act/<int:act_id>', methods=['GET'])
+@login_required
 def edit_act(act_id):
     try:
         form = EditActForm()
@@ -38,6 +42,7 @@ def edit_act(act_id):
 
 
 @check_acts_bp.route('/update_act/<int:act_id>', methods=['POST'])
+@login_required
 def update_act(act_id):
     search_engine = ActsSearchEngine(db.session, act_id)
     edit_engine = EditAct(db.session, act_id)
@@ -84,6 +89,7 @@ def update_act(act_id):
 
 
 @check_acts_bp.route('/preview_pdf/<int:act_id>', methods=['GET'])
+@login_required
 def preview_pdf(act_id):
     search_engine = ActsSearchEngine(db.session, act_id)
     search_result = search_engine.search_act()
@@ -94,6 +100,7 @@ def preview_pdf(act_id):
 
 
 @check_acts_bp.route('/delete_act/<int:act_id>', methods=['DELETE'])
+@login_required
 def delete_act(act_id):
     act_manager = ActsManager(db.session)
     act_on_delete = act_manager.delete_act(act_id)

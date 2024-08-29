@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, jsonify, flash
+from flask_login import login_required
 from sqlalchemy.exc import OperationalError
 from database.db_init import db
 from database.validators import CompanyManager
@@ -8,13 +9,15 @@ from forms.filters import filter_string_fields, filter_voen
 create_company_bp = Blueprint("create_company", __name__)
 
 
-@create_company_bp.route("/create_company", methods=["GET", "POST"])
+@create_company_bp.route("/create_company", methods=["GET"])
+@login_required
 def create_company():
     form = CompanyForm()
     return render_template("create_company.html", form=form)
 
 
 @create_company_bp.route("/save_company", methods=["POST"])
+@login_required
 def save_company():
     form = CompanyForm()
     company_manager = CompanyManager(db.session)

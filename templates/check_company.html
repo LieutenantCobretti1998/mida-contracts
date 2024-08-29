@@ -99,12 +99,14 @@
                             <button onclick="window.location.href='{{ url_for('all_contracts.related_contracts', voen = search_result.voen) }}'" type="button" class="related-btn">View</button>
                         </td>
                     </tr>
-                    <tr>
-                        <td></td>
-                        <td id="edit">
-                            <button onclick="window.location.href='{{ url_for('all_companies.edit_company', company_id = company_id) }}'" type="button" class="edit-btn">Edit</button>
-                        </td>
-                </tr>
+                    {% if current_user.role == 'admin' or current_user.role == 'editor' %}
+                        <tr>
+                            <td></td>
+                            <td id="edit">
+                                <button onclick="window.location.href='{{ url_for('all_companies.edit_company', company_id = company_id) }}'" type="button" class="edit-btn">Edit</button>
+                            </td>
+                        </tr>
+                    {% endif %}
             </tbody>
         </table>
     {% block pop_up_message %}

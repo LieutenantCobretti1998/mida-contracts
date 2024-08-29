@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, redirect, flash, url_for, current_app
+from flask_login import login_required
 from werkzeug.utils import secure_filename
 from sqlalchemy.exc import OperationalError
 from forms.create_contract_form import CreateContractForm
@@ -12,7 +13,8 @@ create_contract_bp = Blueprint('create_contract', __name__)
 
 
 # Our create_contract routes
-@create_contract_bp.route('/create_contract', methods=["GET", 'POST'])
+@create_contract_bp.route('/create_contract', methods=["GET"])
+@login_required
 def create_contract():
     categories = ContractManager(db.session).search_categories()
     form = CreateContractForm()
@@ -21,6 +23,7 @@ def create_contract():
 
 
 @create_contract_bp.route('/save_contract', methods=["POST"])
+@login_required
 def save_contract():
     form = CreateContractForm()
     filtered_company_name = filter_string_fields(form.company.data)

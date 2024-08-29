@@ -97,7 +97,7 @@
 }
 
 .submenu-companies,
-.submenu-contracts{
+.submenu-contracts {
   &__sub-options {
     text-align: center;
     background-color: $color-submenu-background;
@@ -160,4 +160,27 @@
 
 .remove-pointer {
   cursor: default !important;
+}
+
+.log-out {
+  display: flex;
+  margin-left: .9rem;
+  gap: 2rem;
+
+  & button {
+    color: $color-white;
+    & a {
+      text-decoration: none;
+    }
+    &:hover {
+      color: $color-light-blue;
+      cursor: pointer;
+    }
+  }
+}
+
+.svg {
+  width: 24px;
+  height: 24px;
+  color: $color-alice-blue;
 }

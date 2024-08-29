@@ -192,4 +192,26 @@ body {
   cursor: default !important;
 }
 
+.log-out {
+  display: flex;
+  margin-left: 0.9rem;
+  gap: 2rem;
+}
+.log-out button {
+  color: white;
+}
+.log-out button a {
+  text-decoration: none;
+}
+.log-out button:hover {
+  color: #36c7c7;
+  cursor: pointer;
+}
+
+.svg {
+  width: 24px;
+  height: 24px;
+  color: #97c0c0;
+}
+
 /*# sourceMappingURL=common.css.map */

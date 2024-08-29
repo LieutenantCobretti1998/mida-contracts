@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+from flask_login import login_required
 from sqlalchemy.exc import SQLAlchemyError, NoResultFound
 from database.db_init import db
 from database.models import *
@@ -47,6 +48,7 @@ column_map_categories = {
 
 
 @api_contracts_bp.route('/all_contracts', methods=['GET'])
+@login_required
 def all_contracts_data():
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('limit', 10, type=int)
@@ -64,6 +66,7 @@ def all_contracts_data():
 
 
 @api_contracts_bp.route('/all_contracts/<string:search>', methods=['GET'])
+@login_required
 def get_search(search):
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('limit', 10, type=int)
@@ -81,6 +84,7 @@ def get_search(search):
 
 
 @api_contracts_bp.route('/all_contracts/related_contract/<string:search>', methods=['GET'])
+@login_required
 def get_search_for_act_contract(search):
     search_engine = CompanySearchEngine(db.session, search)
     response = search_engine.search_related_contract_api()
@@ -90,6 +94,7 @@ def get_search_for_act_contract(search):
 # Here now we will have our company's api for the table
 
 @api_companies_bp.route('/all_companies', methods=['GET'])
+@login_required
 def all_companies_data():
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('limit', 10, type=int)
@@ -107,6 +112,7 @@ def all_companies_data():
 
 
 @api_companies_bp.route('/all_companies/<string:search>', methods=['GET'])
+@login_required
 def get_search(search):
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('limit', 10, type=int)
@@ -124,6 +130,7 @@ def get_search(search):
 
 
 @api_companies_bp.route('/all_companies/related_companies/<string:search>', methods=['GET'])
+@login_required
 def get_search_for_act_companies(search):
     search_engine = CompanySearchEngine(db.session, search)
     response = search_engine.search_related_companies_api()
@@ -131,6 +138,7 @@ def get_search_for_act_companies(search):
 
 
 @api_companies_bp.route('/all_companies/related_contracts/<string:search>', methods=['GET'])
+@login_required
 def get_search_for_act_contracts(search):
     search_engine = CompanySearchEngine(db.session, search)
     response = search_engine.search_related_contracts_api()
@@ -139,6 +147,7 @@ def get_search_for_act_contracts(search):
 
 # Acts api routes
 @api_acts_bp.route('/related_acts/<int:contract_id>', methods=['GET'])
+@login_required
 def get_related_acts(contract_id):
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('limit', 10, type=int)
@@ -146,7 +155,7 @@ def get_related_acts(contract_id):
     order_by = request.args.get('order_by', 'Date')
     direction = request.args.get('dir', 'desc')
     mapping_results = column_map_acts.get(order_by, ("id", Acts))
-    search_engine = ActsSearchEngine(db.session, contract_id)
+    search_engine = ActsSearchEngine(db.session, contract_id=contract_id)
     act_list, total_count = search_engine.get_all_results_api(per_page, offset, direction, mapping_results)
     response = {
         "data": act_list,
@@ -156,6 +165,7 @@ def get_related_acts(contract_id):
 
 
 @api_acts_bp.route('/related_acts/<int:contract_id>/<string:search>', methods=['GET'])
+@login_required
 def get_search_related_acts(contract_id, search):
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('limit', 10, type=int)
@@ -163,7 +173,7 @@ def get_search_related_acts(contract_id, search):
     order_by = request.args.get('order_by', 'Date')
     direction = request.args.get('dir', 'desc')
     mapping_results = column_map_acts.get(order_by, ("id", Acts))
-    search_engine = ActsSearchEngine(db.session, search)
+    search_engine = ActsSearchEngine(db.session, contract_id=contract_id, search=search)
     acts_list, total_count = search_engine.search_query_api(per_page, offset, direction, mapping_results)
     response = {
         "data": acts_list,
@@ -174,6 +184,7 @@ def get_search_related_acts(contract_id, search):
 
 # Additions
 @api_additions_bp.route('/related_additions/<int:contract_id>', methods=['GET'])
+@login_required
 def get_related_additions(contract_id):
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('limit', 10, type=int)
@@ -181,7 +192,7 @@ def get_related_additions(contract_id):
     order_by = request.args.get('order_by', 'Date')
     direction = request.args.get('dir', 'desc')
     mapping_results = column_map_additions.get(order_by, ("id", Additions))
-    search_engine = AdditionSearchEngine(db.session, contract_id)
+    search_engine = AdditionSearchEngine(db.session, contract_id=contract_id)
     addition_list, total_count = search_engine.get_all_results_api(per_page, offset, direction, mapping_results)
     response = {
         "data": addition_list,
@@ -191,6 +202,7 @@ def get_related_additions(contract_id):
 
 
 @api_acts_bp.route('/related_additions/<int:contract_id>/<string:search>', methods=['GET'])
+@login_required
 def get_search_related_additions(contract_id, search):
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('limit', 10, type=int)
@@ -198,7 +210,7 @@ def get_search_related_additions(contract_id, search):
     order_by = request.args.get('order_by', 'Date')
     direction = request.args.get('dir', 'desc')
     mapping_results = column_map_additions.get(order_by, ("id", Additions))
-    search_engine = AdditionSearchEngine(db.session, search)
+    search_engine = AdditionSearchEngine(db.session, contract_id=contract_id, search=search)
     addition_list, total_count = search_engine.search_query_api(per_page, offset, direction, mapping_results)
     response = {
         "data": addition_list,
@@ -209,6 +221,7 @@ def get_search_related_additions(contract_id, search):
 
 # Categories
 @api_categories_bp.route('/all_categories', methods=['GET'])
+@login_required
 def categories():
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('limit', 10, type=int)
@@ -226,6 +239,7 @@ def categories():
 
 
 @api_categories_bp.route('/all_categories/add_category', methods=['POST'])
+@login_required
 def add_category():
     new_category = request.json
     categories_manager = CategoriesManager(db.session)
@@ -246,6 +260,7 @@ def add_category():
 
 
 @api_categories_bp.route('/all_categories/remove_category/<int:category_id>', methods=['DELETE'])
+@login_required
 def delete_category(category_id):
     categories_manager = CategoriesManager(db.session)
     try:
@@ -261,6 +276,7 @@ def delete_category(category_id):
 
 
 @api_categories_bp.route('/all_categories/<string:search>', methods=['GET'])
+@login_required
 def get_search_for_categories(search):
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('limit', 10, type=int)
@@ -278,6 +294,7 @@ def get_search_for_categories(search):
 
 
 @api_categories_bp.route('/all_categories/update_category', methods=['PUT'])
+@login_required
 def update_category():
     category_to_update = request.json.get('category_name')
     category_id = request.json.get("id")
@@ -304,6 +321,7 @@ def update_category():
 
 # Dashboard Tables
 @api_dashboard_bp.route('/contracts_ending', methods=['GET'])
+@login_required
 def contracts_ending():
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('limit', 10, type=int)
@@ -314,6 +332,7 @@ def contracts_ending():
 
 
 @api_dashboard_bp.route('/contracts_ending_amount', methods=['GET'])
+@login_required
 def contracts_ending_amount():
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('limit', 10, type=int)

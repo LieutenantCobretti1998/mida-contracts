@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, redirect, flash, url_for, current_app, abort
+from flask_login import login_required
 from werkzeug.utils import secure_filename
 from sqlalchemy.exc import OperationalError, NoResultFound, DBAPIError
 from forms.create_act_form import CreateAct
@@ -12,12 +13,14 @@ create_act_bp = Blueprint('create_act', __name__)
 
 # Our create act routes
 @create_act_bp.route('/create_act', methods=['GET', 'POST'])
+@login_required
 def create_act():
     form = CreateAct()
     return render_template('create_act.html', form=form)
 
 
-@create_act_bp.route('/save_act', methods=['GET', 'POST'])
+@create_act_bp.route('/save_act', methods=['POST'])
+@login_required
 def save_act():
     form = CreateAct()
     filtered_act_number = filter_act_number(form.act_number.data)

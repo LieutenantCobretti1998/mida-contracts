@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, redirect, flash, url_for, abort, send_file, jsonify
+from flask_login import login_required
 from werkzeug.utils import secure_filename
 from sqlalchemy.exc import NoResultFound, DBAPIError, OperationalError
 from database.validators import AdditionManager, AdditionSearchEngine, EditAddition
@@ -12,6 +13,7 @@ check_additions_bp = Blueprint('all_additions', __name__)
 
 # Our roots for acts
 @check_additions_bp.route('/act_addition/<int:addition_id>', methods=['GET'])
+@login_required
 def get_addition(addition_id):
     try:
         search_engine = AdditionSearchEngine(db.session, addition_id)
@@ -25,6 +27,7 @@ def get_addition(addition_id):
 
 
 @check_additions_bp.route('/addition/<int:addition_id>', methods=['GET'])
+@login_required
 def edit_addition(addition_id):
     try:
         form = EditAdditionForm()
@@ -39,6 +42,7 @@ def edit_addition(addition_id):
 
 
 @check_additions_bp.route('/update_act/<int:addition_id>', methods=['POST'])
+@login_required
 def update_addition(addition_id):
     search_engine = AdditionSearchEngine(db.session, addition_id)
     edit_engine = EditAddition(db.session, addition_id)
@@ -97,6 +101,7 @@ def update_addition(addition_id):
 
 
 @check_additions_bp.route('/preview_pdf/<int:addition_id>', methods=['GET'])
+@login_required
 def preview_pdf(addition_id):
     search_engine = AdditionSearchEngine(db.session, addition_id)
     search_result = search_engine.search_addition()
@@ -107,6 +112,7 @@ def preview_pdf(addition_id):
 
 
 @check_additions_bp.route('/delete_addition/<int:addition_id>', methods=['DELETE'])
+@login_required
 def delete_addition(addition_id):
     addition_manager = AdditionManager(db.session)
     try:

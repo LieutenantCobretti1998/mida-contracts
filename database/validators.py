@@ -717,8 +717,10 @@ class ActsManager(ValidatorWrapper):
 
 
 class ActsSearchEngine(SearchEngine):
-    def __init__(self, db_session: Session, search: str | int = None):
+    def __init__(self, db_session: Session, act_id: int = None, contract_id: int = None, search: str | int = None):
         super().__init__(db_session, search)
+        self.contract_id = contract_id
+        self.act_id = act_id
 
     def get_all_results_api(self, per_page: int, offset: int, sort_dir: str, mapping: tuple) -> tuple[
         list[dict[str, InstrumentedAttribute | Any]], int]:
@@ -730,7 +732,7 @@ class ActsSearchEngine(SearchEngine):
                 :return: list[dict[str, InstrumentedAttribute | Any]]
                 This method is for put all results of the related acts in the table
                 """
-        query = self.db_session.query(Acts).filter_by(contract_id=self.search)
+        query = self.db_session.query(Acts).filter_by(contract_id=self.contract_id)
 
         query = self.asc_or_desc(query, sort_dir, mapping)
         total_count = query.count()
@@ -754,6 +756,7 @@ class ActsSearchEngine(SearchEngine):
         """
         query = (self.db_session
         .query(Acts)
+        .filter_by(contract_id=self.contract_id)
         .join(Contract, Contract.id == Acts.contract_id)
         .filter(or_(
             Acts.act_number.ilike(f"%{self.search}%"),
@@ -773,7 +776,7 @@ class ActsSearchEngine(SearchEngine):
         return acts_list, total_count
 
     def search_act(self):
-        query = self.db_session.query(Acts).filter_by(id=self.search).first()
+        query = self.db_session.query(Acts).filter_by(id=self.act_id).first()
         if query:
             return query
 
@@ -1089,8 +1092,9 @@ class AdditionManager(ActsManager):
 
 
 class AdditionSearchEngine(ActsSearchEngine):
-    def __init__(self, db_session: Session, search: str | int = None):
-        super().__init__(db_session, search)
+    def __init__(self, db_session: Session, addition_id: int = None, contract_id: int = None, search: str | int = None):
+        super().__init__(db_session, contract_id=contract_id, search=search)
+        self.addition_id = addition_id
 
     def increase_amount(self, contract_id: int, addition: float) -> None:
         contract = self.db_session.query(Contract).filter_by(id=contract_id).first()
@@ -1114,7 +1118,7 @@ class AdditionSearchEngine(ActsSearchEngine):
         :param mapping:
         :return:
         """
-        query = self.db_session.query(Additions).filter_by(contract_id=self.search)
+        query = self.db_session.query(Additions).filter_by(contract_id=self.contract_id)
 
         query = self.asc_or_desc(query, sort_dir, mapping)
         total_count = query.count()
@@ -1138,6 +1142,7 @@ class AdditionSearchEngine(ActsSearchEngine):
         """
         query = (self.db_session
         .query(Additions)
+        .filter_by(contract_id=self.contract_id)
         .join(Contract, Contract.id == Additions.contract_id)
         .filter(or_(
             Additions.addition_number.ilike(f"%{self.search}%"),
@@ -1157,7 +1162,7 @@ class AdditionSearchEngine(ActsSearchEngine):
         return addition_list, total_count
 
     def search_addition(self) -> Type[Additions]:
-        query = self.db_session.query(Additions).filter_by(id=self.search).first()
+        query = self.db_session.query(Additions).filter_by(id=self.addition_id).first()
         if query:
             return query
 

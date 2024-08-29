@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, jsonify, flash, send_file, abort
+from flask_login import login_required
 from sqlalchemy.exc import NoResultFound
 from werkzeug.utils import secure_filename
 
@@ -12,11 +13,13 @@ check_contracts_bp = Blueprint('all_contracts', __name__)
 
 
 @check_contracts_bp.route('/all_contracts', methods=['GET'])
+@login_required
 def get_all_contracts():
     return render_template("check_contracts.html", search_mode=False)
 
 
 @check_contracts_bp.route('/contract_overview/<int:contract_id>', methods=['GET'])
+@login_required
 def get_contract(contract_id):
     try:
         search_engine = SearchEngine(db.session, contract_id)
@@ -30,6 +33,7 @@ def get_contract(contract_id):
 
 
 @check_contracts_bp.route('/contract/<int:contract_id>', methods=['GET'])
+@login_required
 def edit_contract(contract_id):
     try:
         form = EditContractForm()
@@ -49,6 +53,7 @@ def edit_contract(contract_id):
 
 
 @check_contracts_bp.route('/update_contract/<int:contract_id>', methods=['POST'])
+@login_required
 def update_contract(contract_id):
     search_engine = SearchEngine(db.session, contract_id)
     edit_engine = EditContract(db.session, contract_id)
@@ -131,6 +136,7 @@ def update_contract(contract_id):
 
 
 @check_contracts_bp.route('/preview_pdf/<int:contract_id>', methods=['GET'])
+@login_required
 def preview_pdf(contract_id):
     search_engine = SearchEngine(db.session, contract_id)
     search_result = search_engine.search_company_with_contract()
@@ -141,6 +147,7 @@ def preview_pdf(contract_id):
 
 
 @check_contracts_bp.route('/delete_contract/<int:contract_id>', methods=['DELETE'])
+@login_required
 def delete_contract(contract_id):
     contract_manager = ContractManager(db.session)
     contract_on_delete = contract_manager.delete_contract(contract_id)
@@ -159,5 +166,6 @@ def delete_contract(contract_id):
 
 
 @check_contracts_bp.route('/related_contracts/<string:voen>', methods=['GET'])
+@login_required
 def related_contracts(voen):
     return render_template("check_contracts.html", search_mode=True, voen=voen)

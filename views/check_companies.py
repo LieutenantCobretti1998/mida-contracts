@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, session, url_for, jsonify, flash, abort, redirect
+from flask_login import login_required
 from sqlalchemy.exc import NoResultFound
 from forms.edit_company_form import EditCompanyForm
 from forms.filters import *
@@ -10,11 +11,13 @@ check_companies_bp = Blueprint('all_companies', __name__)
 
 
 @check_companies_bp.route('/all_companies', methods=['GET'])
+@login_required
 def get_all_companies():
     return render_template("check_companies.html")
 
 
 @check_companies_bp.route('/company_overview/<int:company_id>', methods=['GET', 'POST'])
+@login_required
 def get_company(company_id):
     try:
         search_engine = CompanySearchEngine(db.session, company_id)
@@ -28,6 +31,7 @@ def get_company(company_id):
 
 
 @check_companies_bp.route('/company/<int:company_id>', methods=['GET', 'POST'])
+@login_required
 def edit_company(company_id):
     form = EditCompanyForm()
     try:
@@ -43,6 +47,7 @@ def edit_company(company_id):
 
 
 @check_companies_bp.route('/update_company/<int:company_id>', methods=['POST'])
+@login_required
 def update_company(company_id):
     search_engine = SearchEngine(db.session, company_id)
     edit_engine = EditCompany(db.session, company_id)
@@ -75,6 +80,7 @@ def update_company(company_id):
 
 
 @check_companies_bp.route('/delete_company/<int:company_id>', methods=['DELETE'])
+@login_required
 def delete_company(company_id):
     company_manager = CompanyManager(db.session)
     company_on_delete = company_manager.delete_company(company_id)

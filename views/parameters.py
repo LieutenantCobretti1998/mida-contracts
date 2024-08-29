@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, redirect, flash, url_for, current_app, abort
+from flask_login import login_required
 from sqlalchemy.exc import OperationalError, NoResultFound
 from forms.categories_form import SearchForm
 from database.db_init import db
@@ -11,6 +12,7 @@ parameter_bp = Blueprint('parameters', __name__)
 
 
 @parameter_bp.route('/categories', methods=['GET'])
+@login_required
 def categories():
     form = SearchForm()
     update_form = EditCategoryForm()
@@ -18,6 +20,7 @@ def categories():
 
 
 @parameter_bp.route('/categories/edit_category/<int:category_id>', methods=['GET'])
+@login_required
 def edit_category(category_id):
     try:
         form = EditCategoryForm()
@@ -32,6 +35,7 @@ def edit_category(category_id):
 
 
 @parameter_bp.route('/categories/update_category/<int:category_id>', methods=['POST'])
+@login_required
 def update_category(category_id):
     form = EditCategoryForm()
     if form.validate_on_submit():

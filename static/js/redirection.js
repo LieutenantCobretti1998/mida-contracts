@@ -10,7 +10,6 @@ function attachEventHandlers() {
             const category_name = event.target.getAttribute("data-value");
             const data_voen = event.target.getAttribute("data-voen");
             const csrf_token = event.target.getAttribute("data-csrf-token");
-            console.log("hello")
             switch (true) {
                 case event.target.classList.contains("pdf-btn"):
                      viewPdf(Number(contract_id));
