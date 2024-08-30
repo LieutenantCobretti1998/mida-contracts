@@ -11,12 +11,13 @@ export default {
     tableForCategories: path.resolve(__dirname, './static/js/categories_table.js'),
     tableForAdditions: path.resolve(__dirname, './static/js/addition_table.js'),
     tablesForDashboard: path.resolve(__dirname, './static/js/dashboard_tables.js'),
+    tableForUsers: path.resolve(__dirname, './static/js/users_table.js'),
   },
   output: {
     filename: "[name].bundle.js",
     path: path.resolve(__dirname, './static/js/'),
      library: {
-      type: 'module', // Export as an ES module
+      type: 'module'
     },
   },
   experiments: {
