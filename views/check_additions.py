@@ -1,10 +1,9 @@
 from flask import Blueprint, render_template, redirect, flash, url_for, abort, send_file, jsonify
-from flask_login import login_required
+from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from sqlalchemy.exc import NoResultFound, DBAPIError, OperationalError
 from database.validators import AdditionManager, AdditionSearchEngine, EditAddition
 from database.db_init import db
-from forms.custom_validators import check_amount, check_act_amount_difference, calculate_amount
 from forms.edit_addition import EditAdditionForm
 from forms.filters import *
 
@@ -29,6 +28,8 @@ def get_addition(addition_id):
 @check_additions_bp.route('/addition/<int:addition_id>', methods=['GET'])
 @login_required
 def edit_addition(addition_id):
+    if current_user.role == "viewer" or current_user.role == "editor":
+        abort(401)
     try:
         form = EditAdditionForm()
         search_engine = AdditionSearchEngine(db.session, addition_id)
@@ -44,6 +45,8 @@ def edit_addition(addition_id):
 @check_additions_bp.route('/update_act/<int:addition_id>', methods=['POST'])
 @login_required
 def update_addition(addition_id):
+    if current_user.role == "viewer" or current_user.role == "editor":
+        abort(401)
     search_engine = AdditionSearchEngine(db.session, addition_id)
     edit_engine = EditAddition(db.session, addition_id)
     original_data = search_engine.search_addition()
@@ -57,13 +60,11 @@ def update_addition(addition_id):
                     case True:
                         remained_amount = original_data.amount - difference
                         new_total_amount = original_data.contract.amount - difference
-                        print(new_total_amount, remained_amount)
                         edit_engine.change_old_contract(remained_amount, new_total_amount)
                         return
                     case False:
                         remained_amount = original_data.amount - difference * -1
                         new_total_amount = original_data.contract.amount - difference * -1
-                        print(new_total_amount, remained_amount)
                         edit_engine.change_old_contract(remained_amount, new_total_amount)
                         return
 
@@ -114,6 +115,8 @@ def preview_pdf(addition_id):
 @check_additions_bp.route('/delete_addition/<int:addition_id>', methods=['DELETE'])
 @login_required
 def delete_addition(addition_id):
+    if current_user.role == "viewer" or current_user.role == "editor":
+        abort(401)
     addition_manager = AdditionManager(db.session)
     try:
         addition_on_delete = addition_manager.delete_addition(addition_id)

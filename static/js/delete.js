@@ -18,6 +18,10 @@ export default function openPopUpMenu(url, csrf_token) {
            case url.includes("delete_category"):
                delete_type = "category";
                break;
+
+           case url.includes("delete_user"):
+               delete_type = "user";
+               break;
        }
        main_container.insertAdjacentHTML("afterend",
            `<div class="confirmation_dialog">
@@ -48,6 +52,8 @@ function closePopUpMenu() {
 }
 
 function deleteContract(url, csrf_token) {
+    console.log(url);
+    console.log(csrf_token)
     fetch(`${url}`, {
         method: "DELETE",
         headers: {

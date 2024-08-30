@@ -1,5 +1,5 @@
-from flask import Blueprint, render_template, request, session, url_for, jsonify, flash, abort, redirect
-from flask_login import login_required
+from flask import Blueprint, render_template, url_for, jsonify, flash, abort, redirect
+from flask_login import login_required, current_user
 from sqlalchemy.exc import NoResultFound
 from forms.edit_company_form import EditCompanyForm
 from forms.filters import *
@@ -33,6 +33,8 @@ def get_company(company_id):
 @check_companies_bp.route('/company/<int:company_id>', methods=['GET', 'POST'])
 @login_required
 def edit_company(company_id):
+    if current_user.role == "viewer" or current_user.role == "editor":
+        abort(401)
     form = EditCompanyForm()
     try:
         search_engine = CompanySearchEngine(db.session, company_id)
@@ -49,6 +51,8 @@ def edit_company(company_id):
 @check_companies_bp.route('/update_company/<int:company_id>', methods=['POST'])
 @login_required
 def update_company(company_id):
+    if current_user.role == "viewer" or current_user.role == "editor":
+        abort(401)
     search_engine = SearchEngine(db.session, company_id)
     edit_engine = EditCompany(db.session, company_id)
     original_data = search_engine.search_company()
@@ -82,6 +86,8 @@ def update_company(company_id):
 @check_companies_bp.route('/delete_company/<int:company_id>', methods=['DELETE'])
 @login_required
 def delete_company(company_id):
+    if current_user.role == "viewer" or current_user.role == "editor":
+        abort(401)
     company_manager = CompanyManager(db.session)
     company_on_delete = company_manager.delete_company(company_id)
     if company_on_delete:

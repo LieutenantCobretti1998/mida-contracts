@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, redirect, flash, url_for, current_app, abort
-from flask_login import login_required
+from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from sqlalchemy.exc import OperationalError, NoResultFound, DBAPIError
 from forms.create_addition_form import CreateAddition
@@ -15,6 +15,8 @@ create_addition_bp = Blueprint('create_addition', __name__)
 @create_addition_bp.route('/create_addition', methods=['GET'])
 @login_required
 def create_addition():
+    if current_user.role == "viewer":
+        abort(401)
     form = CreateAddition()
     return render_template('create_addition.html', form=form)
 
@@ -22,6 +24,8 @@ def create_addition():
 @create_addition_bp.route('/save_addition', methods=['GET', 'POST'])
 @login_required
 def save_addition():
+    if current_user.role == "viewer":
+        abort(401)
     form = CreateAddition()
     filtered_addition_number = filter_act_number(form.addition_number.data)
     act_manager = AdditionManager(db.session)

@@ -1,10 +1,10 @@
 from flask import Blueprint, render_template, redirect, flash, url_for, abort, send_file, jsonify
-from flask_login import login_required
+from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from sqlalchemy.exc import NoResultFound, DBAPIError, OperationalError
 from database.validators import ActsSearchEngine, EditAct, ActsManager
 from database.db_init import db
-from forms.custom_validators import check_amount, check_act_amount_difference, calculate_amount
+from forms.custom_validators import check_amount, check_act_amount_difference
 from forms.edit_act_form import EditActForm
 from forms.filters import *
 
@@ -29,6 +29,8 @@ def get_act(act_id):
 @check_acts_bp.route('/act/<int:act_id>', methods=['GET'])
 @login_required
 def edit_act(act_id):
+    if current_user.role == "viewer" or current_user.role == "editor":
+        abort(401)
     try:
         form = EditActForm()
         search_engine = ActsSearchEngine(db.session, act_id)
@@ -44,6 +46,8 @@ def edit_act(act_id):
 @check_acts_bp.route('/update_act/<int:act_id>', methods=['POST'])
 @login_required
 def update_act(act_id):
+    if current_user.role == "viewer" or current_user.role == "editor":
+        abort(401)
     search_engine = ActsSearchEngine(db.session, act_id)
     edit_engine = EditAct(db.session, act_id)
     original_data = search_engine.search_act()
@@ -102,6 +106,8 @@ def preview_pdf(act_id):
 @check_acts_bp.route('/delete_act/<int:act_id>', methods=['DELETE'])
 @login_required
 def delete_act(act_id):
+    if current_user.role == "viewer" or current_user.role == "editor":
+        abort(401)
     act_manager = ActsManager(db.session)
     act_on_delete = act_manager.delete_act(act_id)
     if act_on_delete:

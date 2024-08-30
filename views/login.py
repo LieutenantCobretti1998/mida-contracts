@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user
 from extensions import login_manager
 from database.db_init import db
@@ -19,11 +19,11 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = db.session.query(User).filter_by(username=form.username.data).first()
-        password = form.password.data
-        if user and password == user.password:
+        if user and check_password_hash(pwhash=user.password ,password=form.password.data):
             login_user(user, remember=user.id)
-            next_page = request.args.get('next')
-            return redirect(next_page or url_for('home.home'))
+            return redirect(url_for('home.home'))
+        flash("The username or password is not correct. Please check fields", "error")
+        return render_template('auth.html', form=form)
     return render_template("auth.html", form=form)
 
 

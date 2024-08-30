@@ -1,6 +1,6 @@
 import { Grid, html } from 'gridJs'; // Using the alias
 import 'gridJs/dist/theme/mermaid.css';
-import {useEffect} from "gridjs"; // Importing the CSS using the alias
+
 
 const grid = new Grid({
    columns: [
@@ -43,7 +43,7 @@ const grid = new Grid({
                         const contract_id = row.cells[0].data;
                         let action_html = `<button type="button" class="view-btn" data-id=${contract_id}>View</button>`
                         if(role === "admin") {
-                            action_html += `<button type="button" class="delete-btn" data-id=${contract_id}>Delete</button>`
+                            action_html += `<button data-csrf-token=${csrf_token} type="button" class="delete-btn" data-id=${contract_id}>Delete</button>`
                         }
                         return html(`<span style="display: flex; justify-content: space-between">${action_html}</span>`);
                     }

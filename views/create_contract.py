@@ -1,5 +1,5 @@
-from flask import Blueprint, render_template, redirect, flash, url_for, current_app
-from flask_login import login_required
+from flask import Blueprint, render_template, redirect, flash, url_for, current_app, abort
+from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from sqlalchemy.exc import OperationalError
 from forms.create_contract_form import CreateContractForm
@@ -16,6 +16,8 @@ create_contract_bp = Blueprint('create_contract', __name__)
 @create_contract_bp.route('/create_contract', methods=["GET"])
 @login_required
 def create_contract():
+    if current_user.role == "viewer":
+        abort(401)
     categories = ContractManager(db.session).search_categories()
     form = CreateContractForm()
     form.categories.choices = [(category.id, category.category_name) for category in categories]
@@ -34,7 +36,7 @@ def save_contract():
     contract_manager = ContractManager(db.session)
     categories = contract_manager.search_categories()
     form.categories.choices = [(category.id, category.category_name) for category in categories]
-    if form.validate():
+    if form.validate_on_submit():
         selected_category_id = form.categories.data
         valid_category = next((cat for cat in categories if cat.id == selected_category_id), None)
         if valid_category is None:

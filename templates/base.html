@@ -131,6 +131,12 @@
                                         <li class="{% block class_create_parameters_li %}{% endblock class_create_parameters_li %}">
                                             <a class="submenu-companies__sub-options {% block class_add_param_requisites %}{% endblock class_add_param_requisites %}" href="{{ url_for('parameters.categories') }}">Categories</a>
                                         </li>
+                                        <li class="{% block class_create_users_li %}{% endblock class_create_users_li %}">
+                                            <a class="submenu-companies__sub-options {% block class_add_user %}{% endblock class_add_user %}" href="{{ url_for('parameters.create_user') }}">Create a user</a>
+                                        </li>
+                                        <li class="{% block class_check_users_li %}{% endblock class_check_users_li %}">
+                                            <a class="submenu-companies__sub-options {% block class_all_users %}{% endblock class_all_users %}" href="{{ url_for('parameters.all_users') }}">Check users</a>
+                                        </li>
                                 </ul>
                         </li>
                     {% endif %}

@@ -1,5 +1,5 @@
-from flask import Blueprint, render_template, redirect, url_for, jsonify, flash
-from flask_login import login_required
+from flask import Blueprint, render_template, redirect, url_for, jsonify, flash, abort
+from flask_login import login_required, current_user
 from sqlalchemy.exc import OperationalError
 from database.db_init import db
 from database.validators import CompanyManager
@@ -12,6 +12,8 @@ create_company_bp = Blueprint("create_company", __name__)
 @create_company_bp.route("/create_company", methods=["GET"])
 @login_required
 def create_company():
+    if current_user.role == "viewer":
+        abort(401)
     form = CompanyForm()
     return render_template("create_company.html", form=form)
 
@@ -19,6 +21,8 @@ def create_company():
 @create_company_bp.route("/save_company", methods=["POST"])
 @login_required
 def save_company():
+    if current_user.role == "viewer":
+        abort(401)
     form = CompanyForm()
     company_manager = CompanyManager(db.session)
     filtered_company_name = filter_string_fields(form.company.data)

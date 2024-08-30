@@ -1,8 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, jsonify, flash, send_file, abort
-from flask_login import login_required
+from flask_login import login_required, current_user
 from sqlalchemy.exc import NoResultFound
 from werkzeug.utils import secure_filename
-
 from forms.custom_validators import calculate_amount
 from forms.filters import *
 from forms.edit_contract_form import EditContractForm
@@ -35,6 +34,8 @@ def get_contract(contract_id):
 @check_contracts_bp.route('/contract/<int:contract_id>', methods=['GET'])
 @login_required
 def edit_contract(contract_id):
+    if current_user.role == "viewer" or current_user.role == "editor":
+        abort(401)
     try:
         form = EditContractForm()
         contract_manager = ContractManager(db.session)
@@ -55,6 +56,8 @@ def edit_contract(contract_id):
 @check_contracts_bp.route('/update_contract/<int:contract_id>', methods=['POST'])
 @login_required
 def update_contract(contract_id):
+    if current_user.role == "viewer" or current_user.role == "editor":
+        abort(401)
     search_engine = SearchEngine(db.session, contract_id)
     edit_engine = EditContract(db.session, contract_id)
     contract_manager = ContractManager(db.session)
@@ -149,6 +152,8 @@ def preview_pdf(contract_id):
 @check_contracts_bp.route('/delete_contract/<int:contract_id>', methods=['DELETE'])
 @login_required
 def delete_contract(contract_id):
+    if current_user.role == "viewer" or current_user.role == "editor":
+        abort(401)
     contract_manager = ContractManager(db.session)
     contract_on_delete = contract_manager.delete_contract(contract_id)
     if contract_on_delete:

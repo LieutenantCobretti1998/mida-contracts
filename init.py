@@ -27,13 +27,15 @@ def create_app() -> Flask:
     app.register_blueprint(check_contracts_bp, url_prefix="/contracts")
     from views.check_acts import check_acts_bp
     app.register_blueprint(check_acts_bp, url_prefix="/acts")
-    from views.table_api import api_contracts_bp, api_companies_bp, api_acts_bp, api_categories_bp, api_additions_bp, api_dashboard_bp
+    from views.table_api import (api_contracts_bp, api_companies_bp, api_acts_bp, api_categories_bp, api_additions_bp,
+                                 api_dashboard_bp, api_users_bp)
     app.register_blueprint(api_dashboard_bp, url_prefix="/api")
     app.register_blueprint(api_contracts_bp, url_prefix="/api")
     app.register_blueprint(api_companies_bp, url_prefix="/api")
     app.register_blueprint(api_acts_bp, url_prefix="/api")
     app.register_blueprint(api_categories_bp, url_prefix="/api")
     app.register_blueprint(api_additions_bp, url_prefix="/api")
+    app.register_blueprint(api_users_bp, url_prefix="/api")
     from views.create_company import create_company_bp
     app.register_blueprint(create_company_bp, url_prefix="/companies")
     from views.check_companies import check_companies_bp
