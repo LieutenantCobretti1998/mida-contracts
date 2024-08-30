@@ -6,10 +6,12 @@ import shutil
 import flask
 import sqlalchemy
 from flask import current_app
+from flask_login import current_user
 from flask_sqlalchemy.session import Session
 from sqlalchemy import or_, desc, asc, func, and_, cast, Float
 from sqlalchemy.exc import NoResultFound, SQLAlchemyError, DBAPIError, OperationalError
 from sqlalchemy.orm import InstrumentedAttribute
+from werkzeug.exceptions import NotFound
 
 from configuration import PERCENTAGE_AMOUNT
 from database.models import *
@@ -1174,7 +1176,7 @@ class EditAddition(EditContract):
         super().__init__(db_session, addition_id)
         self.addition_id = addition_id
 
-    def change_old_contract(self, remained_amount: float, new_total_amount: float,  contract_id: int) -> None:
+    def change_old_contract(self, remained_amount: float, new_total_amount: float, contract_id: int) -> None:
         """
         :param remained_amount:
         :param new_total_amount:
@@ -1219,7 +1221,7 @@ class EditAddition(EditContract):
         if not addition_to_update:
             return False, f"Act was not found in database"
         addition_to_update_dict = {column.name: getattr(addition_to_update, column.name) for column in
-                              addition_to_update.__table__.columns}
+                                   addition_to_update.__table__.columns}
         for key, value in changes.items():
             try:
                 if value != addition_to_update_dict[key] and value is not None:
@@ -1297,8 +1299,8 @@ class DashBoard(ValidatorWrapper):
         today = datetime.today().date()
         end_date_threshold = today + timedelta(days=90)
         contracts_in_ending = ((self.db_session.query(Contract)
-                               .filter(Contract.end_date <= end_date_threshold, Contract.end_date >= today))
-                               )
+                                .filter(Contract.end_date <= end_date_threshold, Contract.end_date >= today))
+        )
         total_count = contracts_in_ending.count()
         filtered_contracts = contracts_in_ending.order_by(Contract.end_date.asc()).offset(offset).limit(per_page)
         return {
@@ -1340,3 +1342,81 @@ class DashBoard(ValidatorWrapper):
         }
 
 
+class UserManager(ValidatorWrapper):
+    def __init__(self, db_session: Session):
+        super().__init__(db_session)
+
+    def is_user_existed(self, username: str) -> bool:
+        """
+        :param username:
+        :return: bool
+        Simple checking of user's existence
+        """
+        query = self.db_session.query(User).filter(User.username == username).first()
+        if query:
+            return True if query.username == username else False
+        return False
+
+    def delete_user(self, user_id: str):
+        try:
+            query = self.db_session.query(User).filter(User.id == user_id).first()
+            print(query.username)
+            if query:
+                self.db_session.delete(query)
+            else:
+                raise NoResultFound
+        except OperationalError:
+            raise OperationalError
+
+
+class UserSearchEngine(SearchEngine):
+    def __init__(self, db_session: Session, search: str | int = None):
+        super().__init__(db_session, search)
+
+    def get_all_results_api(self, per_page: int, offset: int, sort_dir: str, mapping: tuple) -> tuple[
+        list[dict[str, InstrumentedAttribute | Any]], int]:
+        """
+                :param mapping:
+                :param sort_dir:
+                :param offset:
+                :param per_page:
+                :return: list[dict[str, InstrumentedAttribute | Any]]
+                This method is for put all results of the users in the table
+                """
+        query = self.db_session.query(User).filter(User.username != current_user.username)
+        query = self.asc_or_desc(query, sort_dir, mapping)
+        total_count = query.count()
+        users = query.offset(offset).limit(per_page).all()
+        user_list = [{
+            "id": user.id,
+            "user_name": user.username,
+            "role": user.role
+        } for user in users]
+        return user_list, total_count
+
+    def search_query_api(self, per_page: int, offset: int, sort_dir: str, mapping: tuple) -> (
+            tuple)[list[dict[str, InstrumentedAttribute | Any]], int]:
+        """
+        :param mapping:
+        :param sort_dir:
+        :param offset:
+        :param per_page:
+        :return: list[dict[str, InstrumentedAttribute | Any]]
+        server-side search from db directly to user table via api
+        """
+        query = (self.db_session
+        .query(User)
+        .filter(User.username != current_user.username, or_(
+            User.username.ilike(f"%{self.search}%"),
+            User.role.ilike(f"%{self.search}%"),
+        )))
+
+        query = self.asc_or_desc(query, sort_dir, mapping)
+        total_count = query.count()
+        users = query.offset(offset).limit(per_page).all()
+        user_list = [{
+            "id": user.id,
+            "user_name": user.username,
+            "role": user.role
+        } for user in users]
+        return user_list, total_count

@@ -1,10 +1,11 @@
-from flask import Blueprint, jsonify, request
-from flask_login import login_required
+from flask import Blueprint, jsonify, request, abort
+from flask_login import login_required, current_user
 from sqlalchemy.exc import SQLAlchemyError, NoResultFound
 from database.db_init import db
 from database.models import *
 from database.validators import (SearchEngine, CompanySearchEngine, ActsSearchEngine, CategoriesManager,
-                                 CategoriesSearchEngine, EditCategory, AdditionSearchEngine, DashBoard)
+                                 CategoriesSearchEngine, EditCategory, AdditionSearchEngine, DashBoard,
+                                 UserSearchEngine)
 
 api_contracts_bp = Blueprint('api_contracts', __name__)
 api_companies_bp = Blueprint('api_companies', __name__)
@@ -12,6 +13,7 @@ api_acts_bp = Blueprint('api_acts', __name__)
 api_categories_bp = Blueprint('api_categories', __name__)
 api_additions_bp = Blueprint('api_additions', __name__)
 api_dashboard_bp = Blueprint('api_dashboard', __name__)
+api_users_bp = Blueprint('api_users', __name__)
 # Dictionary of tuples
 column_map_contracts = {
     "Company Name": ("company_name", Companies),
@@ -44,6 +46,11 @@ column_map_additions = {
 
 column_map_categories = {
     "Category": ("category_name", Category)
+}
+
+column_map_users = {
+    "User Name": ("username", User),
+    "Role": ("role", User)
 }
 
 
@@ -241,6 +248,8 @@ def categories():
 @api_categories_bp.route('/all_categories/add_category', methods=['POST'])
 @login_required
 def add_category():
+    if current_user.role == "viewer" or current_user.role == "editor":
+        abort(401)
     new_category = request.json
     categories_manager = CategoriesManager(db.session)
 
@@ -262,6 +271,8 @@ def add_category():
 @api_categories_bp.route('/all_categories/remove_category/<int:category_id>', methods=['DELETE'])
 @login_required
 def delete_category(category_id):
+    if current_user.role == "viewer" or current_user.role == "editor":
+        abort(401)
     categories_manager = CategoriesManager(db.session)
     try:
         categories_manager.delete_category(category_id)
@@ -296,6 +307,8 @@ def get_search_for_categories(search):
 @api_categories_bp.route('/all_categories/update_category', methods=['PUT'])
 @login_required
 def update_category():
+    if current_user.role == "viewer" or current_user.role == "editor":
+        abort(401)
     category_to_update = request.json.get('category_name')
     category_id = request.json.get("id")
     if len(category_to_update) > 30:
@@ -339,4 +352,42 @@ def contracts_ending_amount():
     offset = (page - 1) * per_page
     dashboard_instance = DashBoard(db.session)
     response = dashboard_instance.get_contracts_information_amount_api(per_page, offset)
+    return jsonify(response)
+
+
+# Api for users table
+
+@api_users_bp.route('/all_users', methods=['GET'])
+@login_required
+def all_users_data():
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('limit', 10, type=int)
+    offset = (page - 1) * per_page
+    order_by = request.args.get('order_by', 'User Name')
+    direction = request.args.get('dir', 'desc')
+    mapping_results = column_map_users.get(order_by, ("id", User))
+    search_engine = UserSearchEngine(db.session)
+    user_list, total_count = search_engine.get_all_results_api(per_page, offset, direction, mapping_results)
+    response = {
+        "data": user_list,
+        "total_count": total_count
+    }
+    return jsonify(response)
+
+
+@api_users_bp.route('/all_users/<string:search>', methods=['GET'])
+@login_required
+def get_search(search):
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('limit', 10, type=int)
+    offset = (page - 1) * per_page
+    order_by = request.args.get('order_by', 'User Name')
+    direction = request.args.get('dir', 'desc')
+    mapping_results = column_map_users.get(order_by, ("id", User))
+    search_engine = UserSearchEngine(db.session, search)
+    user_list, total_count = search_engine.search_query_api(per_page, offset, direction, mapping_results)
+    response = {
+        "data": user_list,
+        "total_count": total_count
+    }
     return jsonify(response)
