@@ -196,7 +196,8 @@ class SearchEngine(ValidatorWrapper):
             "company_name": contract.company.company_name,
             "voen": contract.company.voen,
             "contract_number": contract.contract_number,
-            "date": contract.date,
+            "start_date": contract.date,
+            "end_date": contract.end_date,
             "amount": float(contract.amount),
             "remained_amount": float(contract.remained_amount),
             "adv_payer": bool(contract.adv_payer),
@@ -235,7 +236,8 @@ class SearchEngine(ValidatorWrapper):
             "company_name": contract.company.company_name,
             "voen": contract.company.voen,
             "contract_number": contract.contract_number,
-            "date": contract.date,
+            "start_date": contract.date,
+            "end_date": contract.end_date,
             "amount": float(contract.amount),
             "remained_amount": float(contract.remained_amount),
             "adv_payer": bool(contract.adv_payer),
@@ -421,8 +423,7 @@ class EditContract(ValidatorWrapper):
                         setattr(contract_to_update, key, value)
 
             return True, f"Contract updated successfully"
-        except sqlalchemy.exc.DBAPIError as e:
-            self.db_session.rollback()
+        except sqlalchemy.exc.DBAPIError:
             return False, f"An error occurred in the server. Please try again later"
 
 
@@ -1373,6 +1374,12 @@ class UserSearchEngine(SearchEngine):
     def __init__(self, db_session: Session, search: str | int = None):
         super().__init__(db_session, search)
 
+    def search_user(self):
+        query = self.db_session.query(User).filter_by(id=self.search).first()
+        if query:
+            return query
+        raise NoResultFound
+
     def get_all_results_api(self, per_page: int, offset: int, sort_dir: str, mapping: tuple) -> tuple[
         list[dict[str, InstrumentedAttribute | Any]], int]:
         """
@@ -1405,8 +1412,8 @@ class UserSearchEngine(SearchEngine):
         server-side search from db directly to user table via api
         """
         query = (self.db_session
-        .query(User)
-        .filter(User.username != current_user.username, or_(
+                 .query(User)
+                 .filter(User.username != current_user.username, or_(
             User.username.ilike(f"%{self.search}%"),
             User.role.ilike(f"%{self.search}%"),
         )))
@@ -1420,3 +1427,28 @@ class UserSearchEngine(SearchEngine):
             "role": user.role
         } for user in users]
         return user_list, total_count
+
+
+class EditUser(EditContract):
+    def __init__(self, db_session: Session, user_id: int):
+        super().__init__(db_session, user_id)
+
+    def update_data(self, changes: dict, pdf_file: flask = None) -> tuple[bool, str]:
+        """
+        :param changes:
+        :param pdf_file:
+        :return:
+        updating the data
+        """
+        user_data = self.db_session.query(User).filter_by(id=self.id).first()
+        if user_data:
+            try:
+                for key, value in changes.items():
+                    if hasattr(user_data, key) and value is not None:
+                        setattr(user_data, key, value)
+                    continue
+                return True, "User was updated successfully"
+            except DBAPIError:
+                raise DBAPIError
+        else:
+            raise NoResultFound

@@ -1,12 +1,71 @@
 {% extends 'base.html' %}
-{% block title %} Check Users {% endblock title %}
-{% block style %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/all.css') }}">
-{% endblock style %}
-{% block class_all_users %}active{% endblock class_all_users %}
-{% block class_check_users_li %}remove-pointer{% endblock class_check_users_li %}
+{% block title %} Users {% endblock title %}
+{% block style %}<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}"> {% endblock style %}
 {% block content_part %}
-    <div id="results" class="results-table"></div>
+    <form action="{{ url_for('parameters.update_user', user_id = user_id) }}" method="post" enctype="multipart/form-data">
+        {{ form.csrf_token() }}
+        <table  class="table">
+            <caption id="caption">
+                <h1>Edit a user</h1>
+            </caption>
+            <thead></thead>
+            <tbody class="table__body">
+                <tr>
+                    <td class="table__text">
+                        {{ form.username.label() }}
+                    </td>
+                    <td>
+                        <div>
+                            {{ form.username(id="default_input", class="table__input rounded", placeholder=search_result.username) }}
+                            <ul class="error-list">
+                            {% for error in form.username.errors %}
+                                <li class="error-list__message">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="table__text">
+                        {{ form.password.label() }}
+                    </td>
+                    <td>
+                        <div>
+                            {{ form.password(class="table__input rounded", placeholder="password")  }}
+                            <ul class="error-list">
+                            {% for error in form.password.errors %}
+                                <li class="error-list__message">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="table__text">
+                        {{ form.role.label() }}
+                    </td>
+                    <td>
+                        <div>
+                            {{ form.role  }}
+                            <ul class="error-list">
+                            {% for error in form.role.errors %}
+                                <li class="error-list__message">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td></td>
+                    <td id="td-save">
+                        {{ form.submit(class="save-btn") }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
     {% block pop_up_message %}
             {% with messages = get_flashed_messages(with_categories=True) %}
                     {% if messages %}
@@ -57,16 +116,5 @@
         {% endblock pop_up_message %}
 {% endblock content_part %}
 {% block javascript %}
-    <script type="text/javascript">
-        const csrf_token = "{{ csrf_token() }}";
-        const role = "{{ current_user.role }}"
-        let delete_url_base = "{{ url_for('parameters.delete_user', user_id = 0) }}"
-        delete_url_base = delete_url_base.replace(/\/0$/, "/");
-        let view_url_base = "{{ url_for('parameters.edit_user', user_id = 0) }}"
-        view_url_base = view_url_base.replace(/\/0$/, "/")
-
-    </script>
-    <script type="module" src="{{ url_for('static', filename='js/delete.js') }}"></script>
-    <script type="module" src="{{ url_for('static', filename="js/redirection.js") }}"></script>
-    <script type="module" src="{{ url_for('static', filename='js/tableForUsers.bundle.js') }}"></script>
+     <script src="{{ url_for('static', filename='js/form_focus.js') }}"></script>
 {% endblock javascript %}

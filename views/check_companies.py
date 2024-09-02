@@ -16,7 +16,7 @@ def get_all_companies():
     return render_template("check_companies.html")
 
 
-@check_companies_bp.route('/company_overview/<int:company_id>', methods=['GET', 'POST'])
+@check_companies_bp.route('/company_overview/<int:company_id>', methods=['GET'])
 @login_required
 def get_company(company_id):
     try:
@@ -30,7 +30,7 @@ def get_company(company_id):
         abort(404)
 
 
-@check_companies_bp.route('/company/<int:company_id>', methods=['GET', 'POST'])
+@check_companies_bp.route('/company/<int:company_id>', methods=['GET'])
 @login_required
 def edit_company(company_id):
     if current_user.role == "viewer" or current_user.role == "editor":

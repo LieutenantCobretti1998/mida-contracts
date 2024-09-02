@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, jsonify, flash, send_file, abort
+from flask import Blueprint, render_template, redirect, url_for, jsonify, flash, send_file, abort, session
 from flask_login import login_required, current_user
 from sqlalchemy.exc import NoResultFound
 from werkzeug.utils import secure_filename
@@ -45,10 +45,15 @@ def edit_contract(contract_id):
         search_result = search_engine.search_company_with_contract()
         form.categories.default = search_result.category_id
         form.process()
+        if "contract_edit_counter" not in session:
+            session['contract_edit_counter'] = 0
+        session['contract_edit_counter'] += 1
+        counter = session['contract_edit_counter']
+        session[f'contract_id_{counter}'] = contract_id
         return render_template("edit_contract.html",
                                search_result=search_result,
-                               contract_id=contract_id,
-                               form=form)
+                               form=form,
+                               contract_id=contract_id)
     except NoResultFound:
         abort(404)
 
@@ -56,8 +61,6 @@ def edit_contract(contract_id):
 @check_contracts_bp.route('/update_contract/<int:contract_id>', methods=['POST'])
 @login_required
 def update_contract(contract_id):
-    if current_user.role == "viewer" or current_user.role == "editor":
-        abort(401)
     search_engine = SearchEngine(db.session, contract_id)
     edit_engine = EditContract(db.session, contract_id)
     contract_manager = ContractManager(db.session)
@@ -116,12 +119,13 @@ def update_contract(contract_id):
             voen=filter_voen(form.voen.data) if form.voen.data else original_data.company.voen,
             contract_number=filter_contract_number(
                 form.contract_number.data) if form.contract_number.data else original_data.contract_number,
-            date=form.date.data if form.date.data else original_data.date,
+            date=form.start_date.data if form.start_date.data else original_data.date,
             amount=float(form.amount.data) if form.amount.data else original_data.amount,
             remained_amount=new_remained_amount if not None else original_data.remained_amount,
             adv_payer=True if form.is_adv_payer.data else False,
             pdf_file_path=filename if form.pdf_file.data else None,
             category_id=form.categories.data if form.categories.data else original_data.category_id,
+            end_date=form.end_date.data if form.end_date.data else original_data.end_date
 
         )
         success, message = edit_engine.update_data(data_dict, form.pdf_file.data)

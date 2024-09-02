@@ -19,11 +19,13 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = db.session.query(User).filter_by(username=form.username.data).first()
-        if user and check_password_hash(pwhash=user.password ,password=form.password.data):
+        if user and check_password_hash(pwhash=user.password,password=form.password.data):
             login_user(user, remember=user.id)
             return redirect(url_for('home.home'))
-        flash("The username or password is not correct. Please check fields", "error")
-        return render_template('auth.html', form=form)
+        else:
+            flash("The username or password is not correct. Please check fields", "error")
+            return render_template('auth.html', form=form)
+    flash("Please provide the password and username you were given", "warning")
     return render_template("auth.html", form=form)
 
 

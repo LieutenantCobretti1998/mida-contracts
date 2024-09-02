@@ -1,4 +1,6 @@
-from sqlalchemy import Column, Integer, CHAR, DATE, ForeignKey, DECIMAL, VARCHAR, BOOLEAN
+from datetime import datetime
+
+from sqlalchemy import Column, Integer, CHAR, DATE, ForeignKey, DECIMAL, VARCHAR, BOOLEAN, DateTime
 from database.db_init import Base
 from sqlalchemy.orm import relationship
 from flask_login import UserMixin
@@ -73,3 +75,12 @@ class Category(Base):
     id = Column(Integer, primary_key=True)
     category_name = Column(VARCHAR(), nullable=False)
     contracts = relationship('Contract', back_populates='category')
+
+
+class ContractUpdateToken(Base):
+    __tablename__ = 'contract_update_token'
+    id = Column(Integer, primary_key=True)
+    token = Column(CHAR(36), unique=True, nullable=False)
+    contract_id = Column(Integer, nullable=False)
+    created_at = Column(DateTime, default=datetime.now())
+

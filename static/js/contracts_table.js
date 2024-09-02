@@ -19,7 +19,10 @@ const grid = new Grid({
                     name: "Contract Number"
                 },
                 {
-                    name: "Date"
+                    name: "Start Date"
+                },
+                {
+                    name: "End Date"
                 },
                 {
                     name: "Amount"
@@ -28,9 +31,12 @@ const grid = new Grid({
                     name: "Remained Amount"
                 },
                 {
+                    name: "Category"
+                },
+                {
                     name: "Adv Payer",
                     formatter: (_, row) => {
-                        const advPayer = row.cells[6].data;
+                        const advPayer = row.cells[9].data;
                         return html(
                             `<span>${advPayer ? "Yes": "No"}</span>`
                         )
@@ -45,7 +51,7 @@ const grid = new Grid({
                         if(role === "admin") {
                             action_html += `<button data-csrf-token=${csrf_token} type="button" class="delete-btn" data-id=${contract_id}>Delete</button>`
                         }
-                        return html(`<span style="display: flex; justify-content: space-between">${action_html}</span>`);
+                        return html(`<span style="display: flex; gap: .5rem">${action_html}</span>`);
                     }
                 }
             ],
@@ -67,7 +73,7 @@ const grid = new Grid({
 
                         const col = columns[0];
                         const dir = col.direction === 1 ? "asc": "desc";
-                        let colName = ["Contract Id", "Company Name", "Voen", "Contract Number", "Date", "Amount", "Remained Amount", "Adv Payer"][col.index];
+                        let colName = ["Contract Id", "Company Name", "Voen", "Contract Number", "Start Date", "End Date", "Amount", "Remained Amount", "Adv Payer", "Category"][col.index];
                         return `${prev}?order_by=${colName}&dir=${dir}`;
                     }
                 }
@@ -84,10 +90,12 @@ const grid = new Grid({
                     contract.company_name,
                     contract.voen,
                     contract.contract_number,
-                    new Date(contract.date).toLocaleDateString(),
+                    new Date(contract.start_date).toLocaleDateString(),
+                    new Date(contract.end_date).toLocaleDateString(),
                     parseFloat(contract.amount).toFixed(2),
                     parseFloat(contract.remained_amount).toFixed(2),
-                    Boolean(contract.adv_payer)
+                    contract.category,
+                    Boolean(contract.adv_payer),
                 ]),
                 total: data => data.total_count
             },

@@ -4,7 +4,7 @@ from sqlalchemy.exc import OperationalError
 from database.db_init import db
 from database.validators import CompanyManager
 from forms.create_company import CompanyForm
-from forms.filters import filter_string_fields, filter_voen
+from forms.filters import filter_string_fields, filter_voen, filter_string
 
 create_company_bp = Blueprint("create_company", __name__)
 
@@ -28,10 +28,10 @@ def save_company():
     filtered_company_name = filter_string_fields(form.company.data)
     filtered_voen = filter_voen(form.voen.data)
     company_data = dict(
-        bank_name=form.bank_name.data if form.bank_name.data else None,
-        m_h=form.m_h.data if form.m_h.data else None,
-        h_h=form.h_h.data if form.h_h.data else None,
-        swift=form.swift.data if form.swift.data else None,
+        bank_name=filter_string(form.bank_name.data) if form.bank_name.data else None,
+        m_h=filter_string(form.m_h.data) if form.m_h.data else None,
+        h_h=filter_string(form.h_h.data) if form.h_h.data else None,
+        swift=filter_string(form.swift.data) if form.swift.data else None,
         email=form.email.data if form.email.data else None,
         telephone_number=form.telephone_number.data if form.telephone_number.data else None,
         address=form.address.data if form.address.data else None,

@@ -20,6 +20,11 @@ def filter_voen(voen: str) -> str:
         return voen.strip().replace(" ", "")
 
 
+def filter_string(string: str) -> str:
+    if string != "":
+        return string.strip().replace(" ", "")
+
+
 def filter_contract_number(contract_number: str) -> str:
     if contract_number:
         return contract_number.strip().replace(" ", "")
@@ -28,6 +33,11 @@ def filter_contract_number(contract_number: str) -> str:
 def filter_act_number(act_number: str) -> str:
     if act_number:
         return act_number.strip().replace(" ", "")
+
+
+def filter_username(username: str) -> str:
+    if username:
+        return username.strip().replace(" ", "")
 
 
 def make_unique(filename: str) -> str:

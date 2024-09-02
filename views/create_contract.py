@@ -31,8 +31,8 @@ def save_contract():
     filtered_company_name = filter_string_fields(form.company.data)
     start_date = form.start_date.data
     end_date = form.end_date.data
-    filtered_voen = filter_voen(form.voen.data)
-    filtered_contract = filter_contract_number(form.contract_number.data)
+    filtered_voen = filter_string(form.voen.data)
+    filtered_contract = filter_string(form.contract_number.data)
     contract_manager = ContractManager(db.session)
     categories = contract_manager.search_categories()
     form.categories.choices = [(category.id, category.category_name) for category in categories]

@@ -50,7 +50,7 @@ def save_act():
             filename = secure_filename(file.filename)
             file_path = add_contract_pdf(current_app.config['UPLOAD_FOLDER_ACTS'], filename)
             act_info = dict(
-                act_number=filtered_act_number,
+                act_number=filter_act_number(filtered_act_number),
                 pdf_file_path=file_path,
                 date=form.act_date.data,
                 amount=form.act_amount.data,
