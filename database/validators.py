@@ -663,9 +663,7 @@ class EditCompany(EditContract):
                 else:
                     continue
             except sqlalchemy.exc.DBAPIError:
-                self.db_session.rollback()
                 return False, "An error occurred with the database. Please try again later"
-        self.db_session.commit()
         return True, "The contract was updated successfully"
 
 
