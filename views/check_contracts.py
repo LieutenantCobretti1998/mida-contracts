@@ -61,6 +61,9 @@ def edit_contract(contract_id):
                 token = existing_token.token
         else:
             token = create_new_token(contract_id=contract_id, user_id=current_user.id)
+
+        session["contract_id"] = contract_id
+        session["contract_token"] = token
         return render_template("edit_contract.html",
                                search_result=search_result,
                                form=form,
@@ -74,6 +77,14 @@ def edit_contract(contract_id):
 def update_contract(contract_token):
     if current_user.role == "viewer" or current_user.role == "editor":
         abort(401)
+    session_contract_id = session.get('contract_id')
+    session_token = session.get('contract_token')
+
+    if not session_contract_id or not session_token:
+        abort(400)  # Bad Request if no contract ID or token is found in the session
+
+    if session_token != contract_token:
+        abort(403)  # Forbidden if the token in the session doesn't match the submitted token
     used_token = db.session.query(ContractUpdateToken).filter_by(token=contract_token).first()
     if used_token is None:
         abort(404)
@@ -150,6 +161,8 @@ def update_contract(contract_token):
         if success:
             db.session.delete(used_token)
             db.session.commit()
+            session.pop('contract_id', None)
+            session.pop('contract_token', None)
             flash(message, "success")
             return redirect(url_for('all_contracts.get_contract', contract_id=contract_id))
         else:
