@@ -8,7 +8,7 @@
 {% block content_part %}
     <section class="categories">
         <h1 class="header">Edit Category</h1>
-        <form action="{{ url_for('parameters.update_category', category_id=id) }}" method="post">
+        <form action="{{ url_for('parameters.update_category', category_token=token) }}" method="post">
             <div class="category-search">
                 {{ form.csrf_token() }}
                 {{ form.category.label(for='default_input') }}

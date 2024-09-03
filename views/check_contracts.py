@@ -1,7 +1,12 @@
+import uuid
+
 from flask import Blueprint, render_template, redirect, url_for, jsonify, flash, send_file, abort, session
 from flask_login import login_required, current_user
 from sqlalchemy.exc import NoResultFound
 from werkzeug.utils import secure_filename
+
+from database.helpers import create_new_token
+from database.models import ContractUpdateToken
 from forms.custom_validators import calculate_amount
 from forms.filters import *
 from forms.edit_contract_form import EditContractForm
@@ -45,22 +50,34 @@ def edit_contract(contract_id):
         search_result = search_engine.search_company_with_contract()
         form.categories.default = search_result.category_id
         form.process()
-        if "contract_edit_counter" not in session:
-            session['contract_edit_counter'] = 0
-        session['contract_edit_counter'] += 1
-        counter = session['contract_edit_counter']
-        session[f'contract_id_{counter}'] = contract_id
+        existing_token = db.session.query(ContractUpdateToken).filter_by(contract_id=contract_id,
+                                                                         user_id=current_user.id).first()
+        if existing_token is not None:
+            if existing_token.is_expired():
+                db.session.delete(existing_token)
+                db.session.commit()
+                token = create_new_token(contract_id=contract_id, user_id=current_user.id)
+            else:
+                token = existing_token.token
+        else:
+            token = create_new_token(contract_id=contract_id, user_id=current_user.id)
         return render_template("edit_contract.html",
                                search_result=search_result,
                                form=form,
-                               contract_id=contract_id)
+                               token=token)
     except NoResultFound:
         abort(404)
 
 
-@check_contracts_bp.route('/update_contract/<int:contract_id>', methods=['POST'])
+@check_contracts_bp.route('/update_contract/<string:contract_token>', methods=['POST'])
 @login_required
-def update_contract(contract_id):
+def update_contract(contract_token):
+    if current_user.role == "viewer" or current_user.role == "editor":
+        abort(401)
+    used_token = db.session.query(ContractUpdateToken).filter_by(token=contract_token).first()
+    if used_token is None:
+        abort(404)
+    contract_id = used_token.contract_id
     search_engine = SearchEngine(db.session, contract_id)
     edit_engine = EditContract(db.session, contract_id)
     contract_manager = ContractManager(db.session)
@@ -89,17 +106,17 @@ def update_contract(contract_id):
             if new_start_date >= new_end_date:
                 flash("Start date cannot be after or the same as the end date.", "warning")
                 return render_template('edit_contract.html', form=form, contract_id=contract_id,
-                                       search_result=original_data)
+                                       search_result=original_data, token=contract_token)
         elif start_date_changed:
             if new_start_date >= original_end_date:
                 flash("Start date cannot be after or the same as the original end date.", "warning")
                 return render_template('edit_contract.html', form=form, contract_id=contract_id,
-                                       search_result=original_data)
+                                       search_result=original_data, token=contract_token)
         elif end_date_changed:
             if new_end_date <= original_start_date:
                 flash("End date cannot be before or the same as the original start date.", "warning")
                 return render_template('edit_contract.html', form=form, contract_id=contract_id,
-                                       search_result=original_data)
+                                       search_result=original_data, token=contract_token)
         if file:
             filename = secure_filename(make_unique(f"{file.filename}"))
         if (original_data.amount != form.amount.data) and form.amount.data:
@@ -111,7 +128,8 @@ def update_contract(contract_id):
                     "The amount can be less than the original one. Delete the acts in order to increase the remained amount.",
                     "warning")
                 return render_template('edit_contract.html', form=form, contract_id=contract_id,
-                                       search_result=original_data)
+                                       search_result=original_data,
+                                       token=contract_token)
 
         data_dict = dict(
             company_name=filter_string_fields(
@@ -130,16 +148,20 @@ def update_contract(contract_id):
         )
         success, message = edit_engine.update_data(data_dict, form.pdf_file.data)
         if success:
+            db.session.delete(used_token)
             db.session.commit()
             flash(message, "success")
             return redirect(url_for('all_contracts.get_contract', contract_id=contract_id))
         else:
             db.session.rollback()
             flash(message, "warning")
-            return render_template('edit_contract.html', form=form, contract_id=contract_id, search_result=original_data)
+            return render_template('edit_contract.html', form=form, contract_id=contract_id,
+                                   search_result=original_data,
+                                   token=contract_token)
     else:
         flash("Validation Error. Please check all fields", "error")
-        return render_template('edit_contract.html', form=form, contract_id=contract_id, search_result=original_data)
+        return render_template('edit_contract.html', form=form, contract_id=contract_id, search_result=original_data,
+                               token=contract_token)
 
 
 @check_contracts_bp.route('/preview_pdf/<int:contract_id>', methods=['GET'])

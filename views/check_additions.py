@@ -2,6 +2,9 @@ from flask import Blueprint, render_template, redirect, flash, url_for, abort, s
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from sqlalchemy.exc import NoResultFound, DBAPIError, OperationalError
+
+from database.helpers import create_new_token
+from database.models import ContractUpdateToken
 from database.validators import AdditionManager, AdditionSearchEngine, EditAddition
 from database.db_init import db
 from forms.edit_addition import EditAdditionForm
@@ -34,19 +37,34 @@ def edit_addition(addition_id):
         form = EditAdditionForm()
         search_engine = AdditionSearchEngine(db.session, addition_id)
         search_result = search_engine.search_addition()
+        existing_token = db.session.query(ContractUpdateToken).filter_by(addition_id=addition_id,
+                                                                         user_id=current_user.id).first()
+        if existing_token is not None:
+            if existing_token.is_expired():
+                db.session.delete(existing_token)
+                db.session.commit()
+                token = create_new_token(addition_id=addition_id, user_id=current_user.id)
+            else:
+                token = existing_token.token
+        else:
+            token = create_new_token(addition_id=addition_id, user_id=current_user.id)
         return render_template("edit_addition.html",
                                search_result=search_result,
-                               addition_id=addition_id,
+                               token=token,
                                form=form)
     except NoResultFound:
         abort(404)
 
 
-@check_additions_bp.route('/update_act/<int:addition_id>', methods=['POST'])
+@check_additions_bp.route('/update_act/<string:addition_token>', methods=['POST'])
 @login_required
-def update_addition(addition_id):
+def update_addition(addition_token):
     if current_user.role == "viewer" or current_user.role == "editor":
         abort(401)
+    used_token = db.session.query(ContractUpdateToken).filter_by(token=addition_token).first()
+    if used_token is None:
+        abort(404)
+    addition_id = used_token.addition_id
     search_engine = AdditionSearchEngine(db.session, addition_id)
     edit_engine = EditAddition(db.session, addition_id)
     original_data = search_engine.search_addition()
@@ -89,16 +107,21 @@ def update_addition(addition_id):
         )
         success, message = edit_engine.update_data(data_dict, form.pdf_file_act.data)
         if success:
+            db.session.delete(used_token)
             db.session.commit()
             flash(message, "success")
             return redirect(url_for('all_additions.get_addition', addition_id=addition_id))
         else:
             db.session.rollback()
             flash(message, "warning")
-            return render_template('edit_addition.html', form=form, addition_id=addition_id, search_result=original_data)
+            return render_template('edit_addition.html', form=form, addition_id=addition_id,
+                                   search_result=original_data,
+                                   token=addition_token)
     else:
         flash("Validation Error. Please check all fields", "error")
-        return render_template('edit_addition.html', form=form, addition_id=addition_id, search_result=original_data)
+        return render_template('edit_addition.html', form=form, addition_id=addition_id,
+                               search_result=original_data,
+                               token=addition_token)
 
 
 @check_additions_bp.route('/preview_pdf/<int:addition_id>', methods=['GET'])

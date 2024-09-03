@@ -19,8 +19,8 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = db.session.query(User).filter_by(username=form.username.data).first()
-        if user and check_password_hash(pwhash=user.password,password=form.password.data):
-            login_user(user, remember=user.id)
+        if user and check_password_hash(pwhash=user.password, password=form.password.data):
+            login_user(user)
             return redirect(url_for('home.home'))
         else:
             flash("The username or password is not correct. Please check fields", "error")

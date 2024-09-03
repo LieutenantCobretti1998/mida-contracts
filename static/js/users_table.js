@@ -19,7 +19,9 @@ const grid = new Grid({
                     name: "Actions",
                     formatter: (cell, row) => {
                         const user_id = row.cells[0].data;
-                        return html(`<span style="display: flex; justify-content: space-between">\<button data-csrf-token=${csrf_token} type="button" class="delete-btn" data-id=${user_id}>Delete</button>\</span>`);
+                        let action_html = `<button type="button" class="view-btn" data-id=${user_id}>Edit</button>`
+                        action_html += `<button data-csrf-token=${csrf_token} type="button" class="delete-btn" data-id=${user_id}>Delete</button>`
+                        return html(`<span class="actions-btn" style="display: flex; justify-content: space-between">${action_html}</span>`);
                     }
                 }
             ],

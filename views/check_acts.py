@@ -2,6 +2,9 @@ from flask import Blueprint, render_template, redirect, flash, url_for, abort, s
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from sqlalchemy.exc import NoResultFound, DBAPIError, OperationalError
+
+from database.helpers import create_new_token
+from database.models import ContractUpdateToken
 from database.validators import ActsSearchEngine, EditAct, ActsManager
 from database.db_init import db
 from forms.custom_validators import check_amount, check_act_amount_difference
@@ -35,19 +38,34 @@ def edit_act(act_id):
         form = EditActForm()
         search_engine = ActsSearchEngine(db.session, act_id)
         search_result = search_engine.search_act()
+        existing_token = db.session.query(ContractUpdateToken).filter_by(act_id=act_id,
+                                                                         user_id=current_user.id).first()
+        if existing_token is not None:
+            if existing_token.is_expired():
+                db.session.delete(existing_token)
+                db.session.commit()
+                token = create_new_token(act_id=act_id, user_id=current_user.id)
+            else:
+                token = existing_token.token
+        else:
+            token = create_new_token(act_id=act_id, user_id=current_user.id)
         return render_template("edit_act.html",
                                search_result=search_result,
-                               act_id=act_id,
+                               token=token,
                                form=form)
     except NoResultFound:
         abort(404)
 
 
-@check_acts_bp.route('/update_act/<int:act_id>', methods=['POST'])
+@check_acts_bp.route('/update_act/<string:act_token>', methods=['POST'])
 @login_required
-def update_act(act_id):
+def update_act(act_token):
     if current_user.role == "viewer" or current_user.role == "editor":
         abort(401)
+    used_token = db.session.query(ContractUpdateToken).filter_by(token=act_token).first()
+    if used_token is None:
+        abort(404)
+    act_id = used_token.act_id
     search_engine = ActsSearchEngine(db.session, act_id)
     edit_engine = EditAct(db.session, act_id)
     original_data = search_engine.search_act()
@@ -80,16 +98,20 @@ def update_act(act_id):
         )
         success, message = edit_engine.update_data(data_dict, form.pdf_file_act.data)
         if success:
+            db.session.delete(used_token)
             db.session.commit()
             flash(message, "success")
             return redirect(url_for('all_acts.get_act', act_id=act_id))
         else:
             db.session.rollback()
             flash(message, "warning")
-            return render_template('edit_act.html', form=form, act_id=act_id, search_result=original_data)
+            return render_template('edit_act.html', form=form, act_id=act_id,
+                                   search_result=original_data,
+                                   token=act_token)
     else:
         flash("Validation Error. Please check all fields", "error")
-        return render_template('edit_act.html', form=form, act_id=act_id, search_result=original_data)
+        return render_template('edit_act.html', form=form, act_id=act_id, search_result=original_data,
+                               token=act_token)
 
 
 @check_acts_bp.route('/preview_pdf/<int:act_id>', methods=['GET'])

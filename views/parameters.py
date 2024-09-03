@@ -2,7 +2,9 @@ from flask import Blueprint, render_template, redirect, flash, url_for, abort, j
 from flask_login import login_required, current_user
 from sqlalchemy.exc import NoResultFound, OperationalError, DBAPIError
 from werkzeug.security import generate_password_hash
-from database.models import User
+
+from database.helpers import create_new_token
+from database.models import User, ContractUpdateToken
 from forms.add_user import CreateUserForm
 from forms.categories_form import SearchForm
 from database.db_init import db
@@ -33,19 +35,34 @@ def edit_category(category_id):
         form = EditCategoryForm()
         search_engine = CategoriesSearchEngine(db.session, category_id)
         search_result = search_engine.search_category()
+        existing_token = db.session.query(ContractUpdateToken).filter_by(category_id=category_id,
+                                                                         user_id=current_user.id).first()
+        if existing_token is not None:
+            if existing_token.is_expired():
+                db.session.delete(existing_token)
+                db.session.commit()
+                token = create_new_token(company_id=category_id, user_id=current_user.id)
+            else:
+                token = existing_token.token
+        else:
+            token = create_new_token(company_id=category_id, user_id=current_user.id)
         return render_template('edit_category.html',
                                form=form,
                                search_result=search_result,
-                               id=category_id)
+                               token=token)
     except NoResultFound:
         abort(404)
 
 
-@parameter_bp.route('/categories/update_category/<int:category_id>', methods=['POST'])
+@parameter_bp.route('/categories/update_category/<string:category_token>', methods=['POST'])
 @login_required
-def update_category(category_id):
+def update_category(category_token):
     if current_user.role == "viewer" or current_user.role == "editor":
         abort(401)
+    used_token = db.session.query(ContractUpdateToken).filter_by(token=category_token).first()
+    if used_token is None:
+        abort(404)
+    category_id = used_token.category_id
     form = EditCategoryForm()
     if form.validate_on_submit():
         try:
@@ -106,25 +123,45 @@ def save_user():
 @parameter_bp.route('/edit_user/<int:user_id>', methods=['GET'])
 @login_required
 def edit_user(user_id):
+    print(f"edit: {user_id}")
     if current_user.role == "viewer" or current_user.role == "editor":
         abort(401)
     try:
         search_engine = UserSearchEngine(db.session, user_id)
         search_result = search_engine.search_user()
         form = EditUserForm(role=search_result.role)
+        existing_token = db.session.query(ContractUpdateToken).filter_by(edited_user_id=user_id,
+                                                                         user_id=current_user.id).first()
+        if existing_token is not None:
+            if existing_token.is_expired():
+                db.session.delete(existing_token)
+                db.session.commit()
+                token = create_new_token(edited_user_id=user_id, user_id=current_user.id)
+            else:
+                token = existing_token.token
+        else:
+            token = create_new_token(edited_user_id=user_id, user_id=current_user.id)
         return render_template("edit_user.html",
                                search_result=search_result,
                                form=form,
-                               user_id=user_id
+                               token=token
                                )
     except NoResultFound:
         abort(404)
 
 
-@parameter_bp.route('/update_user/<int:user_id>', methods=['POST'])
+@parameter_bp.route('/update_user/<string:user_token>', methods=['POST'])
 @login_required
-def update_user(user_id):
+def update_user(user_token):
+    if current_user.role == "viewer" or current_user.role == "editor":
+        abort(401)
+    used_token = db.session.query(ContractUpdateToken).filter_by(token=user_token).first()
+    if used_token is None:
+        abort(404)
+    user_id = used_token.edited_user_id
+    print(f"update: {user_id}")
     search_engine = UserSearchEngine(db.session, user_id)
+    user_manager = UserManager(db.session)
     edit_engine = EditUser(db.session, user_id)
     original_data = search_engine.search_user()
     form = EditUserForm(role=original_data.role)
@@ -134,6 +171,11 @@ def update_user(user_id):
         flash('Invalid category selected. Please choose a valid option.', 'error')
         return redirect(url_for('parameters.edit_user', user_id=user_id))
     if form.validate_on_submit():
+        user_exist = user_manager.is_user_existed(form.username.data)
+        if user_exist:
+            flash("User already exists", "warning")
+            return render_template('edit_user.html', form=form, user_id=user_id,
+                                   search_result=original_data, token=user_token)
         hashed_password = generate_password_hash(form.password.data, salt_length=10)
         try:
             data_dict = dict(
@@ -143,23 +185,31 @@ def update_user(user_id):
             )
             success, message = edit_engine.update_data(data_dict)
             if success:
+                db.session.delete(used_token)
                 db.session.commit()
                 flash(message, "success")
-                return redirect(url_for('parameters.edit_user', user_id=user_id))
+                return redirect(url_for('parameters.all_users', user_id=user_id))
             else:
                 db.session.rollback()
                 flash(message, "warning")
-                return render_template('edit_user.html', form=form, user_id=user_id, search_result=original_data)
+                return render_template('edit_user.html', form=form, user_id=user_id,
+                                       search_result=original_data, token=user_token)
         except NoResultFound:
             db.session.rollback()
             flash("The user was not found in the database", "error")
-            return render_template('edit_user.html', form=form, user_id=user_id, search_result=original_data)
+            return render_template('edit_user.html', form=form, user_id=user_id,
+
+                                   search_result=original_data, token=user_token)
         except DBAPIError:
             db.session.rollback()
             flash("The user was not found in the database", "error")
-            return render_template('edit_user.html', form=form, user_id=user_id, search_result=original_data)
+            return render_template('edit_user.html', form=form, user_id=user_id,
+
+                                   search_result=original_data, token=user_token)
     flash("The user was not found in the database", "warning")
-    return render_template('edit_user.html', form=form, user_id=user_id, search_result=original_data)
+    return render_template('edit_user.html', form=form, user_id=user_id,
+
+                           search_result=original_data, token=user_token)
 
 
 @parameter_bp.route('/delete_user/<int:user_id>', methods=['DELETE'])
