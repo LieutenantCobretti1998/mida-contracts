@@ -1,3 +1,4 @@
+from datetime import timedelta
 from flask import Flask
 from configuration import *
 from flask_migrate import Migrate
@@ -11,6 +12,7 @@ from extensions import login_manager
 def create_app() -> Flask:
     app = Flask(__name__)
     app.config["WTF_CSRF_SECRET_KEY"] = WTF_CSRF_SECRET_KEY
+    app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=8)
     app.config["SECRET_KEY"] = APP_SECRET_KEY
     app.config["SQLALCHEMY_DATABASE_URI"] = TEST_DB_URI
     app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER

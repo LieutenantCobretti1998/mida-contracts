@@ -1,10 +1,10 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, redirect, url_for, flash
 from flask_login import login_user, logout_user
 from extensions import login_manager
 from database.db_init import db
 from database.models import User
 from forms.login import LoginForm
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import check_password_hash
 
 login_bp = Blueprint('login', __name__)
 

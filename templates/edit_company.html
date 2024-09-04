@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/edit_company.css') }}">
 {% endblock style %}
 {% block content_part %}
-    <form action="{{ url_for("all_companies.update_company", company_token = token) }}" method="post">
+    <form action="{{ url_for("all_companies.update_company", company_id = company_id) }}" method="post">
         {{ form.csrf_token() }}
         <table class="table" data-edit-mode="true">
             <caption id="caption">

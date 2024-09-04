@@ -1,9 +1,6 @@
 from flask import Blueprint, render_template, url_for, jsonify, flash, abort, redirect
 from flask_login import login_required, current_user
 from sqlalchemy.exc import NoResultFound
-
-from database.helpers import create_new_token
-from database.models import ContractUpdateToken
 from forms.edit_company_form import EditCompanyForm
 from forms.filters import *
 from database.db_init import db
@@ -42,35 +39,20 @@ def edit_company(company_id):
     try:
         search_engine = CompanySearchEngine(db.session, company_id)
         search_result = search_engine.search_company()
-        existing_token = db.session.query(ContractUpdateToken).filter_by(company_id=company_id,
-                                                                         user_id=current_user.id).first()
-        if existing_token is not None:
-            if existing_token.is_expired():
-                db.session.delete(existing_token)
-                db.session.commit()
-                token = create_new_token(company_id=company_id, user_id=current_user.id)
-            else:
-                token = existing_token.token
-        else:
-            token = create_new_token(company_id=company_id, user_id=current_user.id)
         return render_template("edit_company.html",
                                search_result=search_result,
                                form=form,
-                               token=token
+                               company_id=company_id
                                )
     except NoResultFound:
         abort(404)
 
 
-@check_companies_bp.route('/update_company/<string:company_token>', methods=['POST'])
+@check_companies_bp.route('/update_company/<int:company_id>', methods=['POST'])
 @login_required
-def update_company(company_token):
+def update_company(company_id):
     if current_user.role == "viewer" or current_user.role == "editor":
         abort(401)
-    used_token = db.session.query(ContractUpdateToken).filter_by(token=company_token).first()
-    if used_token is None:
-        abort(404)
-    company_id = used_token.company_id
     search_engine = SearchEngine(db.session, company_id)
     edit_engine = EditCompany(db.session, company_id)
     original_data = search_engine.search_company()
@@ -90,7 +72,7 @@ def update_company(company_token):
         )
         success, message = edit_engine.update_data(data_dict)
         if success:
-            db.session.delete(used_token)
+
             db.session.commit()
             flash(message, "success")
             return redirect(url_for('all_companies.get_company', company_id=company_id))
@@ -99,12 +81,12 @@ def update_company(company_token):
             flash(message, "warning")
             return render_template("edit_company.html", form=form, company_id=company_id,
                                    search_result=original_data,
-                                   token=company_token)
+                                   )
     else:
         flash("Validation Error. Please check all fields", "error")
         return render_template("edit_company.html", form=form, company_id=company_id,
                                search_result=original_data,
-                               token=company_token)
+                               )
 
 
 @check_companies_bp.route('/delete_company/<int:company_id>', methods=['DELETE'])
@@ -115,6 +97,10 @@ def delete_company(company_id):
     company_manager = CompanyManager(db.session)
     company_on_delete = company_manager.delete_company(company_id)
     if company_on_delete:
+        company_tokens = db.session.query(ContractUpdateToken).filter_by(company_id=company_id).all()
+        if len(company_tokens) > 0:
+            for token in company_tokens:
+                db.session.delete(token)
         db.session.commit()
         flash("Company deleted successfully", "success")
         return jsonify({

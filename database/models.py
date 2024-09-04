@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-
 from sqlalchemy import Column, Integer, CHAR, DATE, ForeignKey, DECIMAL, VARCHAR, BOOLEAN, DateTime
 from database.db_init import Base
 from sqlalchemy.orm import relationship
@@ -75,21 +74,3 @@ class Category(Base):
     id = Column(Integer, primary_key=True)
     category_name = Column(VARCHAR(), nullable=False)
     contracts = relationship('Contract', back_populates='category')
-
-
-class ContractUpdateToken(Base):
-    __tablename__ = 'contract_update_token'
-    id = Column(Integer, primary_key=True)
-    token = Column(CHAR(36), unique=True, nullable=False)
-    contract_id = Column(Integer, nullable=True)
-    company_id = Column(Integer, nullable=True)
-    addition_id = Column(Integer, nullable=True)
-    act_id = Column(Integer, nullable=True)
-    user_id = Column(Integer, nullable=False)
-    edited_user_id = Column(Integer, nullable=True)
-    category_id = Column(Integer, nullable=True)
-    created_at = Column(DateTime, default=datetime.now())
-
-    def is_expired(self):
-        return datetime.now() > self.created_at + timedelta(minutes=2)
-

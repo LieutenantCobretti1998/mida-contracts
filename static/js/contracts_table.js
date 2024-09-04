@@ -10,10 +10,12 @@ const grid = new Grid({
                 },
 
                 {
-                    name: "Company Name"
+                    name: "Company Name",
+                    sort: !search_mode
                 },
                 {
-                    name: "Voen"
+                    name: "Voen",
+                     sort: !search_mode
                 },
                 {
                     name: "Contract Number"
@@ -78,13 +80,8 @@ const grid = new Grid({
                     }
                 }
             },
-            search: {
-                server: {
-                    url: (prev, keyword) => `${prev}/${encodeURIComponent(keyword)}`
-                }
-            },
             server: {
-                url:  "/api/all_contracts",
+                url:  search_mode ? `/api/all_contracts/${company_voen}`: "/api/all_contracts",
                 then: data => data.data.map(contract => [
                     contract.id,
                     contract.company_name,
@@ -99,5 +96,12 @@ const grid = new Grid({
                 ]),
                 total: data => data.total_count
             },
+            ...(!search_mode && {
+                    search: {
+                        server: {
+                            url: (prev, keyword) => `${prev}/${encodeURIComponent(keyword)}`
+                        }
+                    }
+            })
         })
 grid.render(document.getElementById("results"));
