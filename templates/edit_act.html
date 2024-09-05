@@ -202,7 +202,8 @@
 {% endblock content_part %}
 {% block javascript %}
     <script type="text/javascript">
-        const original_act_amount = {{ search_result.amount }}
+        const original_act_amount = {{ search_result.amount }};
+        const original_contract_amount = {{ search_result.contract.amount }}
         const type_of_page = "acts-edit";
     </script>
     <script src="{{ url_for('static', filename='js/form_focus.js') }}"></script>

@@ -52,9 +52,9 @@ def update_act(act_id):
     edit_engine = EditAct(db.session, act_id)
     original_data = search_engine.search_act()
     form = EditActForm()
-
     if form.validate_on_submit():
-        if form.act_amount.data and form.contract_id == original_data.contract_id:
+        print("hello")
+        if form.act_amount.data and form.contract_id.data == original_data.contract_id:
             try:
                 difference = check_act_amount_difference(form.act_amount.data, original_data.amount)
                 check_amount(form.act_amount.data, original_data.amount)
@@ -82,7 +82,7 @@ def update_act(act_id):
         if success:
             db.session.commit()
             flash(message, "success")
-            return redirect(url_for('all_acts.get_act', act_id=act_id))
+            return redirect(url_for('all_contracts.get_contract', contract_id=form.contract_id.data))
         else:
             db.session.rollback()
             flash(message, "warning")

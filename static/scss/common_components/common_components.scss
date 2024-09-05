@@ -70,7 +70,7 @@
 
   &__text {
     color: $color-white;
-    font-size: $font-size-small;
+    font-size: $font-size-medium;
     transition: color .2s ease-in-out;
 
     &:hover {
@@ -99,12 +99,14 @@
 .submenu-companies,
 .submenu-contracts {
   &__sub-options {
+    padding-left: .8rem;
+    align-items: start;
     text-align: center;
     background-color: $color-submenu-background;
     flex-direction: column;
-    gap: .8vh;
+    gap: 1.5vh;
     text-decoration: none;
-    font-size: .9em;
+    font-size: $font-size-small;
     color: $color-white;
     list-style: none;
     overflow: hidden;
@@ -145,6 +147,7 @@
 .home:active,
 .home:link,
 .home:visited{
+  font-size: $font-size-medium;
   cursor: pointer;
   pointer-events: visible;
   font-weight: normal;

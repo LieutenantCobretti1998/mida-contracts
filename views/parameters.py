@@ -168,7 +168,7 @@ def update_user(user_id):
                                    search_result=original_data)
         except DBAPIError:
             db.session.rollback()
-            flash("The user was not found in the database", "error")
+            flash("Error in database", "error")
             return render_template('edit_user.html', form=form, user_id=user_id,
 
                                    search_result=original_data)

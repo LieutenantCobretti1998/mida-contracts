@@ -3,6 +3,9 @@ import 'gridJs/dist/theme/mermaid.css';
 
 
 const grid = new Grid({
+    style: {
+
+    },
    columns: [
                 {
                     name: "Contract Id",

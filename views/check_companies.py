@@ -72,13 +72,12 @@ def update_company(company_id):
         )
         success, message = edit_engine.update_data(data_dict)
         if success:
-
-            db.session.commit()
             flash(message, "success")
+            db.session.commit()
             return redirect(url_for('all_companies.get_company', company_id=company_id))
         else:
-            db.session.rollback()
             flash(message, "warning")
+            db.session.rollback()
             return render_template("edit_company.html", form=form, company_id=company_id,
                                    search_result=original_data,
                                    )
@@ -97,18 +96,14 @@ def delete_company(company_id):
     company_manager = CompanyManager(db.session)
     company_on_delete = company_manager.delete_company(company_id)
     if company_on_delete:
-        company_tokens = db.session.query(ContractUpdateToken).filter_by(company_id=company_id).all()
-        if len(company_tokens) > 0:
-            for token in company_tokens:
-                db.session.delete(token)
-        db.session.commit()
         flash("Company deleted successfully", "success")
+        db.session.commit()
         return jsonify({
             'status': 'success',
         }), 200
     else:
-        db.session.rollback()
         flash("Could not delete the company. Something went wrong on the server side", "error")
+        db.session.rollback()
         return jsonify({
             'status': 'error',
         }), 500

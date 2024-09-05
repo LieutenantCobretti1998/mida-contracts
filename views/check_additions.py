@@ -51,28 +51,26 @@ def update_addition(addition_id):
     form = EditAdditionForm()
 
     if form.validate_on_submit():
-        if form.addition_amount.data and form.contract_id == original_data.contract_id:
+        if form.addition_amount.data and form.contract_id.data == original_data.contract_id:
+            print("hello")
             try:
                 difference = original_data.amount - form.addition_amount.data
                 match difference > 0:
                     case True:
                         remained_amount = original_data.amount - difference
                         new_total_amount = original_data.contract.amount - difference
-                        edit_engine.change_old_contract(remained_amount, new_total_amount)
+                        edit_engine.change_old_contract(remained_amount, new_total_amount, original_data.contract_id)
                         return
                     case False:
                         remained_amount = original_data.amount - difference * -1
                         new_total_amount = original_data.contract.amount - difference * -1
-                        edit_engine.change_old_contract(remained_amount, new_total_amount)
+                        edit_engine.change_old_contract(remained_amount, new_total_amount, original_data.contract_id)
                         return
 
             except NoResultFound:
                 abort(404)
             except (DBAPIError, OperationalError):
                 flash("Something went wrong in the database", "error")
-                return render_template('edit_act.html', form=form, addition_id=addition_id, search_result=original_data)
-            except ValueError:
-                flash("Act's amount is bigger than the total contract's amount. Please check act amount field", "warning")
                 return render_template('edit_act.html', form=form, addition_id=addition_id, search_result=original_data)
         file = form.pdf_file_act.data
         filename = ""
@@ -87,9 +85,10 @@ def update_addition(addition_id):
         )
         success, message = edit_engine.update_data(data_dict, form.pdf_file_act.data)
         if success:
+            print(form.contract_id)
             db.session.commit()
             flash(message, "success")
-            return redirect(url_for('all_additions.get_addition', addition_id=addition_id))
+            return redirect(url_for('all_contracts.get_contract', contract_id=form.contract_id.data))
         else:
             db.session.rollback()
             flash(message, "warning")

@@ -46,11 +46,15 @@ body {
   }
 }
 #results {
-  margin: 3vw 2vw 2vw 15vw;
+  margin: 3vw 2vw 2vw 13vw;
 }
 
 .main_container {
   background-color: #EEEDEB;
+}
+
+.gridjs-container {
+  width: 82vw !important;
 }
 
 .gridjs-wrapper,

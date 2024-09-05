@@ -390,7 +390,7 @@ class EditContract(ValidatorWrapper):
                                             "Please, load a new pdf first")
                                 else:
                                     return False, (
-                                        f"There is no such company in the database or remained amount is corrupted: {value}.Please go to the"
+                                        f"There is no such company in the database: {value}.Please go to the"
                                         f" create contract form page")
                             case "voen":
                                 existed_voen_id = self.is_voen_exists(value)
@@ -423,7 +423,7 @@ class EditContract(ValidatorWrapper):
                         setattr(contract_to_update, key, value)
 
             return True, f"Contract updated successfully"
-        except sqlalchemy.exc.DBAPIError:
+        except DBAPIError:
             return False, f"An error occurred in the server. Please try again later"
 
 
@@ -662,7 +662,7 @@ class EditCompany(EditContract):
                     setattr(company_to_update, key, value)
                 else:
                     continue
-            except sqlalchemy.exc.DBAPIError:
+            except DBAPIError:
                 return False, "An error occurred with the database. Please try again later"
         return True, "The contract was updated successfully"
 

@@ -109,7 +109,7 @@ body {
 }
 .toggle-menu-button__text {
   color: white;
-  font-size: 1.5rem;
+  font-size: 1.9rem;
   transition: color 0.2s ease-in-out;
 }
 .toggle-menu-button__text:hover {
@@ -135,12 +135,14 @@ body {
 
 .submenu-companies__sub-options,
 .submenu-contracts__sub-options {
+  padding-left: 0.8rem;
+  align-items: start;
   text-align: center;
   background-color: #18476a;
   flex-direction: column;
-  gap: 0.8vh;
+  gap: 1.5vh;
   text-decoration: none;
-  font-size: 0.9em;
+  font-size: 1.5rem;
   color: white;
   list-style: none;
   overflow: hidden;
@@ -175,6 +177,7 @@ body {
 .home:active,
 .home:link,
 .home:visited {
+  font-size: 1.9rem;
   cursor: pointer;
   pointer-events: visible;
   font-weight: normal;

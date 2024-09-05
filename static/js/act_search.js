@@ -133,34 +133,35 @@ function updateContractList(data, contracts_list) {
         const addition_amount_el = document.querySelector("#addition_amount");
         const remained_amount_el = document.querySelector("#remained_amount");
         getContractInfo(data_id).then(data => {
-            if (data && type_of_page === "acts") {
-                updateContractDetails(data);
-                act_amount_el.addEventListener("input", () => {
-                    calculateRemainedMoney(remained_amount_el, data.remained_amount, act_amount_el);
-                })
-            }
-            else if (data && type_of_page === "acts-edit") {
-                updateContractDetails(data);
-                const total_contract_amount_el = document.querySelector("#amount");
-                act_amount_el.addEventListener("input", () => {
-                    calculateRemainedMoneyEditMode(remained_amount_el, data.remained_amount, act_amount_el, total_contract_amount_el, data.amount)
-                })
-            }
-            else if (data && type_of_page === "additions-edit" ) {
-                 updateContractDetails(data);
-                 const total_contract_amount_el = document.querySelector("#amount");
-                 addition_amount_el.addEventListener("input", () => {
-                    calculateAdditionalMoneyEditMode(remained_amount_el, data.remained_amount, addition_amount_el, total_contract_amount_el, data.amount);
-                })
-            }
-            else {
-                updateContractDetails(data);
-                addition_amount_el.addEventListener("input", () => {
-                    const total_contract_amount_el = document.querySelector("#amount");
-                    calculateAdditionalMoney(remained_amount_el, data.remained_amount, addition_amount_el, total_contract_amount_el, data.amount);
-                })
-            }
-        })
+    if (data && type_of_page === "acts") {
+        updateContractDetails(data);
+        act_amount_el.oninput = () => {
+            calculateRemainedMoney(remained_amount_el, data.remained_amount, act_amount_el);
+        };
+    }
+    else if (data && type_of_page === "acts-edit") {
+        updateContractDetails(data);
+        const total_contract_amount_el = document.querySelector("#amount");
+        act_amount_el.oninput = () => {
+            calculateRemainedMoneyEditMode(remained_amount_el, data.remained_amount, act_amount_el, total_contract_amount_el, data.amount);
+        };
+    }
+    else if (data && type_of_page === "additions-edit") {
+        updateContractDetails(data);
+        const total_contract_amount_el = document.querySelector("#amount");
+        addition_amount_el.oninput = () => {
+            calculateAdditionalMoneyEditMode(remained_amount_el, data.remained_amount, addition_amount_el, total_contract_amount_el, data.amount);
+        };
+    }
+    else {
+        updateContractDetails(data);
+        addition_amount_el.oninput = () => {
+            const total_contract_amount_el = document.querySelector("#amount");
+            calculateAdditionalMoney(remained_amount_el, data.remained_amount, addition_amount_el, total_contract_amount_el, data.amount);
+        };
+    }
+});
+
     }
     contracts_list.addEventListener("change",handle_selection_change);
     if (contracts_list.options.length > 0) {
@@ -245,24 +246,30 @@ function calculateRemainedMoney(remained_amount_el, remain_contract_amount, act_
  * @param act_amount_el
  */
 function calculateRemainedMoneyEditMode(remained_amount_el, remain_contract_amount, act_amount_el) {
-    let remained_amount;
-    let new_total_amount;
+    // let remained_amount;
+    // if (act_amount_el.value === "") {
+    //      remained_amount_el.innerText = Number.parseFloat(remain_contract_amount).toFixed(2);
+    //      return;
+    // }
+    // console.log(original_act_amount)
+    // const difference_amount = original_act_amount -  Number.parseFloat(act_amount_el.value);
+    // switch (difference_amount > 0) {
+    //     case true:
+    //         remained_amount = Number.parseFloat(remain_contract_amount) + difference_amount;
+    //         break;
+    //     case false:
+    //         remained_amount = Number.parseFloat(remain_contract_amount) - difference_amount * -1;
+    //         break;
+    //     default:
+    //         remained_amount_el.innerText = Number.parseFloat(remain_contract_amount).toFixed(2);
+    //         return;
+    // }
+    // remained_amount_el.innerText = remained_amount.toFixed(2);
     if (act_amount_el.value === "") {
          remained_amount_el.innerText = Number.parseFloat(remain_contract_amount).toFixed(2);
-         return;
+        return;
     }
-    const difference_amount = original_act_amount -  Number.parseFloat(act_amount_el.value);
-    switch (difference_amount > 0) {
-        case true:
-            remained_amount = Number.parseFloat(remain_contract_amount) + difference_amount;
-            break;
-        case false:
-            remained_amount = Number.parseFloat(remain_contract_amount) - difference_amount * -1;
-            break;
-        default:
-            remained_amount_el.innerText = Number.parseFloat(remain_contract_amount).toFixed(2);
-            return;
-    }
+    const remained_amount = Number.parseFloat(remain_contract_amount) - Number.parseFloat(act_amount_el.value);
     remained_amount_el.innerText = remained_amount.toFixed(2);
 }
 
@@ -305,23 +312,31 @@ function calculateAdditionalMoneyEditMode(remained_amount_el, remain_contract_am
          total_amount_el.innerText = Number.parseFloat(total_amount).toFixed(2);
          return;
     }
-    const difference_amount = original_addition_amount -  Number.parseFloat(addition_amount_el.value);
-    switch (difference_amount > 0) {
-        case true:
-            remained_amount = Number.parseFloat(remain_contract_amount) - difference_amount;
-            new_total_amount = Number.parseFloat(total_amount) - difference_amount;
-            break;
-        case false:
-            remained_amount = Number.parseFloat(remain_contract_amount) + difference_amount * -1;
-            new_total_amount = Number.parseFloat(total_amount) + difference_amount * -1;
-            break;
-        default:
-            remained_amount_el.innerText = Number.parseFloat(remain_contract_amount).toFixed(2);
-            total_amount_el.innerText = Number.parseFloat(total_amount).toFixed(2);
-            return;
+
+    if (original_contract_amount ===  Number.parseFloat(total_amount)) {
+        console.log(original_addition_amount)
+        const difference_amount = original_addition_amount -  Number.parseFloat(addition_amount_el.value);
+        console.log(difference_amount);
+        switch (difference_amount > 0) {
+            case true:
+                remained_amount = Number.parseFloat(remain_contract_amount) - difference_amount;
+                new_total_amount = Number.parseFloat(total_amount) - difference_amount;
+                break;
+            case false:
+                remained_amount = Number.parseFloat(remain_contract_amount) + difference_amount * -1;
+                new_total_amount = Number.parseFloat(total_amount) + difference_amount * -1;
+                break;
+            default:
+                remained_amount_el.innerText = Number.parseFloat(remain_contract_amount).toFixed(2);
+                total_amount_el.innerText = Number.parseFloat(total_amount).toFixed(2);
+                return;
+        }
+        remained_amount_el.innerText = remained_amount.toFixed(2);
+        total_amount_el.innerText = new_total_amount.toFixed(2);
+    } else {
+        console.log("hello")
+        calculateAdditionalMoney(remained_amount_el, remain_contract_amount, addition_amount_el, total_amount_el, total_amount);
     }
-    remained_amount_el.innerText = remained_amount.toFixed(2);
-    total_amount_el.innerText = new_total_amount.toFixed(2);
 }
 
 
