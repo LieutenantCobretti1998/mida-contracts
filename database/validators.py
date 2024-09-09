@@ -330,6 +330,31 @@ class EditContract(ValidatorWrapper):
         new_file_path = os.path.normpath(new_file_path)
         return new_file_path
 
+    def calculate_total_contract_addition(self, contract_id: int) -> float:
+        """
+        :param contract_id:
+        :return: float
+        To calculate the total addition's sum of contract
+        """
+        contract = self.db_session.query(Contract).filter_by(id=contract_id).first()
+        if not contract:
+            raise NoResultFound
+        total_addition = sum(addition.amount for addition in contract.additions)
+        print(total_addition)
+        return total_addition
+
+    def calculate_total_contract_act(self, contract_id: int) -> float:
+        """
+        :param contract_id:
+        :return: float
+        To calculate the total act's sum of contract
+        """
+        contract = self.db_session.query(Contract).filter_by(id=contract_id).first()
+        if not contract:
+            raise NoResultFound
+        total_addition = sum(act.amount for act in contract.acts)
+        return total_addition
+
     @staticmethod
     def change_pdf_itself(previous_pdf_file_path: str, new_pdf_file_name: str) -> str:
         """

@@ -314,9 +314,7 @@ function calculateAdditionalMoneyEditMode(remained_amount_el, remain_contract_am
     }
 
     if (original_contract_amount ===  Number.parseFloat(total_amount)) {
-        console.log(original_addition_amount)
         const difference_amount = original_addition_amount -  Number.parseFloat(addition_amount_el.value);
-        console.log(difference_amount);
         switch (difference_amount > 0) {
             case true:
                 remained_amount = Number.parseFloat(remain_contract_amount) - difference_amount;
@@ -334,7 +332,6 @@ function calculateAdditionalMoneyEditMode(remained_amount_el, remain_contract_am
         remained_amount_el.innerText = remained_amount.toFixed(2);
         total_amount_el.innerText = new_total_amount.toFixed(2);
     } else {
-        console.log("hello")
         calculateAdditionalMoney(remained_amount_el, remain_contract_amount, addition_amount_el, total_amount_el, total_amount);
     }
 }

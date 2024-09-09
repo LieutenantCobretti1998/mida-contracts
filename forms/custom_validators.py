@@ -95,12 +95,19 @@ def calculate_amount(original_amount: float, new_amount: float, old_remained_amo
     """
     new_remained_amount = None
     if original_amount > new_amount:
-        new_remained_amount = (new_amount - original_amount) + old_remained_amount
+        new_remained_amount = (original_amount - new_amount) + old_remained_amount
     elif original_amount < new_amount:
         new_remained_amount = (new_amount - original_amount) + old_remained_amount
     if new_remained_amount < 0:
         raise ValueError
     return new_remained_amount
+
+
+def calculate_new_amount(new_amount: float, total_addition_amount: float, total_act_amount: float) -> float:
+    new_contract_remained_amount = new_amount + total_addition_amount - total_act_amount
+    if new_contract_remained_amount < 0:
+        raise ValueError
+    return new_contract_remained_amount
 
 
 class NegativeAmountError(ValueError):

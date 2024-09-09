@@ -52,7 +52,6 @@ def update_addition(addition_id):
 
     if form.validate_on_submit():
         if form.addition_amount.data and form.contract_id.data == original_data.contract_id:
-            print("hello")
             try:
                 difference = original_data.amount - form.addition_amount.data
                 match difference > 0:

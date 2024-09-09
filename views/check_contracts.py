@@ -4,7 +4,7 @@ from flask import Blueprint, render_template, redirect, url_for, jsonify, flash,
 from flask_login import login_required, current_user
 from sqlalchemy.exc import NoResultFound
 from werkzeug.utils import secure_filename
-from forms.custom_validators import calculate_amount
+from forms.custom_validators import calculate_new_amount, calculate_amount
 from forms.filters import *
 from forms.edit_contract_form import EditContractForm
 from database.db_init import db
@@ -83,6 +83,7 @@ def update_contract(contract_id):
         new_end_date = form.end_date.data
         start_date_changed = new_start_date is not None and new_start_date != original_start_date
         end_date_changed = new_end_date is not None and new_end_date != original_end_date
+        new_amount = form.amount.data
         filename = ""
         if start_date_changed and end_date_changed:
             if new_start_date >= new_end_date:
@@ -101,10 +102,13 @@ def update_contract(contract_id):
                                        search_result=original_data, )
         if file:
             filename = secure_filename(make_unique(f"{file.filename}"))
-        if (original_data.amount != form.amount.data) and form.amount.data:
+        if (original_data.amount != new_amount) and new_amount:
             try:
-                new_remained_amount = calculate_amount(original_data.amount, form.amount.data,
-                                                       original_data.remained_amount)
+                total_addition_amount = edit_engine.calculate_total_contract_addition(contract_id)
+                total_act_amount = edit_engine.calculate_total_contract_act(contract_id)
+                new_remained_amount = calculate_new_amount(new_amount, total_addition_amount, total_act_amount)
+                new_amount += total_addition_amount
+
             except ValueError:
                 flash(
                     "The amount can be less than the original one. Delete the acts in order to increase the remained amount.",
@@ -120,7 +124,7 @@ def update_contract(contract_id):
             contract_number=filter_contract_number(
                 form.contract_number.data) if form.contract_number.data else original_data.contract_number,
             date=form.start_date.data if form.start_date.data else original_data.date,
-            amount=float(form.amount.data) if form.amount.data else original_data.amount,
+            amount=new_amount if new_amount else original_data.amount,
             remained_amount=new_remained_amount if not None else original_data.remained_amount,
             adv_payer=True if form.is_adv_payer.data else False,
             pdf_file_path=filename if form.pdf_file.data else None,
