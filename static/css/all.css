@@ -53,10 +53,6 @@ body {
   background-color: #EEEDEB;
 }
 
-.gridjs-container {
-  width: 82vw !important;
-}
-
 .gridjs-wrapper,
 .gridjs-footer {
   border-radius: 0 !important;
