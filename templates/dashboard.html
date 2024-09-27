@@ -4,11 +4,11 @@
 
 {% block content_part %}
     <section class="main-container">
-        <h1>Overall Statistics</h1>
+        <h1>Statistika</h1>
         <section class="statistics">
             <div class="contract_amount">
                 <div class="option-name">
-                    <p>Contracts</p>
+                    <p>Kontratlar</p>
                 </div>
                 <div class="amount">
                     <em>{{ results.get('total_contracts') }}</em>
@@ -16,7 +16,7 @@
             </div>
             <div class="companies">
                  <div class="option-name">
-                    <p>Companies</p>
+                    <p>Müqavilələr</p>
                 </div>
                 <div class="amount">
                     <em>{{ results.get('total_companies') }}</em>
@@ -24,7 +24,7 @@
             </div>
             <div class="acts">
                 <div class="option-name">
-                    <p>Acts</p>
+                    <p>Aktlar</p>
                 </div>
                 <div class="amount">
                     <em>{{ results.get('total_acts') }}</em>
@@ -32,16 +32,16 @@
             </div>
             <div class="additions">
                 <div  class="option-name">
-                    <p>Additions</p>
+                    <p>Əlavələr</p>
                 </div>
                 <div class="amount">
                     <em>{{ results.get('total_additions') }}</em>
                 </div>
             </div>
         </section>
-        <h1>Days left for contract ending</h1>
+        <h1>Müqavilənin bitməsinə qalan günlər</h1>
         <section id="calculations-date"></section>
-        <h1>Amount left for contract ending</h1>
+        <h1>Müqavilənin bitməsinə qalan məbləğ</h1>
         <section id="calculations-amount"></section>
 
     </section>

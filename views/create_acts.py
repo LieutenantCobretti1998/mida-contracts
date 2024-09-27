@@ -39,11 +39,11 @@ def save_act():
         except NoResultFound:
             abort(404)
         except (DBAPIError, OperationalError):
-            flash("Something went wrong in the database", "error")
+            flash("Verilənlər bazasında xəta baş verdi", "error")
             return render_template('create_act.html', form=form)
 
         except ValueError:
-            flash("Act's amount is bigger than the total contract's amount. Please check act amount field", "warning")
+            flash("Aktın məbləği müqavilənin ümumi məbləğindən böyükdür. Zəhmət olmasa akt məbləği sahəsini yoxlayın", "warning")
             return render_template('create_act.html', form=form)
         try:
             file = form.pdf_file_act.data
@@ -58,15 +58,15 @@ def save_act():
             )
             act_manager.create_act(act_info)
             file.save(file_path)
-            flash("The act is saved successfully!", "success")
+            flash("Akt uğurla saxlanıldı!", "success")
             db.session.commit()
             return redirect(url_for('create_act.create_act'))
 
         except (OperationalError, DBAPIError):
-            flash("Something went wrong. transaction was restored", "error")
+            flash("Xəta baş verdi. əməliyyat bərpa edildi", "error")
             db.session.rollback()
             return render_template('create_act.html', form=form)
     else:
-        flash("Validation Error. Please check all fields", "error")
+        flash("Doğrulama Xətası. Bütün sahələri yoxlayın", "error")
     return render_template('create_act.html', form=form)
 

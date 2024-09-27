@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, flash, url_for, current_app, abort
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
-from sqlalchemy.exc import OperationalError
+from sqlalchemy.exc import OperationalError, DBAPIError
 from forms.create_contract_form import CreateContractForm
 from database.models import *
 from database.db_init import db
@@ -40,13 +40,13 @@ def save_contract():
         selected_category_id = form.categories.data
         valid_category = next((cat for cat in categories if cat.id == selected_category_id), None)
         if valid_category is None:
-            flash('Invalid category selected. Please choose a valid option.', 'error')
+            flash('Yanlış kateqoriya seçilib. Zəhmət olmasa düzgün seçimi edin', 'error')
             return render_template("add_contract.html", form=form)
         if start_date >= end_date:
-            flash('Start date must be before end date.', 'warning')
+            flash('Başlanğıc tarixi bitmə tarixindən sonra və ya ona bərabər ola bilməz', 'warning')
             return render_template('add_contract.html', form=form)
         elif end_date <= start_date:
-            flash('End date must be after start date.', 'warning')
+            flash('Bitmə tarixi orijinal başlanğıc tarixindən əvvəl və ya ona bərabər ola bilməz', 'warning')
             return render_template('add_contract.html', form=form)
         try:
             file = form.pdf_file.data
@@ -67,15 +67,15 @@ def save_contract():
             db.session.add(contract)
             db.session.commit()
             file.save(file_path)
-            flash("The contract is saved successfully!", "success")
+            flash("Müqavilə uğurla yadda saxlanıldı", "success")
             return redirect(url_for("create_contract.create_contract"))
 
         except ValueError as e:
             flash(str(e), "warning")
             db.session.rollback()
-        except OperationalError:
-            flash("Something went wrong. transaction was restored", "error")
+        except (DBAPIError, OperationalError):
+            flash("Xəta baş verdi. əməliyyat bərpa edildi", "error")
             db.session.rollback()
     else:
-        flash("Validation Error. Please check all fields", "error")
+        flash("Doğrulama xətası. Zəhmət olmasa, bütün sahələri yoxlayın", "error")
     return render_template('add_contract.html', form=form)

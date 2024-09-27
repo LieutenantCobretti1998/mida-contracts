@@ -2,6 +2,17 @@ import { Grid, html } from 'gridJs'; // Using the alias
 import 'gridJs/dist/theme/mermaid.css'; // Importing the CSS using the alias
 
 const grid = new Grid({
+    language: {
+        "search": {
+            "placeholder": "🔍 Axtar",
+        },
+        "pagination": {
+            "previous": "Əvvəlki",
+            "next": "Növbəti️",
+            "showing": "Göstər",
+            "results": "Nəticələr"
+        }
+    },
     columns: [
                 {
                     name: "Company Id",
@@ -9,13 +20,13 @@ const grid = new Grid({
                 },
 
                 {
-                    name: "Company Name"
+                    name: "Şirkətin adı"
                 },
                 {
-                    name: "Voen"
+                    name: "Vöen"
                 },
                 {
-                    name: "Related Contracts"
+                    name: "Əlaqədar Müqavilələr"
                 },
                 {
                     sort: false,

@@ -104,12 +104,12 @@ class ContractManager(ValidatorWrapper):
         try:
             existed_company = self.db_session.query(Companies).filter_by(company_name=company_name).one()
             if existed_company.voen != voen:
-                raise ValueError(f"The {company_name} company already has a voen {existed_company.voen}")
+                raise ValueError(f"{company_name} şirkətinin artıq {existed_company.voen} VÖEN-i var")
             return existed_company
         except NoResultFound:
             if self.check_voen(voen):
                 raise ValueError(
-                    f"VOEN is already linked to {self.db_session.query(Companies).filter_by(voen=voen).one().company_name} company")
+                    f"VOEN artıq {self.db_session.query(Companies).filter_by(voen=voen).one().company_name} şirkətə aiddir")
             new_company = Companies(company_name=company_name, voen=voen)
             self.db_session.add(new_company)
             self.db_session.flush()
@@ -340,7 +340,6 @@ class EditContract(ValidatorWrapper):
         if not contract:
             raise NoResultFound
         total_addition = sum(addition.amount for addition in contract.additions)
-        print(total_addition)
         return total_addition
 
     def calculate_total_contract_act(self, contract_id: int) -> float:
@@ -383,7 +382,7 @@ class EditContract(ValidatorWrapper):
             Contract.id == int(self.id)).with_for_update().first()
         if not contract_to_update:
             self.db_session.close()
-            return False, f"Contract was not found in database"
+            return False, "Müqavilə verilənlər bazasında tapılmadı"
         try:
             company_name = changes.get("company_name")
             voen = changes.get("voen")
@@ -393,8 +392,7 @@ class EditContract(ValidatorWrapper):
                     contract_to_update.company_id = existed_company_id
                     update_status["company_and_voen_updated"] = True
                 else:
-                    return False, ("The provided company name and VOEN do not match to any existing company. "
-                                   "Please check your information or create a new company record.")
+                    return False, ("Şirkət adı və VÖEN mövcüd şirkətlərin heç birinə uyğun gəlmir.  Zəhmət olmasa məlumatlarınızı yoxlayın və ya Şirkət haqqında yeni bir qeyd yaradın")
             for key, value in changes.items():
                 if hasattr(contract_to_update.company, key) and not update_status["company_and_voen_updated"]:
                     current_value = getattr(contract_to_update.company, key)
@@ -411,12 +409,11 @@ class EditContract(ValidatorWrapper):
                                         contract_to_update.pdf_file_path = new_pdf_file_path
                                     except FileNotFoundError:
                                         return False, (
-                                            "There is the file path problem. It was corrupted or not existed."
-                                            "Please, load a new pdf first")
+                                            "Fayl yolunda problem var. Fayl zədələnmiş və ya mövcud deyil. Zəhmət olmasa, əvvəlcə yeni bir PDF yükləyin"
+                                        )
                                 else:
                                     return False, (
-                                        f"There is no such company in the database: {value}.Please go to the"
-                                        f" create contract form page")
+                                        f"Verilənlər bazasında belə bir şirkət yoxdur: {value}.Zəhmət olmasa şirkətin yaradılması və ya müqavilə forması səhifəsinə keçin")
                             case "voen":
                                 existed_voen_id = self.is_voen_exists(value)
                                 if existed_voen_id:
@@ -428,12 +425,10 @@ class EditContract(ValidatorWrapper):
                                         contract_to_update.pdf_file_path = new_pdf_file_path
                                     except FileNotFoundError:
                                         return False, (
-                                            "There is the file path problem. It was corrupted or not existed."
-                                            "Please, load a new pdf first")
+                                            "Fayl yolunda problem var. Fayl zədələnmiş və ya mövcud deyil. Zəhmət olmasa, əvvəlcə yeni bir PDF yükləyin"
+                                            )
                                 else:
-                                    return False, (f"There is no such voen related to any company in the database: "
-                                                   f"{value}.Please go to the"
-                                                   f"create contract form page")
+                                    return False, (f"Verilənlər bazasında hər hansı bir şirkətə aid belə bir voen yoxdur: {value}.Zəhmət olmasa müqavilə forması yaratmaq səhifəsinə keçin")
                 elif hasattr(contract_to_update, key):
                     current_value = getattr(contract_to_update, key)
                     if key == "pdf_file_path":
@@ -443,13 +438,13 @@ class EditContract(ValidatorWrapper):
                                 setattr(contract_to_update, key, new_pdf_path)
                                 pdf_file.save(new_pdf_path)
                             except FileNotFoundError:
-                                return False, "There is the file path problem. It was corrupted or not existed."
+                                return False, "Fayl yolunda problem var. Fayl zədələnmiş və ya mövcud deyil."
                     else:
                         setattr(contract_to_update, key, value)
 
-            return True, f"Contract updated successfully"
+            return True, "Müqavilə uğurla yeniləndi"
         except DBAPIError:
-            return False, f"An error occurred in the server. Please try again later"
+            return False, "Serverdə xəta baş verdi."
 
 
 class CompanyManager(ContractManager):

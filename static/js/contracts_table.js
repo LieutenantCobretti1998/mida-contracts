@@ -3,8 +3,16 @@ import 'gridJs/dist/theme/mermaid.css';
 
 
 const grid = new Grid({
-    style: {
-
+    language: {
+        "search": {
+            "placeholder": "🔍 Axtar",
+        },
+        "pagination": {
+            "previous": "Əvvəlki",
+            "next": "Növbəti️",
+            "showing": "Göstər",
+            "results": "Nəticələr"
+        }
     },
    columns: [
                 {
@@ -13,33 +21,34 @@ const grid = new Grid({
                 },
 
                 {
-                    name: "Company Name",
+                    name: "Şirkətin adı",
                     sort: !search_mode
                 },
                 {
-                    name: "Voen",
-                     sort: !search_mode
+                    name: "VÖEN",
+                    label: "VÖEN",
+                    sort: !search_mode
                 },
                 {
-                    name: "Contract Number"
+                    name: "Müqavilə Nömrəsi"
                 },
                 {
-                    name: "Start Date"
+                    name: "Başlama tarixi"
                 },
                 {
-                    name: "End Date"
+                    name: "Bitmə tarixi"
                 },
                 {
-                    name: "Amount"
+                    name: "Məbləğ"
                 },
                 {
-                    name: "Remained Amount"
+                    name: "Qalan məbləğ"
                 },
                 {
-                    name: "Category"
+                    name: "Kategoriya"
                 },
                 {
-                    name: "Adv Payer",
+                    name: "Ədv ödəyicisi",
                     formatter: (_, row) => {
                         const advPayer = row.cells[9].data;
                         return html(
@@ -49,12 +58,12 @@ const grid = new Grid({
                 },
                 {
                     sort: false,
-                    name: "Actions",
+                    name: "Əməliyyatlar",
                     formatter: (cell, row) => {
                         const contract_id = row.cells[0].data;
-                        let action_html = `<button type="button" class="view-btn" data-id=${contract_id}>View</button>`
+                        let action_html = `<button type="button" class="view-btn" data-id=${contract_id}>Bax</button>`
                         if(role === "admin") {
-                            action_html += `<button data-csrf-token=${csrf_token} type="button" class="delete-btn" data-id=${contract_id}>Delete</button>`
+                            action_html += `<button data-csrf-token=${csrf_token} type="button" class="delete-btn" data-id=${contract_id}>Sil</button>`
                         }
                         return html(`<span style="display: flex; gap: .5rem">${action_html}</span>`);
                     }
@@ -108,3 +117,9 @@ const grid = new Grid({
             })
         })
 grid.render(document.getElementById("results"));
+
+const headers = document.querySelectorAll("#results th");  // Select header elements
+headers.forEach((header, index) => {
+    const columnName = grid.config.columns[index].name;
+    header.textContent = columnName;  // Replace with label if available
+});

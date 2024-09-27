@@ -4,31 +4,31 @@ export default function openPopUpMenu(url, csrf_token) {
        let delete_type;
        switch (true) {
            case url.includes("delete_company"):
-               delete_type = "company";
+               delete_type = "kompaniaynı";
                break;
            case url.includes("delete_contract"):
-               delete_type = "contract";
+               delete_type = "müqaviləni";
                break;
            case url.includes("delete_act"):
-               delete_type = "act";
+               delete_type = "aktı";
                break;
            case url.includes("delete_addition"):
-               delete_type = "addition";
+               delete_type = "əlavəni";
                break;
            case url.includes("delete_category"):
-               delete_type = "category";
+               delete_type = "kategoriyanı";
                break;
 
            case url.includes("delete_user"):
-               delete_type = "user";
+               delete_type = "istifadəçini";
                break;
        }
        main_container.insertAdjacentHTML("afterend",
            `<div class="confirmation_dialog">
-                    <h1>Are you sure you want to delete this ${delete_type} ?</h1>
+                    <h1>Bu ${delete_type} sil ?</h1>
                     <div class="popup_buttons">
-                        <button type="button" class="yes">Yes</button>
-                        <button type="button" class="no">No</button>
+                        <button type="button" class="yes">Bəli</button>
+                        <button type="button" class="no">Xeyr</button>
                     </div>
                  </div>`
        )

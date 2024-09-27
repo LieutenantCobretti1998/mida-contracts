@@ -1,6 +1,6 @@
-from datetime import datetime, timedelta
+
 from sqlalchemy import Column, Integer, CHAR, DATE, ForeignKey, DECIMAL, VARCHAR, BOOLEAN, DateTime
-from database.db_init import Base
+from database.db_init import Base, db
 from sqlalchemy.orm import relationship
 from flask_login import UserMixin
 

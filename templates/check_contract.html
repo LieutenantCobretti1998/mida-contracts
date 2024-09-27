@@ -6,12 +6,12 @@
 {% block content_part %}
         <table  class="table">
             <caption id="caption">
-                <h1>Contract's Overview</h1>
+                <h1>Müqaviləyə baxış</h1>
             </caption>
             <tbody class="main-table-part">
                 <tr>
                     <td class="table__text">
-                        <p>Company</p>
+                        <p>Şirkət</p>
                     </td>
                     <td>
                         <p>{{ search_result.company.company_name }}</p>
@@ -19,17 +19,16 @@
                 </tr>
                 <tr>
                     <td class="table__text">
-                       <p>Voen</p>
+                       <p>Vöen</p>
                     </td>
                     <td>
-                       <p>{{ search_result.company.voen }}
-                       </p>
+                       <p>{{ search_result.company.voen }}</p>
                     </td>
                 </tr>
 
                 <tr>
                     <td class="table__text">
-                         <p>Contract Number</p>
+                         <p>Kontrakt Nömrəsi</p>
                     </td>
 
                     <td>
@@ -39,7 +38,7 @@
 
                 <tr>
                     <td class="table__text">
-                      <p>Start Date</p>
+                      <p>Başlama Tarixi</p>
                     </td>
 
                     <td>
@@ -49,7 +48,7 @@
 
                 <tr>
                     <td class="table__text">
-                      <p>End Date</p>
+                      <p>Bitmə Tarixi</p>
                     </td>
 
                     <td>
@@ -59,7 +58,7 @@
 
                 <tr>
                     <td class="table__text">
-                       <p>Amount</p>
+                       <p>Məbləğ</p>
                     </td>
 
                     <td>
@@ -69,7 +68,7 @@
 
                  <tr>
                     <td class="table__text">
-                       <p>Remained Amount</p>
+                       <p>Qalan Məbləğ</p>
                     </td>
 
                     <td>
@@ -79,7 +78,7 @@
 
                 <tr>
                     <td class="table__text">
-                        <p>Adv Payer</p>
+                        <p>Ədv ödəyicisi</p>
                     </td>
 
                     <td>
@@ -89,18 +88,18 @@
 
                 <tr>
                     <td>
-                        <p>Contract's PDF</p>
+                        <p>PDF</p>
                     </td>
 
                     <td id="pdf">
-                        <button onclick="window.open('{{ url_for('all_contracts.preview_pdf', contract_id = contract_id) }}')" type="button" class="pdf-btn">View</button>
+                        <button onclick="window.open('{{ url_for('all_contracts.preview_pdf', contract_id = contract_id) }}')" type="button" class="pdf-btn">Bax</button>
                     </td>
                 </tr>
                 {% if current_user.role == 'admin' or current_user.role == 'editor' %}
                     <tr>
                         <td></td>
                         <td id="edit">
-                             <button onclick="window.location.href='{{ url_for('all_contracts.edit_contract', contract_id = contract_id) }}'" type="button" class="edit-btn">Edit</button>
+                             <button onclick="window.location.href='{{ url_for('all_contracts.edit_contract', contract_id = contract_id) }}'" type="button" class="edit-btn">Redakta et</button>
                         </td>
                     </tr>
                 {% endif %}

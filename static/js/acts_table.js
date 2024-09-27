@@ -3,6 +3,19 @@ import { Grid, html } from 'gridJs'; // Using the alias
 import 'gridJs/dist/theme/mermaid.css'; // Importing the CSS using the alias
 
 const grid = new Grid( {
+     language: {
+        "search": {
+            "placeholder": "🔍 Axtar",
+        },
+        "pagination": {
+            "previous": "Əvvəlki",
+            "next": "Növbəti️",
+            "showing": "Göstər",
+            "results": "Nəticələr"
+        },
+         noRecordsFound: "Uyğun qeydlər tapılmadı",
+         error: "Məlumatların çıxarılması zamanı xəta baş verdi"
+    },
     columns: [
         {
             name: 'Act id',
@@ -10,22 +23,22 @@ const grid = new Grid( {
         },
 
         {
-            name: "Act Number",
+            name: "Akt nömrəsi",
         },
         {
-            name: "Act Amount",
+            name: "Akt məbləği",
         },
         {
-            name: "Date"
+            name: "Tarix"
         },
         {
             sort: false,
-            name: "Actions",
+            name: "Əməliyyatlar",
             formatter: (cell, row) => {
                         const act_id = row.cells[0].data;
-                        let action_html = `<button type="button" class="view-btn" data-id=${act_id}>View</button>`;
+                        let action_html = `<button type="button" class="view-btn" data-id=${act_id}>Bax</button>`;
                         if(role === "admin") {
-                            action_html += `<button data-csrf-token=${csrf_token} type="button" class="delete-btn" data-id=${act_id}>Delete</button>`
+                            action_html += `<button data-csrf-token=${csrf_token} type="button" class="delete-btn" data-id=${act_id}>Sil</button>`
                         }
                          return html(`<span style="display: flex; justify-content: space-between">${action_html}</span>`)
                     }

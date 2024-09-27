@@ -1,6 +1,14 @@
 import {Grid} from "gridjs";
 import 'gridJs/dist/theme/mermaid.css';
 const contract_end_date_grid = new Grid({
+    language: {
+        "pagination": {
+            "previous": "Əvvəlki",
+            "next": "Növbəti️",
+            "showing": "Göstər",
+            "results": "Nəticələr"
+        }
+    },
     style: {
         table: {
             'font-size': '1.5rem'
@@ -27,14 +35,14 @@ const contract_end_date_grid = new Grid({
                 },
 
                 {
-                  name: "Company Name"
+                  name: "Şirkətin Adı"
                 },
 
                 {
-                    name: "Contract Number"
+                    name: "Kontrakt Nömrəsi"
                 },
                 {
-                    name: "Days Left"
+                    name: "Müqavilənin bitməsinə qalan günlər"
                 },
 
             ],
@@ -63,6 +71,16 @@ const contract_end_date_grid = new Grid({
 contract_end_date_grid.render(document.getElementById("calculations-date"));
 
 const contract_end_money_grid = new Grid({
+    language: {
+        "pagination": {
+            "previous": "Əvvəlki",
+            "next": "Növbəti️",
+            "showing": "Göstər",
+            "results": "Nəticələr"
+        },
+        noRecordsFound: "Uyğun qeydlər tapılmadı",
+        error: "Məlumatların çıxarılması zamanı xəta baş verdi"
+    },
     style: {
         table: {
             'font-size': '1.5rem'
@@ -89,14 +107,14 @@ const contract_end_money_grid = new Grid({
                 },
 
                 {
-                    name: "Company Name",
+                    name: "Şirkətin Adı",
                 },
 
                 {
-                    name: "Contract Number"
+                    name: "Kontrakt Nömrəsi"
                 },
                 {
-                    name: "Amount Left"
+                    name: "Qalan Məbləğ"
                 },
 
             ],

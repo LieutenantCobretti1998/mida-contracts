@@ -12,7 +12,7 @@
         {{ form.csrf_token() }}
         <table  class="table">
             <caption id="caption">
-                <h1>Add a new contract</h1>
+                <h1>Yeni müqavilə əlavə edin</h1>
             </caption>
             <thead></thead>
             <tbody class="table__body">
@@ -22,7 +22,7 @@
                     </td>
                     <td>
                         <div>
-                            {{ form.company(id="default_input", class="table__input rounded", placeholder="COMPANY") }}
+                            {{ form.company(id="default_input", class="table__input rounded", placeholder=form.company.label.text) }}
                             <ul class="error-list">
                             {% for error in form.company.errors %}
                                 <li class="error-list__message">{{ error }}</li>
@@ -37,7 +37,7 @@
                     </td>
                     <td>
                         <div>
-                            {{ form.voen(class="table__input rounded", placeholder="VOEN")  }}
+                            {{ form.voen(class="table__input rounded", placeholder=form.voen.label.text)  }}
                             <ul class="error-list">
                             {% for error in form.voen.errors %}
                                 <li class="error-list__message">{{ error }}</li>
@@ -53,7 +53,7 @@
                     </td>
 
                     <td>
-                        {{ form.contract_number(class="table__input rounded", placeholder="CONTRACT'S NUMBER") }}
+                        {{ form.contract_number(class="table__input rounded", placeholder=form.contract_number.label.text) }}
                         <ul class="error-list">
                             {% for error in form.contract_number.errors %}
                                 <li class="error-list__message">{{ error }}</li>
@@ -98,7 +98,7 @@
                     </td>
 
                     <td>
-                        {{ form.amount(class="table__input rounded", placeholder="AMOUNT") }}
+                        {{ form.amount(class="table__input rounded", placeholder=form.amount.label.text) }}
                         <ul class="error-list">
                             {% for error in form.amount.errors %}
                                 <li class="error-list__message">{{ error }}</li>

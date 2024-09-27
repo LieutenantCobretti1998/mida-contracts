@@ -115,12 +115,12 @@ def delete_act(act_id):
     act_on_delete = act_manager.delete_act(act_id)
     if act_on_delete:
         db.session.commit()
-        flash("Act deleted successfully", "success")
+        flash("Akt uğurla silindi", "success")
         return jsonify({
             'status': 'success',
         }), 200
     else:
-        flash("Could not delete the act. Something went wrong on the server side. Maybe data is outdated", "error")
+        flash("Act silinmədi. Server tərəfində xəta baş verdi", "error")
         db.session.rollback()
         return jsonify({
             'status': 'error',

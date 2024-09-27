@@ -36,7 +36,7 @@ def save_addition():
         except NoResultFound:
             abort(404)
         except (DBAPIError, OperationalError):
-            flash("Something went wrong in the database", "error")
+            flash("erilənlər bazasında xəta baş verdi", "error")
             return render_template('create_addition.html', form=form)
         try:
             file = form.pdf_file_act.data
@@ -51,14 +51,14 @@ def save_addition():
             )
             act_manager.create_addition(addition_info)
             file.save(file_path)
-            flash("The addition is saved successfully!", "success")
+            flash("Əlavə uğurla saxlanıldı!", "success")
             db.session.commit()
             return redirect(url_for('create_addition.create_addition'))
 
         except OperationalError:
-            flash("Something went wrong. transaction was restored", "error")
+            flash("Xəta baş verdi. əməliyyat bərpa edildi", "error")
             db.session.rollback()
             return render_template('create_addition.html', form=form)
     else:
-        flash("Validation Error. Please check all fields", "error")
+        flash("Doğrulama Xətası. Bütün sahələri yoxlayın", "error")
     return render_template('create_addition.html', form=form)

@@ -1,10 +1,8 @@
-import uuid
-
-from flask import Blueprint, render_template, redirect, url_for, jsonify, flash, send_file, abort, session
+from flask import Blueprint, render_template, redirect, url_for, jsonify, flash, send_file, abort
 from flask_login import login_required, current_user
 from sqlalchemy.exc import NoResultFound
 from werkzeug.utils import secure_filename
-from forms.custom_validators import calculate_new_amount, calculate_amount
+from forms.custom_validators import calculate_new_amount
 from forms.filters import *
 from forms.edit_contract_form import EditContractForm
 from database.db_init import db
@@ -72,7 +70,7 @@ def update_contract(contract_id):
     selected_category_id = form.categories.data
     valid_category = next((cat for cat in categories if cat.id == selected_category_id), None)
     if valid_category is None:
-        flash('Invalid category selected. Please choose a valid option.', 'error')
+        flash('anlış kateqoriya seçilib. Zəhmət olmasa düzgün seçimi edin', 'error')
         return redirect(url_for('all_contracts.edit_contract', contract_id=contract_id))
     if form.validate_on_submit():
         new_remained_amount = None
@@ -87,17 +85,17 @@ def update_contract(contract_id):
         filename = ""
         if start_date_changed and end_date_changed:
             if new_start_date >= new_end_date:
-                flash("Start date cannot be after or the same as the end date.", "warning")
+                flash("Başlanğıc tarixi bitmə tarixindən sonra və ya ona bərabər ola bilməz", "warning")
                 return render_template('edit_contract.html', form=form, contract_id=contract_id,
                                        search_result=original_data, )
         elif start_date_changed:
             if new_start_date >= original_end_date:
-                flash("Start date cannot be after or the same as the original end date.", "warning")
+                flash("Başlanğıc tarixi original bitmə tarixindən sonra və ya ona bərabər ola bilməz", "warning")
                 return render_template('edit_contract.html', form=form, contract_id=contract_id,
                                        search_result=original_data,)
         elif end_date_changed:
             if new_end_date <= original_start_date:
-                flash("End date cannot be before or the same as the original start date.", "warning")
+                flash("Bitmə tarixi orijinal başlanğıc tarixindən əvvəl və ya ona bərabər ola bilməz", "warning")
                 return render_template('edit_contract.html', form=form, contract_id=contract_id,
                                        search_result=original_data, )
         if file:
@@ -135,8 +133,6 @@ def update_contract(contract_id):
         success, message = edit_engine.update_data(data_dict, form.pdf_file.data)
         if success:
             db.session.commit()
-            session.pop('contract_id', None)
-            session.pop('contract_token', None)
             flash(message, "success")
             return redirect(url_for('all_contracts.get_contract', contract_id=contract_id))
         else:

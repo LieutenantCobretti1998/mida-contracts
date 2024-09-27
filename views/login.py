@@ -23,9 +23,9 @@ def login():
             login_user(user)
             return redirect(url_for('home.home'))
         else:
-            flash("The username or password is not correct. Please check fields", "error")
+            flash("İstifadəçi adı və ya şifrə səhvdir", "error")
             return render_template('auth.html', form=form)
-    flash("Please provide the password and username you were given", "warning")
+    flash("Zəhmət olmasa sizə verilən parol və istifadəçi adını daxil edin", "warning")
     return render_template("auth.html", form=form)
 
 

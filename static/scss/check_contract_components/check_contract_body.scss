@@ -107,6 +107,7 @@
 }
 
 .confirmation_dialog {
+  text-align: center;
   display: flex;
   flex-direction: column;
   gap: 5rem;
@@ -134,6 +135,7 @@
 
 .popup_buttons {
   display: flex;
+  gap: 5rem;
   justify-content: space-between;
 }
 

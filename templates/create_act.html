@@ -9,7 +9,7 @@
         {{ form.contract_id }}
         <table  class="table">
             <caption id="caption">
-                <h1>Add a new act</h1>
+                <h1>Yeni Akt Əlavə Edin</h1>
             </caption>
             <tbody class="table__body">
                 <tr>
@@ -18,7 +18,7 @@
                     </td>
 
                     <td>
-                        {{ form.company_name(list="companies_list", class="table__input rounded", placeholder="COMPANIES", id="default_input") }}
+                        {{ form.company_name(list="companies_list", class="table__input rounded", placeholder="Şirkət", id="default_input") }}
                         <datalist id="companies_list"></datalist>
                         <ul class="error-list">
                             {% for error in form.company_name.errors %}
@@ -48,7 +48,7 @@
                     </td>
                     <td>
                         <div>
-                            {{ form.act_number(class="table__input rounded", placeholder="ACT NUMBER") }}
+                            {{ form.act_number(class="table__input rounded", placeholder="Akt Nömrəsi") }}
                             <ul class="error-list">
                             {% for error in form.act_number.errors %}
                                 <li class="error-list__message">{{ error }}</li>
@@ -63,7 +63,7 @@
                     </td>
                     <td>
                         <div>
-                            {{ form.act_amount(class="table__input rounded", placeholder="AMOUNT")  }}
+                            {{ form.act_amount(class="table__input rounded", placeholder="Məbləğ")  }}
                             <ul class="error-list">
                             {% for error in form.act_amount.errors %}
                                 <li class="error-list__message">{{ error }}</li>
@@ -79,7 +79,7 @@
                     </td>
 
                     <td>
-                        {{ form.act_date(class="table__input rounded", placeholder="DATE") }}
+                        {{ form.act_date(class="table__input rounded", placeholder="Tarix") }}
                         <ul class="error-list">
                             {% for error in form.act_date.errors %}
                                 <li class="error-list__message">{{ error }}</li>
@@ -122,33 +122,33 @@
     <table class="table">
         <tbody class="contract-details">
             <tr>
-                <td class="table__text">contract number</td>
-                <td id="contract_number">No Data</td>
+                <td class="table__text">Kontrakt Nömrəsi</td>
+                <td id="contract_number">Məlumat yoxdur</td>
             </tr>
 
              <tr>
-                <td class="table__text">date</td>
-                <td id="date">No Data</td>
+                <td class="table__text">Tarix</td>
+                <td id="date">Məlumat yoxdur</td>
             </tr>
 
             <tr>
-                <td class="table__text">amount</td>
-                <td id="amount">No Data</td>
+                <td class="table__text">Məbləğ</td>
+                <td id="amount">Məlumat yoxdur</td>
             </tr>
 
             <tr>
-                <td class="table__text">remained amount</td>
-                <td id="remained_amount">No Data</td>
+                <td class="table__text">Qalan Məbləğ</td>
+                <td id="remained_amount">Məlumat yoxdur</td>
             </tr>
 
             <tr>
-                <td class="table__text">adv payer</td>
-                <td id="adv_payer">No Data</td>
+                <td class="table__text">Ədv Ödəyicisi</td>
+                <td id="adv_payer">Məlumat yoxdur</td>
             </tr>
 
             <tr>
-                <td class="table__text">pdf file</td>
-                <td id="pdf_file">No Data</td>
+                <td class="table__text">PDF</td>
+                <td id="pdf_file">Məlumat yoxdur</td>
             </tr>
         </tbody>
     </table>

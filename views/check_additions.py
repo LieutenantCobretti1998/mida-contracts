@@ -122,18 +122,18 @@ def delete_addition(addition_id):
         addition_on_delete = addition_manager.delete_addition(addition_id)
         if addition_on_delete:
             db.session.commit()
-            flash("Addition deleted successfully", "success")
+            flash("Əlavə uğurla silindi", "success")
             return jsonify({
                 'status': 'success',
             }), 200
         else:
-            flash("Could not delete the addition. Something went wrong on the server side. Maybe data is outdated", "error")
+            flash("Əlavə silinmədi. Server tərəfində xəta baş verdi", "error")
             db.session.rollback()
             return jsonify({
                 'status': 'error',
             }), 500
     except ValueError:
-        flash("Final Amount cannot be negative. Please delete some acts for that", "warning")
+        flash("Ümumi məbləğ mənfi ola bilməz. Bunu etmək üçün bəzi aktları silin", "warning")
         return jsonify({
             'status': 'error',
         }), 500
