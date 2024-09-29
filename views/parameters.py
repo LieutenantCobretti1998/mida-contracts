@@ -53,9 +53,9 @@ def update_category(category_id):
             search_engine = EditCategory(db.session, category_id)
             search_result = search_engine.category_update(new_name)
             if search_result:
-                flash("The category was updated successfully", "success")
+                flash("Kateqoriya uğurla yeniləndi", "success")
                 return redirect(url_for('parameters.edit_category', category_id=category_id))
-            flash("The error occurred on the database", "error")
+            flash("Səhv verilənlər bazasında baş verdi", "error")
             return render_template('edit_category.html',
                                    form=form,
                                    search_result=search_result,
@@ -84,7 +84,7 @@ def save_user():
         user_manager = UserManager(db.session)
         user_exist = user_manager.is_user_existed(user_name)
         if user_exist:
-            flash("User already exists", "warning")
+            flash("İstifadəçi artıq mövcuddur", "warning")
             return render_template('create_user.html', form=form)
         else:
             try:
@@ -95,10 +95,10 @@ def save_user():
                 )
                 db.session.add(user)
                 db.session.commit()
-                flash("User created successfully", "success")
+                flash("İstifadəçi uğurla yaradıldı", "success")
                 return redirect(url_for('parameters.create_user'))
             except OperationalError:
-                flash("Something went wrong on database side. Please add again later", "error")
+                flash("Verilənlər bazası tərəfində xəta baş verdi. Zəhmət olmasa sonra yenidən əlavə edin", "error")
                 db.session.rollback()
                 return render_template('create_user.html', form=form)
 
@@ -106,7 +106,6 @@ def save_user():
 @parameter_bp.route('/edit_user/<int:user_id>', methods=['GET'])
 @login_required
 def edit_user(user_id):
-    print(f"edit: {user_id}")
     if current_user.role == "viewer" or current_user.role == "editor":
         abort(401)
     try:
@@ -135,12 +134,12 @@ def update_user(user_id):
     all_roles = form.role.choices
     values = [role for role, _ in all_roles]
     if form.role.data not in values:
-        flash('Invalid category selected. Please choose a valid option.', 'error')
+        flash('Yanlış kateqoriya seçilib. Zəhmət olmasa düzgün seçimi edin', 'error')
         return redirect(url_for('parameters.edit_user', user_id=user_id))
     if form.validate_on_submit():
         user_exist = user_manager.is_user_existed(form.username.data)
         if user_exist:
-            flash("User already exists", "warning")
+            flash("İstifadəçi artıq mövcuddur", "warning")
             return render_template('edit_user.html', form=form, user_id=user_id,
                                    search_result=original_data)
         hashed_password = generate_password_hash(form.password.data, salt_length=10)
@@ -162,20 +161,16 @@ def update_user(user_id):
                                        search_result=original_data)
         except NoResultFound:
             db.session.rollback()
-            flash("The user was not found in the database", "error")
+            flash("İstifadəçi verilənlər bazasında tapılmadı", "error")
             return render_template('edit_user.html', form=form, user_id=user_id,
 
                                    search_result=original_data)
         except DBAPIError:
             db.session.rollback()
             flash("Error in database", "error")
-            return render_template('edit_user.html', form=form, user_id=user_id,
-
-                                   search_result=original_data)
-    flash("The user was not found in the database", "warning")
-    return render_template('edit_user.html', form=form, user_id=user_id,
-
-                           search_result=original_data)
+            return render_template('edit_user.html', form=form, user_id=user_id, search_result=original_data)
+    flash("İstifadəçi verilənlər bazasında tapılmadı", "warning")
+    return render_template('edit_user.html', form=form, user_id=user_id, search_result=original_data)
 
 
 @parameter_bp.route('/delete_user/<int:user_id>', methods=['DELETE'])
@@ -186,7 +181,7 @@ def delete_user(user_id):
     user_manager = UserManager(db.session)
     try:
         user_manager.delete_user(user_id)
-        flash("User deleted successfully", "success")
+        flash("İstifadəçi uğurla silindi", "success")
         db.session.commit()
         return jsonify({
             'status': 'success',
@@ -194,7 +189,7 @@ def delete_user(user_id):
     except NoResultFound:
         abort(404)
     except OperationalError:
-        flash("Something went wrong. transaction was restored", "error")
+        flash("Xəta baş verdi. Əməliyyat bərpa edildi", "error")
         db.session.rollback()
         return jsonify({
             'status': 'error',

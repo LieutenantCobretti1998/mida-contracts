@@ -520,7 +520,7 @@ class CompanyManager(ContractManager):
         try:
             company = self.db_session.query(Companies).filter_by(company_name=company_name).one()
             if company.voen != voen:
-                raise ValueError(f"The {company_name} company already has a voen {company.voen}")
+                raise ValueError(f"The {company_name} şirkətində artıq {company.voen} vöeni var")
 
             for key, value in company_data.items():
                 if value is not None:
@@ -528,7 +528,7 @@ class CompanyManager(ContractManager):
         except NoResultFound:
             if self.check_voen(voen):
                 raise ValueError(
-                    f"VOEN is already linked to {self.db_session.query(Companies).filter_by(voen=voen).one().company_name} company")
+                    f"Vöen artıq {self.db_session.query(Companies).filter_by(voen=voen).one().company_name} şirkəti ilə əlaqələndirilib.")
             else:
                 company = Companies(
                     company_name=company_name,
@@ -665,7 +665,7 @@ class EditCompany(EditContract):
         """
         company_to_update = self.db_session.query(Companies).filter_by(id=self.company_id).first()
         if not company_to_update:
-            return False, f"Contract was not found in database"
+            return False, f"Şirkət verilənlər bazasında tapılmadı"
         company_to_update_dict = {column.name: getattr(company_to_update, column.name) for column in
                                   company_to_update.__table__.columns}
         for key, value in changes.items():
@@ -674,7 +674,7 @@ class EditCompany(EditContract):
                     if key in ["voen", "swift", "company_name"]:
                         check_voen_or_swift = self.update_company_voen_or_swift(key, value)
                         if check_voen_or_swift:
-                            return False, f"This {key} is already linked to {check_voen_or_swift}."
+                            return False, f"Bu {key} artıq {check_voen_or_swift} ilə əlaqələndirilib."
                         setattr(company_to_update, key, value)
                         if key == "company_name":
                             self.update_company_pdf_and_path(value, company_to_update_dict["company_name"])
@@ -683,8 +683,8 @@ class EditCompany(EditContract):
                 else:
                     continue
             except DBAPIError:
-                return False, "An error occurred with the database. Please try again later"
-        return True, "The contract was updated successfully"
+                return False, "Verilənlər bazasında xəta baş verdi. Lütfən, sonra yenidən cəhd edin"
+        return True, "Müqavilə uğurla yeniləndi"
 
 
 class ActsManager(ValidatorWrapper):
@@ -1465,7 +1465,7 @@ class EditUser(EditContract):
                     if hasattr(user_data, key) and value is not None:
                         setattr(user_data, key, value)
                     continue
-                return True, "User was updated successfully"
+                return True, "İstifadəçi uğurla yeniləndi"
             except DBAPIError:
                 raise DBAPIError
         else:

@@ -6,45 +6,45 @@
 {% block content_part %}
         <table class="table" data-edit-mode="true">
             <caption id="caption">
-                <h1>Company's Overview</h1>
+                <h1>Şirkətə Baxiş</h1>
             </caption>
             <tbody class="main-table-part">
                     <tr>
                         <td class="table__text">
-                            <p>Company</p>
+                            <p>Şirkət</p>
                         </td>
                         <td>
                            <p>{{ search_result.company_name }}</p>
                         </td>
                     </tr>
                     <tr>
-                        <td class="table__text">Voen</td>
+                        <td class="table__text">Vöen</td>
                         <td>
                             <p>{{ search_result.voen }}</p>
                         </td>
                     </tr>
                     <tr>
                         <td class="table__text">
-                            <p>Bank Name</p>
+                            <p>Bank Adı</p>
                         </td>
                         <td>
-                            <p>{% if search_result.bank_name %} {{ search_result.bank_name }} {% else %} No data {% endif %}</p>
+                            <p>{% if search_result.bank_name %} {{ search_result.bank_name }} {% else %} Məlumat yoxdur {% endif %}</p>
                         </td>
                     </tr>
                     <tr>
                         <td class="table__text">
-                            <p>M h </p>
+                            <p>M/H</p>
                         </td>
                         <td>
-                           <p>{% if search_result.m_h %} {{ search_result.m_h }} {% else %} No data {% endif %}</p>
+                           <p>{% if search_result.m_h %} {{ search_result.m_h }} {% else %} Məlumat yoxdur {% endif %}</p>
                         </td>
                     </tr>
                      <tr>
                         <td class="table__text">
-                            <p>H h</p>
+                            <p>H/H</p>
                         </td>
                         <td>
-                            <p>{% if search_result.h_h %} {{ search_result.h_h }} {% else %} No data {% endif %}</p>
+                            <p>{% if search_result.h_h %} {{ search_result.h_h }} {% else %} Məlumat yoxdur {% endif %}</p>
                         </td>
                     </tr>
                     <tr>
@@ -52,58 +52,58 @@
                             <p>Swift</p>
                         </td>
                         <td>
-                            <p>{% if search_result.swift %} {{ search_result.swift }} {% else %} No data {% endif %}</p>
+                            <p>{% if search_result.swift %} {{ search_result.swift }} {% else %} Məlumat yoxdur {% endif %}</p>
                         </td>
                     </tr>
 
                     <tr>
                         <td class="table__text">
-                            <p>Email</p>
+                            <p>E-poçt</p>
                         </td>
                         <td>
-                            <p>{% if search_result.email %} {{ search_result.email }} {% else %} No data {% endif %}</p>
+                            <p>{% if search_result.email %} {{ search_result.email }} {% else %} Məlumat yoxdur {% endif %}</p>
                         </td>
                     </tr>
 
                     <tr>
                         <td class="table__text">
-                            <p>Telephone Number</p>
+                            <p>Telefon Nömrəsi</p>
                         </td>
                         <td>
-                            <p>{% if search_result.telephone_number %} {{ search_result.telephone_number }} {% else %} No data {% endif %}</p>
+                            <p>{% if search_result.telephone_number %} {{ search_result.telephone_number }} {% else %} Məlumat yoxdur {% endif %}</p>
                         </td>
                     </tr>
 
                     <tr>
                         <td class="table__text">
-                            <p>Address</p>
+                            <p>Ünvan</p>
                         </td>
                         <td>
-                            <p>{% if search_result.address %} {{ search_result.address }} {% else %} No data {% endif %}</p>
+                            <p>{% if search_result.address %} {{ search_result.address }} {% else %} Məlumat yoxdur {% endif %}</p>
                         </td>
                     </tr>
 
                     <tr>
                         <td class="table__text">
-                            <p>Website</p>
+                            <p>Vebsayt</p>
                         </td>
                         <td>
-                            <p>{% if search_result.website %} <a target="_blank" href='{{ search_result.website }}'>Link</a> {% else %} No data {% endif %}</p>
+                            <p>{% if search_result.website %} <a target="_blank" href='{{ search_result.website }}'>Link</a> {% else %} Məlumat yoxdur {% endif %}</p>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <p>Related Contracts</p>
+                            <p>Əlaqədar Müqavilələr</p>
                         </td>
                         <td id="related-contracts">
-                            <button onclick="window.location.href='{{ url_for('all_contracts.related_contracts', voen = search_result.voen) }}'" type="button" class="related-btn">View</button>
+                            <button onclick="window.location.href='{{ url_for('all_contracts.related_contracts', voen = search_result.voen) }}'" type="button" class="related-btn">Bax</button>
                         </td>
                     </tr>
                     {% if current_user.role == 'admin' or current_user.role == 'editor' %}
                         <tr>
                             <td></td>
                             <td id="edit">
-                                <button onclick="window.location.href='{{ url_for('all_companies.edit_company', company_id = company_id) }}'" type="button" class="edit-btn">Edit</button>
+                                <button onclick="window.location.href='{{ url_for('all_companies.edit_company', company_id = company_id) }}'" type="button" class="edit-btn">Redakta Et</button>
                             </td>
                         </tr>
                     {% endif %}

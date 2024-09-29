@@ -4,5 +4,5 @@ from wtforms.validators import DataRequired, Length
 
 
 class SearchForm(FlaskForm):
-    category = SearchField('Add the category', validators=[DataRequired(), Length(max=15)])
-    save = SubmitField('save')
+    category = SearchField('Kateqoriya əlavə edin', validators=[DataRequired(), Length(max=15)])
+    save = SubmitField('Saxla')

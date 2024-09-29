@@ -42,15 +42,15 @@ def save_company():
             company_manager.check_swift(form.swift.data)
             company_manager.get_or_create_company(filtered_company_name, filtered_voen, company_data)
             db.session.commit()
-            flash("The company requisites is saved successfully!", "success")
+            flash("Şirkət rekvizitləri uğurla saxlanıldı!", "success")
             return redirect(url_for("create_company.create_company"))
         except ValueError as e:
             flash(str(e), "warning")
             db.session.rollback()
         except OperationalError:
-            flash("Something went wrong. transaction was restored", "error")
+            flash("Xəta baş verdi. əməliyyat bərpa edildi", "error")
             db.session.rollback()
     else:
-        flash("Validation Error. Please check all fields", "error")
+        flash("Doğrulama xətası. Bütün sahələri yoxlayın", "error")
         db.session.rollback()
     return render_template("create_company.html", form=form)

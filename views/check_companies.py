@@ -82,7 +82,7 @@ def update_company(company_id):
                                    search_result=original_data,
                                    )
     else:
-        flash("Validation Error. Please check all fields", "error")
+        flash("Doğrulama xətası. Bütün sahələri yoxlayın", "error")
         return render_template("edit_company.html", form=form, company_id=company_id,
                                search_result=original_data,
                                )
@@ -96,13 +96,13 @@ def delete_company(company_id):
     company_manager = CompanyManager(db.session)
     company_on_delete = company_manager.delete_company(company_id)
     if company_on_delete:
-        flash("Company deleted successfully", "success")
+        flash("Şirkət uğurla silindi", "success")
         db.session.commit()
         return jsonify({
             'status': 'success',
         }), 200
     else:
-        flash("Could not delete the company. Something went wrong on the server side", "error")
+        flash("Şirkəti silmək mümkün olmadı. Server tərəfində xəta baş verdi", "error")
         db.session.rollback()
         return jsonify({
             'status': 'error',

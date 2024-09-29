@@ -3,6 +3,21 @@ import { Grid, html } from 'gridJs'; // Using the alias
 import 'gridJs/dist/theme/mermaid.css'; // Importing the CSS using the alias
 
 const grid = new Grid( {
+    language: {
+        "search": {
+            "placeholder": "🔍 Axtar",
+        },
+        "pagination": {
+            "previous": "Əvvəlki",
+            "next": "Növbəti️",
+            "showing": "Göstərilir",
+             to: '-dən',
+             of: '-qədər Cəmi',
+            "results": "Nəticə",
+        },
+        noRecordsFound: "Uyğun qeydlər tapılmadı",
+        error: "Məlumatların çıxarılması zamanı xəta baş verdi"
+    },
     columns: [
         {
             hidden: true,
@@ -10,17 +25,17 @@ const grid = new Grid( {
         },
 
         {
-            name: "Category",
+            name: "Kategoriyalar",
         },
 
         {
             sort: false,
-            name: "Actions",
+            name: "Əməliyyatlar",
             formatter: (cell, row) => {
                         const category_id = row.cells[0].data;
                          return html(
                                `<span style="display: flex; justify-content: space-between">` +
-                                    `<button data-csrf-token=${csrf_token} type="button" class="delete-btn" data-id=${category_id}>Delete</button>`+
+                                    `<button data-csrf-token=${csrf_token} type="button" class="delete-btn" data-id=${category_id}>Sil</button>`+
                                `</span>`
                            );
                     }

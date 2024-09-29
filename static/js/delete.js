@@ -4,7 +4,7 @@ export default function openPopUpMenu(url, csrf_token) {
        let delete_type;
        switch (true) {
            case url.includes("delete_company"):
-               delete_type = "kompaniaynı";
+               delete_type = "kompaniyanı";
                break;
            case url.includes("delete_contract"):
                delete_type = "müqaviləni";
@@ -15,7 +15,7 @@ export default function openPopUpMenu(url, csrf_token) {
            case url.includes("delete_addition"):
                delete_type = "əlavəni";
                break;
-           case url.includes("delete_category"):
+           case url.includes("remove_category"):
                delete_type = "kategoriyanı";
                break;
 

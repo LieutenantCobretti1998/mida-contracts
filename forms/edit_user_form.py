@@ -7,8 +7,8 @@ from forms.custom_validators import *
 
 
 class EditUserForm(CreateUserForm):
-    username = EmailField('Username', validators=[Optional(), Length(min=1, max=20),
+    username = EmailField('İstifadəçi adı', validators=[Optional(), Length(min=1, max=20),
                                                   Email(message=user_error_message)])
-    password = PasswordField('Password', validators=[Optional(), Length(min=1, max=8)])
-    role = SelectField('User Role', choices=[('viewer', 'Viewer'), ('editor', 'Manager'), ('admin', 'Admin')])
-    submit = SubmitField('Save')
+    password = PasswordField('Parol', validators=[Optional(), Length(min=1, max=8)])
+    role = SelectField('İstifadəçi Rolu', choices=[('viewer', 'Viewer'), ('editor', 'Manager'), ('admin', 'Admin')])
+    submit = SubmitField('Saxla')

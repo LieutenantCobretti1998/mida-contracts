@@ -41,7 +41,7 @@
                         <td class="table__text">{{ form.bank_name.label() }}</td>
                         <td>
                             <div>
-                               {{ form.bank_name(placeholder=search_result.bank_name if search_result.bank_name else 'No data', class='table__input rounded') | safe }}
+                               {{ form.bank_name(placeholder=search_result.bank_name if search_result.bank_name else 'Məlumat yoxdur', class='table__input rounded') | safe }}
                                 <ul class="error-list">
                                     {% for error in form.bank_name.errors %}
                                     <li class="error-list__message">{{ error }}</li>
@@ -54,7 +54,7 @@
                         <td class="table__text">{{ form.m_h.label() }}</td>
                         <td>
                             <div>
-                               {{ form.m_h(placeholder=search_result.m_h if search_result.m_h else 'No data', class='table__input rounded') | safe }}
+                               {{ form.m_h(placeholder=search_result.m_h if search_result.m_h else 'Məlumat yoxdur', class='table__input rounded') | safe }}
                                 <ul class="error-list">
                                     {% for error in form.m_h.errors %}
                                     <li class="error-list__message">{{ error }}</li>
@@ -67,7 +67,7 @@
                         <td class="table__text">{{ form.h_h.label() }}</td>
                         <td>
                             <div>
-                               {{ form.h_h(placeholder=search_result.h_h if search_result.h_h else 'No data' , class='table__input rounded') | safe }}
+                               {{ form.h_h(placeholder=search_result.h_h if search_result.h_h else 'Məlumat yoxdur' , class='table__input rounded') | safe }}
                                 <ul class="error-list">
                                     {% for error in form.h_h.errors %}
                                     <li class="error-list__message">{{ error }}</li>
@@ -80,7 +80,7 @@
                         <td class="table__text">{{ form.swift.label() }}</td>
                         <td>
                                 <div>
-                               {{ form.swift(placeholder=search_result.swift if search_result.swift else 'No data', class='table__input rounded') | safe }}
+                               {{ form.swift(placeholder=search_result.swift if search_result.swift else 'Məlumat yoxdur', class='table__input rounded') | safe }}
                                 <ul class="error-list">
                                     {% for error in form.swift.errors %}
                                     <li class="error-list__message">{{ error }}</li>
@@ -94,7 +94,7 @@
                         <td class="table__text">{{ form.email.label() }}</td>
                         <td>
                                 <div>
-                               {{ form.email(placeholder=search_result.email if search_result.email else 'No data', class='table__input rounded') | safe }}
+                               {{ form.email(placeholder=search_result.email if search_result.email else 'Məlumat yoxdur', class='table__input rounded') | safe }}
                                 <ul class="error-list">
                                     {% for error in form.email.errors %}
                                     <li class="error-list__message">{{ error }}</li>
@@ -108,7 +108,7 @@
                         <td class="table__text">{{ form.telephone_number.label() }}</td>
                         <td>
                                 <div>
-                               {{ form.telephone_number(placeholder=search_result.telephone_number if search_result.telephone_number else 'No data', class='table__input rounded') | safe }}
+                               {{ form.telephone_number(placeholder=search_result.telephone_number if search_result.telephone_number else 'Məlumat yoxdur', class='table__input rounded') | safe }}
                                 <ul class="error-list">
                                     {% for error in form.telephone_number.errors %}
                                     <li class="error-list__message">{{ error }}</li>
@@ -122,7 +122,7 @@
                         <td class="table__text">{{ form.address.label() }}</td>
                         <td>
                             <div>
-                               {{ form.address(placeholder=search_result.address if search_result.address else 'No data', class='table__input rounded') | safe }}
+                               {{ form.address(placeholder=search_result.address if search_result.address else 'Məlumat yoxdur', class='table__input rounded') | safe }}
                                 <ul class="error-list">
                                     {% for error in form.address.errors %}
                                     <li class="error-list__message">{{ error }}</li>
@@ -136,7 +136,7 @@
                         <td class="table__text">{{ form.website.label() }}</td>
                         <td>
                             <div>
-                               {{ form.website(placeholder=search_result.website if search_result.website else 'No data', class='table__input rounded') | safe }}
+                               {{ form.website(placeholder=search_result.website if search_result.website else 'Məlumat yoxdur', class='table__input rounded') | safe }}
                                 <ul class="error-list">
                                     {% for error in form.website.errors %}
                                     <li class="error-list__message">{{ error }}</li>

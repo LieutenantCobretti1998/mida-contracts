@@ -6,7 +6,7 @@
 
 {% block content_part %}
     <section class="categories">
-        <h1 class="header">Categories</h1>
+        <h1 class="header">Kategoriyalar</h1>
         <div class="category-search">
             {{ form.category.label(for='default_input') }}
             {{ form.category(id='default_input') }}
@@ -22,6 +22,7 @@
         const edit_form = '{{ update_form.category }}';
         let delete_url_base = "{{ url_for('api_categories.delete_category', category_id = 0) }}";
         delete_url_base = delete_url_base.replace(/\/0$/, "/");
+        console.log(delete_url_base)
 
         let edit_url_base = "{{ url_for('parameters.edit_category', category_id = 0) }}";
         edit_url_base = edit_url_base.replace(/\/0$/, "/");

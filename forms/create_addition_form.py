@@ -21,4 +21,4 @@ class CreateAddition(FlaskForm):
                                                        FileAllowed(["pdf"], pdf_files_only)]
                              )
     contract_id = HiddenField("contract_id")
-    save = SubmitField('save')
+    save = SubmitField('Saxla')
