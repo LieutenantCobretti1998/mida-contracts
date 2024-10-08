@@ -7,11 +7,11 @@ from forms.custom_validators import *
 
 
 class EditAdditionForm(CreateAddition):
-    addition_date = DateField('date', validators=[Optional()])
-    addition_number = StringField('addition number', validators=[Optional()])
-    addition_amount = DecimalField("amount", validators=[Optional(),
+    addition_date = DateField('Tarix', validators=[Optional()])
+    addition_number = StringField('Əlavə nömrəsi', validators=[Optional()])
+    addition_amount = DecimalField("Məbləğ", validators=[Optional(),
                                                     NumberRange(min=1, max=1000000000, message=amount_error_message)]
                               )
-    pdf_file_act = FileField("Upload pdf", validators=[Optional(),
-                                                       FileAllowed(["pdf"], pdf_files_only)]
+    pdf_file_act = FileField("Fayl yüklə", validators=[Optional(),
+                                                       FileAllowed(["pdf", "gif", "png", "jpeg", "jpg"], selected_files_only)]
                              )

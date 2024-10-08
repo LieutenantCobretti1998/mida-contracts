@@ -4,10 +4,9 @@ from configuration import *
 from flask_migrate import Migrate
 from database.db_init import db
 from extensions import login_manager
-
-
+from flask_wtf.csrf import CSRFProtect
+csrf = CSRFProtect()
 # Initialization of the app
-
 
 def create_app() -> Flask:
     app = Flask(__name__)
@@ -18,7 +17,7 @@ def create_app() -> Flask:
     app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
     app.config["UPLOAD_FOLDER_ACTS"] = UPLOAD_FOLDER_ACTS
     app.config["UPLOAD_FOLDER_ADDITIONS"] = UPLOAD_FOLDER_ADDITIONS
-    app.config["MAX_CONTENT_LENGTH"] = 50 * 1000 * 1000
+    app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024
     from views.login import login_bp
     app.register_blueprint(login_bp)
     from views.dashboard import home_bp
@@ -56,6 +55,7 @@ def create_app() -> Flask:
     login_manager.login_view = "login.login"
     migrate = Migrate()
     migrate.init_app(app, db, render_as_batch=True)
+    csrf.init_app(app)
     with app.app_context():
         db.create_all()
     return app

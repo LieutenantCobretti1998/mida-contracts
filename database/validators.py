@@ -145,6 +145,7 @@ class SearchEngine(ValidatorWrapper):
 
     def search_company_with_contract(self) -> Contract | None:
         result = self.db_session.query(Contract).join(Companies).filter(Contract.id == self.search).first()
+        print(f"result: {result} and remained amount: {result.remained_amount}")
         if result:
             return result
         else:
@@ -683,8 +684,8 @@ class EditCompany(EditContract):
                 else:
                     continue
             except DBAPIError:
-                return False, "Verilənlər bazasında xəta baş verdi. Lütfən, sonra yenidən cəhd edin"
-        return True, "Müqavilə uğurla yeniləndi"
+                return False, "Verilənlər bazasında xəta baş verdi."
+        return True, "Şirkətin məlumatları uğurla yeniləndi"
 
 
 class ActsManager(ValidatorWrapper):
@@ -864,6 +865,33 @@ class ActsSearchEngine(SearchEngine):
         else:
             raise NoResultFound
 
+    def recalculate_contract_amount(self, contract_id: int, act_id: int, new_amount: float) -> None:
+        """
+        :param act_id: int
+        :param contract_id: int
+        :param new_amount: float
+        :return:
+        The main purpose of this method is recalculate the remained amount of the contract with the new act's amount
+        """
+        contract = self.db_session.query(Contract).filter_by(id=contract_id).first()
+        related_acts_amount = self.db_session.query(func.sum(Acts.amount)).filter_by(contract_id=contract.id).scalar()
+        print(related_acts_amount)
+        if contract:
+            try:
+                related_acts_amount = self.db_session.query(func.sum(Acts.amount)).filter(Acts.contract_id == contract.id, Acts.id != act_id).scalar()
+                print(related_acts_amount)
+                new_remained_amount = contract.amount - related_acts_amount - new_amount
+                if new_remained_amount < 0:
+                    raise ValueError(related_acts_amount)
+                contract.remained_amount = new_remained_amount
+            except DBAPIError:
+                raise DBAPIError
+            except OperationalError:
+                raise OperationalError
+        else:
+            raise NoResultFound
+
+
 
 class EditAct(EditContract):
     def __init__(self, db_session: Session, act_id: int):
@@ -903,7 +931,7 @@ class EditAct(EditContract):
         """
         act_to_update = self.db_session.query(Acts).filter_by(id=self.act_id).first()
         if not act_to_update:
-            return False, f"Act was not found in database"
+            return False, "Akt verilənlər bazasında tapılmadı"
         act_to_update_dict = {column.name: getattr(act_to_update, column.name) for column in
                               act_to_update.__table__.columns}
         for key, value in changes.items():
@@ -915,7 +943,7 @@ class EditAct(EditContract):
                             setattr(act_to_update, key, new_pdf_path)
                             pdf_file.save(new_pdf_path)
                         except FileNotFoundError:
-                            return False, "There is the file path problem. It was corrupted or not existed."
+                            return False, "Fayl yolunda problem var"
                     elif key == "contract_id":
                         try:
                             setattr(act_to_update, key, value)
@@ -925,20 +953,20 @@ class EditAct(EditContract):
 
                             self.change_amount(old_contract, value, new_act_amount, old_act_amount)
                         except NoResultFound:
-                            return False, "There is no such contract in db."
+                            return False, "Belə müqavilə yoxdur"
                         except ValueError:
-                            return False, "The contract's you want to link the act is smaller than act's amount."
+                            return False, "Aktı bağlamaq istədiyiniz müqavilə aktın məbləğindən kiçikdir."
                         except (DBAPIError, OperationalError):
                             self.db_session.rollback()
-                            return False, "An error occurred with the database. Please try again later"
+                            return False, "Verilənlər bazasında xəta baş verdi."
                     else:
                         setattr(act_to_update, key, value)
                 else:
                     continue
             except sqlalchemy.exc.DBAPIError:
                 self.db_session.rollback()
-                return False, "An error occurred with the database. Please try again later"
-        return True, "The act was updated successfully"
+                return False, "Verilənlər bazasında xəta baş verdi."
+        return True, "Akt uğurla yeniləndi."
 
 
 class CategoriesManager(ValidatorWrapper):
@@ -1339,13 +1367,12 @@ class DashBoard(ValidatorWrapper):
         :return: dict
         Get card information api for the tables in dashboard
         """
-        percentage = PERCENTAGE_AMOUNT
         contracts = self.db_session.query(Contract,
                                           (cast(Contract.remained_amount, Float) / cast(Contract.amount, Float) * 100)
                                           .label('percentage_remained')).order_by(Contract.remained_amount.asc()).all()
         filtered_contracts = []
         for contract, remained_amount in contracts:
-            if remained_amount <= PERCENTAGE_AMOUNT:
+            if remained_amount <= float(PERCENTAGE_AMOUNT):
                 filtered_contracts.append(contract)
             continue
         total_count = len(filtered_contracts)

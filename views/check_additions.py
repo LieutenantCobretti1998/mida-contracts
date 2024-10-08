@@ -69,7 +69,7 @@ def update_addition(addition_id):
             except NoResultFound:
                 abort(404)
             except (DBAPIError, OperationalError):
-                flash("Something went wrong in the database", "error")
+                flash("Verilənlər bazasında xəta baş verdi", "error")
                 return render_template('edit_act.html', form=form, addition_id=addition_id, search_result=original_data)
         file = form.pdf_file_act.data
         filename = ""
@@ -95,7 +95,7 @@ def update_addition(addition_id):
                                    search_result=original_data,
                                    )
     else:
-        flash("Validation Error. Please check all fields", "error")
+        flash("Doğrulama Xətası. Bütün sahələri yoxlayın", "error")
         return render_template('edit_addition.html', form=form, addition_id=addition_id,
                                search_result=original_data,
                                )
@@ -133,7 +133,7 @@ def delete_addition(addition_id):
                 'status': 'error',
             }), 500
     except ValueError:
-        flash("Ümumi məbləğ mənfi ola bilməz. Bunu etmək üçün bəzi aktları silin", "warning")
+        flash("Ümumi məbləğ mənfi ola bilməz. Bəzi aktları silin", "warning")
         return jsonify({
             'status': 'error',
         }), 500

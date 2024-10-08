@@ -70,7 +70,7 @@ def update_contract(contract_id):
     selected_category_id = form.categories.data
     valid_category = next((cat for cat in categories if cat.id == selected_category_id), None)
     if valid_category is None:
-        flash('anlış kateqoriya seçilib. Zəhmət olmasa düzgün seçimi edin', 'error')
+        flash('Anlış kateqoriya seçilib. Zəhmət olmasa düzgün seçimi edin', 'error')
         return redirect(url_for('all_contracts.edit_contract', contract_id=contract_id))
     if form.validate_on_submit():
         new_remained_amount = None
@@ -114,7 +114,8 @@ def update_contract(contract_id):
                 return render_template('edit_contract.html', form=form, contract_id=contract_id,
                                        search_result=original_data,
                                        )
-
+        print(f"new_remained_amount:{new_remained_amount}")
+        print(f"original_data.remained_amount:{original_data.remained_amount}")
         data_dict = dict(
             company_name=filter_string_fields(
                 form.company.data) if form.company.data else original_data.company.company_name,
@@ -123,7 +124,7 @@ def update_contract(contract_id):
                 form.contract_number.data) if form.contract_number.data else original_data.contract_number,
             date=form.start_date.data if form.start_date.data else original_data.date,
             amount=new_amount if new_amount else original_data.amount,
-            remained_amount=new_remained_amount if not None else original_data.remained_amount,
+            remained_amount=new_remained_amount if new_remained_amount else original_data.remained_amount,
             adv_payer=True if form.is_adv_payer.data else False,
             pdf_file_path=filename if form.pdf_file.data else None,
             category_id=form.categories.data if form.categories.data else original_data.category_id,

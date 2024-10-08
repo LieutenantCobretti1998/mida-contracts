@@ -17,8 +17,8 @@ class CreateAct(FlaskForm):
                                       ])
     contracts_list = SelectField("Əlaqəli Müqavilələr", validators=[DataRequired(message=empty_field)],
                                     default="Choose the contract", validate_choice=False)
-    pdf_file_act = FileField("PDF Yüklə", validators=[FileRequired(message=empty_field),
-                                                   FileAllowed(["pdf"], pdf_files_only)]
+    pdf_file_act = FileField("Fayl Yüklə", validators=[FileRequired(message=empty_field),
+                                                      FileAllowed(["pdf", "gif", "png", "jpeg", "jpg"], selected_files_only)]
                          )
     contract_id = HiddenField("contract_id")
     save = SubmitField('Saxla')

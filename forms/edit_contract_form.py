@@ -28,7 +28,7 @@ class EditContractForm(CreateContractForm):
     categories = SelectField("Kategoriyalar", validate_choice=False, coerce=int,
                              validators=[Optional()])
 
-    pdf_file = FileField("PDF Fayl",validators=[Optional(),
-                                     FileAllowed(["pdf"], pdf_files_only)]
+    pdf_file = FileField("Fayl",validators=[Optional(),
+                                                FileAllowed(["pdf", "gif", "png", "jpeg", "jpg"], selected_files_only)]
                          )
     save = SubmitField("Save")

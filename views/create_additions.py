@@ -36,7 +36,7 @@ def save_addition():
         except NoResultFound:
             abort(404)
         except (DBAPIError, OperationalError):
-            flash("erilənlər bazasında xəta baş verdi", "error")
+            flash("Verilənlər bazasında xəta baş verdi", "error")
             return render_template('create_addition.html', form=form)
         try:
             file = form.pdf_file_act.data
@@ -56,7 +56,7 @@ def save_addition():
             return redirect(url_for('create_addition.create_addition'))
 
         except OperationalError:
-            flash("Xəta baş verdi. əməliyyat bərpa edildi", "error")
+            flash("Xəta baş verdi.Əməliyyat bərpa edildi", "error")
             db.session.rollback()
             return render_template('create_addition.html', form=form)
     else:

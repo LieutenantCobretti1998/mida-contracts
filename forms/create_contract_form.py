@@ -30,7 +30,7 @@ class CreateContractForm(FlaskForm):
 
     categories = SelectField("Kategoriyalar", validate_choice=False, coerce=int, validators=[DataRequired(message=empty_field)])
 
-    pdf_file = FileField("PDF Yüklə", validators=[FileRequired(message=empty_field),
-                                                   FileAllowed(["pdf"], pdf_files_only)]
+    pdf_file = FileField("Fayl Yüklə", validators=[FileRequired(message=empty_field),
+                                                  FileAllowed(["pdf", "gif", "png", "jpeg", "jpg"], selected_files_only)]
                          )
     save = SubmitField('Saxla')

@@ -212,7 +212,7 @@ function updateContractDetails(data) {
                             const button = document.createElement("button");
                             button.classList.add("pdf-btn");
                             button.type = "button";
-                            button.textContent = "View";
+                            button.textContent = "Bax";
                             button.addEventListener("click", function (event) {
                                 window.open(`/contracts/preview_pdf/${data["id"]}`)
                             });

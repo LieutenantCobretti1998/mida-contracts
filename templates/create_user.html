@@ -18,7 +18,7 @@
                     </td>
                     <td>
                         <div>
-                            {{ form.username(id="default_input", class="table__input rounded", placeholder="username") }}
+                            {{ form.username(id="default_input", class="table__input rounded", placeholder="İstifadəçi") }}
                             <ul class="error-list">
                             {% for error in form.username.errors %}
                                 <li class="error-list__message">{{ error }}</li>
@@ -33,7 +33,7 @@
                     </td>
                     <td>
                         <div>
-                            {{ form.password(class="table__input rounded", placeholder="password")  }}
+                            {{ form.password(class="table__input rounded", placeholder="Şifrə")  }}
                             <ul class="error-list">
                             {% for error in form.password.errors %}
                                 <li class="error-list__message">{{ error }}</li>

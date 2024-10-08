@@ -52,20 +52,19 @@ def update_act(act_id):
     edit_engine = EditAct(db.session, act_id)
     original_data = search_engine.search_act()
     form = EditActForm()
+
     if form.validate_on_submit():
-        print("hello")
         if form.act_amount.data and form.contract_id.data == original_data.contract_id:
             try:
-                difference = check_act_amount_difference(form.act_amount.data, original_data.amount)
-                check_amount(form.act_amount.data, original_data.amount)
-                search_engine.decrease_or_increase_difference_amount(form.contract_id.data, difference)
+                search_engine.recalculate_contract_amount(form.contract_id.data, form.act_amount.data, act_id)
             except NoResultFound:
                 abort(404)
             except (DBAPIError, OperationalError):
-                flash("Something went wrong in the database", "error")
+                flash("Verilənlər bazasında xəta baş verdi", "error")
                 return render_template('edit_act.html', form=form, act_id=act_id, search_result=original_data)
             except ValueError:
-                flash("Act's amount is bigger than the total contract's amount. Please check act amount field", "warning")
+
+                flash("Aktın məbləği müqavilənin ümumi məbləğindən böyükdür. Zəhmət olmasa akt məbləği sahəsini yoxlayın", "warning")
                 return render_template('edit_act.html', form=form, act_id=act_id, search_result=original_data)
         file = form.pdf_file_act.data
         filename = ""
@@ -90,7 +89,7 @@ def update_act(act_id):
                                    search_result=original_data,
                                    )
     else:
-        flash("Validation Error. Please check all fields", "error")
+        flash("Doğrulama xətası. Bütün sahələri yoxlayın", "error")
         return render_template('edit_act.html', form=form, act_id=act_id, search_result=original_data,
                                )
 

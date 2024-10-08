@@ -7,12 +7,12 @@
 {% block content_part %}
     <table  class="table">
             <caption id="caption">
-                <h1>Act's Overview</h1>
+                <h1>Akta baxış</h1>
             </caption>
             <tbody class="main-table-part">
                 <tr>
                     <td class="table__text">
-                        <p>Company name</p>
+                        <p>Şirkətin adı</p>
                     </td>
                     <td>
                         <p>{{ search_result.contract.company.company_name }}</p>
@@ -20,7 +20,7 @@
                 </tr>
                 <tr>
                     <td class="table__text">
-                       <p>Contract number</p>
+                       <p>Kontrakt nömrəsi</p>
                     </td>
                     <td>
                        <p>{{ search_result.contract.contract_number }}</p>
@@ -29,7 +29,7 @@
 
                 <tr>
                     <td class="table__text">
-                         <p>Act Number</p>
+                         <p>Akt Nömrəsi</p>
                     </td>
 
                     <td>
@@ -39,7 +39,7 @@
 
                 <tr>
                     <td class="table__text">
-                       <p>Amount</p>
+                       <p>Məbləğ</p>
                     </td>
 
                     <td>
@@ -49,7 +49,7 @@
 
                 <tr>
                     <td class="table__text">
-                      <p>Date</p>
+                      <p>Tarix</p>
                     </td>
 
                     <td>
@@ -59,11 +59,11 @@
 
                 <tr>
                     <td>
-                        <p>PDF</p>
+                        <p>Fayl</p>
                     </td>
 
                     <td id="pdf">
-                        <button onclick="window.open('{{ url_for('all_acts.preview_pdf', act_id = act_id) }}')"  type="button" class="pdf-btn">View</button>
+                        <button onclick="window.open('{{ url_for('all_acts.preview_pdf', act_id = act_id) }}')"  type="button" class="pdf-btn">Bax</button>
                     </td>
                 </tr>
 
@@ -71,7 +71,7 @@
                     <tr>
                         <td></td>
                         <td id="edit">
-                             <button onclick="window.location.href='{{ url_for('all_acts.edit_act', act_id = act_id) }}'"   type="button" class="edit-btn">Edit</button>
+                             <button onclick="window.location.href='{{ url_for('all_acts.edit_act', act_id = act_id) }}'"   type="button" class="edit-btn">Redakta et</button>
                         </td>
                     </tr>
                 {% endif %}

@@ -7,19 +7,19 @@ from forms.custom_validators import *
 
 
 class EditActForm(CreateAct):
-    act_date = DateField('date', validators=[Optional()])
-    act_number = StringField('act number', validators=[Optional()])
-    act_amount = DecimalField("amount", validators=[Optional(),
+    act_date = DateField('Tarix', validators=[Optional()])
+    act_number = StringField('Akt nömrəsi', validators=[Optional()])
+    act_amount = DecimalField("Məbləğ", validators=[Optional(),
                                                     NumberRange(min=1, max=1000000000, message=amount_error_message)]
                               )
-    company_name = StringField("select a company",
+    company_name = StringField("Şirkət seçin",
                                validators=[
                                            Length(min=1, max=16, message=symbol_error_message),
                                            ])
-    contracts_list = SelectField("related contracts",
+    contracts_list = SelectField("Əlaqəli müqavilələr",
                                  default="Choose the contract", validate_choice=False)
-    pdf_file_act = FileField("Upload pdf", validators=[Optional(),
-                                                       FileAllowed(["pdf"], pdf_files_only)]
+    pdf_file_act = FileField("Fayl Yüklə", validators=[Optional(),
+                                                       FileAllowed(["pdf", "gif", "png", "jpeg", "jpg"], selected_files_only)]
                              )
     contract_id = HiddenField("contract_id")
-    save = SubmitField('save')
+    save = SubmitField('saxla')

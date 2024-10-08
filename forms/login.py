@@ -6,7 +6,7 @@ from forms.custom_validators import *
 
 
 class LoginForm(FlaskForm):
-    username = EmailField('İstifadəçi', validators=[DataRequired(message=empty_field), Length(min=1, max=20),
+    username = EmailField('İstifadəçi', validators=[DataRequired(message=empty_field), Length(min=1, max=40),
                                                   Email(message=user_error_message)])
     password = PasswordField('Şifrə', validators=[DataRequired(message=empty_field), Length(min=1, max=8)])
     submit = SubmitField('Daxil ol')
