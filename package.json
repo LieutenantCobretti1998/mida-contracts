@@ -6,7 +6,8 @@
     "gridjs": "^6.2.0"
   },
   "scripts": {
-    "watch-other": "webpack --config webpack.config.js"
+    "dev": "webpack --mode development --config webpack.config.js",
+    "build": "webpack --mode production --config webpack.config.js"
   },
   "devDependencies": {
     "css-loader": "^7.1.2",

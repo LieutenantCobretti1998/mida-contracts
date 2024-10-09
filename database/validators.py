@@ -265,9 +265,18 @@ class SearchEngine(ValidatorWrapper):
             return contracts
         return []
 
-    def search_related_contract_api(self) -> Union[dict[any] | dict[None]]:
+    def search_related_contract_api(self, act_id: int = None) -> dict[str, InstrumentedAttribute | None] | dict[Any, Any]:
+        """
+        :param act_id: int
+        :return: Union[dict[any] | dict[None]]
+        """
         contract = self.db_session.query(Contract).filter_by(id=self.search).first()
         if contract:
+            new_remained_amount = None
+            if act_id:
+                related_acts_amount = self.db_session.query(func.sum(Acts.amount)).filter(Acts.contract_id == contract.id,
+                                                                                          Acts.id != act_id).scalar() or 0
+                new_remained_amount = contract.amount - related_acts_amount
             contract = dict(
                 id=contract.id,
                 contract_number=contract.contract_number,
@@ -275,7 +284,8 @@ class SearchEngine(ValidatorWrapper):
                 amount=contract.amount,
                 remained_amount=contract.remained_amount,
                 adv_payer=contract.adv_payer,
-                pdf_file=None
+                pdf_file=None,
+                new_remained_amount=new_remained_amount,
             )
             return contract
         return {}
@@ -556,6 +566,22 @@ class CompanySearchEngine(SearchEngine):
             return result
         except NoResultFound:
             raise NoResultFound
+
+    def is_only_act_api(self, contract_id: int) -> bool:
+        """
+        :param contract_id: int
+        :return: bool
+        Show if it is the only act in the system
+        """
+        other_acts = self.db_session.query(Contract).filter_by(id=contract_id).first().acts
+        if other_acts:
+            print(other_acts)
+            if len(other_acts) > 1:
+                return False
+            else:
+                return True
+        else:
+            return True
 
     def get_all_results_api(self, per_page: int, offset: int, sort_dir: str, mapping: tuple) -> (
             tuple)[list[dict[str, InstrumentedAttribute | Any]], int]:

@@ -38,7 +38,8 @@ def edit_act(act_id):
         return render_template("edit_act.html",
                                search_result=search_result,
                                act_id=act_id,
-                               form=form)
+                               form=form,
+                                )
     except NoResultFound:
         abort(404)
 

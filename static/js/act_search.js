@@ -76,8 +76,7 @@ async function getRelatedContracts(query) {
  * @return {Promise<void>}
  */
 async function getContractInfo(query) {
-    const route = `/api/all_contracts/related_contract/${query}`;
-
+    const route = type_of_page === "acts-edit" ?`/api/all_contracts/related_contract/${query}/${act_id}` : `/api/all_contracts/related_contract/${query}`;
     try {
         const response = await fetch(route);
         if (!response.ok) {
@@ -92,9 +91,20 @@ async function getContractInfo(query) {
 
 /**
  *
+ * @param contractId
+ * @returns {Promise<any>}
+ */
+async function getActsCountForContract(contractId) {
+    return fetch(`/api/all_contracts/${contractId}/acts/count`)
+        .then(response => response.json())
+        .then(data => data.count);
+}
+
+/**
+ *
  * @param data{Object}
  * @param data_list{HTMLDataListElement}
- * @return {string}
+ * @returns {string}
  */
 function updateList(data, data_list) {
     data_list.innerHTML = "";
@@ -132,7 +142,7 @@ function updateContractList(data, contracts_list) {
         const act_amount_el = document.querySelector("#act_amount");
         const addition_amount_el = document.querySelector("#addition_amount");
         const remained_amount_el = document.querySelector("#remained_amount");
-        getContractInfo(data_id).then(data => {
+        Promise.all([getContractInfo(data_id), getActsCountForContract(data_id)]).then(([data, is_one_act]) => {
     if (data && type_of_page === "acts") {
         updateContractDetails(data);
         act_amount_el.oninput = () => {
@@ -142,9 +152,16 @@ function updateContractList(data, contracts_list) {
     else if (data && type_of_page === "acts-edit") {
         updateContractDetails(data);
         const total_contract_amount_el = document.querySelector("#amount");
-        act_amount_el.oninput = () => {
-            calculateRemainedMoneyEditMode(remained_amount_el, data.remained_amount, act_amount_el, total_contract_amount_el, data.amount);
-        };
+        if(is_one_act) {
+            act_amount_el.oninput = () => {
+                 calculateRemainedMoney(remained_amount_el, data.amount, act_amount_el);
+            };
+        }
+        else {
+            act_amount_el.oninput = () => {
+                calculateRemainedMoneyEditMode(remained_amount_el, data.new_remained_amount, act_amount_el, data.remained_amount);
+            };
+        }
     }
     else if (data && type_of_page === "additions-edit") {
         updateContractDetails(data);
@@ -187,6 +204,9 @@ function updateContractList(data, contracts_list) {
  */
 function updateContractDetails(data) {
     for(const key in data) {
+        if(key === "new_remained_amount") {
+            continue;
+        }
         if(key === "id") {
             const contract_id = document.getElementById("contract_id");
             contract_id.value = data["id"];
@@ -244,8 +264,9 @@ function calculateRemainedMoney(remained_amount_el, remain_contract_amount, act_
  * @param remained_amount_el
  * @param remain_contract_amount
  * @param act_amount_el
+ * @param old_remained_amount
  */
-function calculateRemainedMoneyEditMode(remained_amount_el, remain_contract_amount, act_amount_el) {
+function calculateRemainedMoneyEditMode(remained_amount_el, remain_contract_amount, act_amount_el, old_remained_amount) {
     // let remained_amount;
     // if (act_amount_el.value === "") {
     //      remained_amount_el.innerText = Number.parseFloat(remain_contract_amount).toFixed(2);
@@ -266,7 +287,7 @@ function calculateRemainedMoneyEditMode(remained_amount_el, remain_contract_amou
     // }
     // remained_amount_el.innerText = remained_amount.toFixed(2);
     if (act_amount_el.value === "") {
-         remained_amount_el.innerText = Number.parseFloat(remain_contract_amount).toFixed(2);
+         remained_amount_el.innerText = Number.parseFloat(old_remained_amount).toFixed(2);
         return;
     }
     const remained_amount = Number.parseFloat(remain_contract_amount) - Number.parseFloat(act_amount_el.value);
