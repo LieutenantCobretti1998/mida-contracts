@@ -54,17 +54,19 @@ def update_act(act_id):
     form = EditActForm()
 
     if form.validate_on_submit():
-        if form.act_amount.data and form.contract_id.data == original_data.contract_id:
+        if form.act_amount.data and int(form.contract_id.data) == original_data.contract_id:
             try:
-                search_engine.recalculate_contract_amount(form.contract_id.data, form.act_amount.data, act_id)
+                search_engine.recalculate_contract_amount(form.contract_id.data, int(act_id), form.act_amount.data)
+                db.session.commit()
             except NoResultFound:
                 abort(404)
             except (DBAPIError, OperationalError):
                 flash("Verilənlər bazasında xəta baş verdi", "error")
+                db.session.rollback()
                 return render_template('edit_act.html', form=form, act_id=act_id, search_result=original_data)
             except ValueError:
-
                 flash("Aktın məbləği müqavilənin ümumi məbləğindən böyükdür. Zəhmət olmasa akt məbləği sahəsini yoxlayın", "warning")
+                db.session.rollback()
                 return render_template('edit_act.html', form=form, act_id=act_id, search_result=original_data)
         file = form.pdf_file_act.data
         filename = ""

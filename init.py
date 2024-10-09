@@ -13,7 +13,7 @@ def create_app() -> Flask:
     app.config["WTF_CSRF_SECRET_KEY"] = WTF_CSRF_SECRET_KEY
     app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=8)
     app.config["SECRET_KEY"] = APP_SECRET_KEY
-    app.config["SQLALCHEMY_DATABASE_URI"] = TEST_DB_URI
+    app.config["SQLALCHEMY_DATABASE_URI"] = PRODUCTION_DB_URI
     app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
     app.config["UPLOAD_FOLDER_ACTS"] = UPLOAD_FOLDER_ACTS
     app.config["UPLOAD_FOLDER_ADDITIONS"] = UPLOAD_FOLDER_ADDITIONS

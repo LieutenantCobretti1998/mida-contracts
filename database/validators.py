@@ -145,7 +145,6 @@ class SearchEngine(ValidatorWrapper):
 
     def search_company_with_contract(self) -> Contract | None:
         result = self.db_session.query(Contract).join(Companies).filter(Contract.id == self.search).first()
-        print(f"result: {result} and remained amount: {result.remained_amount}")
         if result:
             return result
         else:
@@ -831,39 +830,39 @@ class ActsSearchEngine(SearchEngine):
         else:
             raise NoResultFound
 
-    def decrease_or_increase_difference_amount(self, contract_id: int, remained_amount: float) -> None:
-        """
-        :param contract_id:
-        :param remained_amount:
-        :return None:
-        """
-        contract = self.db_session.query(Contract).filter_by(id=contract_id).first()
-        if contract:
-            try:
-                contract.remained_amount -= remained_amount
-            except DBAPIError:
-                raise DBAPIError
-            except OperationalError:
-                raise OperationalError
-        else:
-            raise NoResultFound
+    # def decrease_or_increase_difference_amount(self, contract_id: int, remained_amount: float) -> None:
+    #     """
+    #     :param contract_id:
+    #     :param remained_amount:
+    #     :return None:
+    #     """
+    #     contract = self.db_session.query(Contract).filter_by(id=contract_id).first()
+    #     if contract:
+    #         try:
+    #             contract.remained_amount -= remained_amount
+    #         except DBAPIError:
+    #             raise DBAPIError
+    #         except OperationalError:
+    #             raise OperationalError
+    #     else:
+    #         raise NoResultFound
 
-    def add_amount(self, contract_id: int, difference: float):
-        """
-        :param contract_id:
-        :param difference:
-        :return:
-        """
-        contract = self.db_session.query(Contract).filter_by(id=contract_id).first()
-        if contract:
-            try:
-                contract.remained_amount -= difference
-            except DBAPIError:
-                raise DBAPIError
-            except OperationalError:
-                raise OperationalError
-        else:
-            raise NoResultFound
+    # def add_amount(self, contract_id: int, difference: float):
+    #     """
+    #     :param contract_id:
+    #     :param difference:
+    #     :return:
+    #     """
+    #     contract = self.db_session.query(Contract).filter_by(id=contract_id).first()
+    #     if contract:
+    #         try:
+    #             contract.remained_amount -= difference
+    #         except DBAPIError:
+    #             raise DBAPIError
+    #         except OperationalError:
+    #             raise OperationalError
+    #     else:
+    #         raise NoResultFound
 
     def recalculate_contract_amount(self, contract_id: int, act_id: int, new_amount: float) -> None:
         """
@@ -874,12 +873,9 @@ class ActsSearchEngine(SearchEngine):
         The main purpose of this method is recalculate the remained amount of the contract with the new act's amount
         """
         contract = self.db_session.query(Contract).filter_by(id=contract_id).first()
-        related_acts_amount = self.db_session.query(func.sum(Acts.amount)).filter_by(contract_id=contract.id).scalar()
-        print(related_acts_amount)
         if contract:
             try:
-                related_acts_amount = self.db_session.query(func.sum(Acts.amount)).filter(Acts.contract_id == contract.id, Acts.id != act_id).scalar()
-                print(related_acts_amount)
+                related_acts_amount = self.db_session.query(func.sum(Acts.amount)).filter(Acts.contract_id == contract.id, Acts.id != act_id).scalar() or 0
                 new_remained_amount = contract.amount - related_acts_amount - new_amount
                 if new_remained_amount < 0:
                     raise ValueError(related_acts_amount)
@@ -901,6 +897,7 @@ class EditAct(EditContract):
     def change_amount(self, old_contract_id: int, new_contract_id: int, act_amount: float,
                       old_act_amount: float) -> None:
         """
+        :param old_act_amount:
         :param old_contract_id:
         :param new_contract_id:
         :param act_amount:
@@ -944,12 +941,13 @@ class EditAct(EditContract):
                             pdf_file.save(new_pdf_path)
                         except FileNotFoundError:
                             return False, "Fayl yolunda problem var"
-                    elif key == "contract_id":
+                    elif key == "contract_id" and int(value) != act_to_update_dict[key]:
                         try:
                             setattr(act_to_update, key, value)
                             old_contract = act_to_update_dict["contract_id"]
                             old_act_amount = act_to_update_dict["amount"]
                             new_act_amount = changes["amount"]
+
 
                             self.change_amount(old_contract, value, new_act_amount, old_act_amount)
                         except NoResultFound:
@@ -1406,7 +1404,6 @@ class UserManager(ValidatorWrapper):
     def delete_user(self, user_id: str):
         try:
             query = self.db_session.query(User).filter(User.id == user_id).first()
-            print(query.username)
             if query:
                 self.db_session.delete(query)
             else:
