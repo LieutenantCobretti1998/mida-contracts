@@ -23,6 +23,10 @@ def upgrade():
                existing_type=sa.VARCHAR(length=20),
                type_=sa.VARCHAR(length=40),
                existing_nullable=False)
+        batch_op.alter_column('password',
+                              existing_type=sa.VARCHAR(),
+                              type_=sa.VARCHAR(length=8),
+                              existing_nullable=False)
 
     # ### end Alembic commands ###
 
@@ -34,5 +38,9 @@ def downgrade():
                existing_type=sa.VARCHAR(length=40),
                type_=sa.VARCHAR(length=20),
                existing_nullable=False)
+        batch_op.alter_column('password',
+                              existing_type=sa.VARCHAR(length=8),
+                              type_=sa.VARCHAR(),
+                              existing_nullable=False)
 
     # ### end Alembic commands ###
