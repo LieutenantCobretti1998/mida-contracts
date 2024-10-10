@@ -96,7 +96,6 @@ def get_search(search):
 def get_search_for_act_contract_edit_mode(search, act_id):
     search_engine = CompanySearchEngine(db.session, search)
     response = search_engine.search_related_contract_api(act_id)
-    print(response)
     return jsonify(response)
 
 @api_contracts_bp.route('/all_contracts/related_contract/<string:search>', methods=['GET'])
@@ -111,7 +110,7 @@ def get_search_for_act_contract(search):
 def get_count_for_act_contract(contract_id):
     search_engine = CompanySearchEngine(db.session)
     response = search_engine.is_only_act_api(contract_id)
-    print(response)
+
     return jsonify({"count": response})
 
 # Here now we will have our company's api for the table

@@ -114,8 +114,7 @@ def update_contract(contract_id):
                 return render_template('edit_contract.html', form=form, contract_id=contract_id,
                                        search_result=original_data,
                                        )
-        print(f"new_remained_amount:{new_remained_amount}")
-        print(f"original_data.remained_amount:{original_data.remained_amount}")
+
         data_dict = dict(
             company_name=filter_string_fields(
                 form.company.data) if form.company.data else original_data.company.company_name,

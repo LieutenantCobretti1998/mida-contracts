@@ -575,7 +575,6 @@ class CompanySearchEngine(SearchEngine):
         """
         other_acts = self.db_session.query(Contract).filter_by(id=contract_id).first().acts
         if other_acts:
-            print(other_acts)
             if len(other_acts) > 1:
                 return False
             else:

@@ -84,7 +84,7 @@ def update_addition(addition_id):
         )
         success, message = edit_engine.update_data(data_dict, form.pdf_file_act.data)
         if success:
-            print(form.contract_id)
+
             db.session.commit()
             flash(message, "success")
             return redirect(url_for('all_contracts.get_contract', contract_id=form.contract_id.data))
