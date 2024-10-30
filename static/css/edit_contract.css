@@ -88,6 +88,10 @@ body {
   border-radius: 0.35rem;
 }
 
+.comments {
+  padding: 2rem;
+}
+
 .focused {
   scale: 1.05;
 }
@@ -161,13 +165,16 @@ body {
   width: 0; /* Start with no fill */
 }
 
-#is_adv_payer {
+#is_adv_payer,
+#status {
   margin: 10px;
 }
-#is_adv_payer > li {
+#is_adv_payer > li,
+#status > li {
   list-style: none;
 }
-#is_adv_payer > li:not(:last-child) {
+#is_adv_payer > li:not(:last-child),
+#status > li:not(:last-child) {
   margin-bottom: 1.2rem;
 }
 

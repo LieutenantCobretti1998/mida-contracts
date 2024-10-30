@@ -7,7 +7,9 @@ const contract_end_date_grid = new Grid({
             "next": "Növbəti️",
             "showing": "Göstər",
             "results": "Nəticələr"
-        }
+        },
+        noRecordsFound: "Uyğun qeydlər tapılmadı",
+        error: "Məlumatların çıxarılması zamanı xəta baş verdi"
     },
     style: {
         table: {

@@ -88,6 +88,10 @@ body {
   border-radius: 0.35rem;
 }
 
+.comments {
+  padding: 2rem;
+}
+
 .focused {
   scale: 1.05;
 }

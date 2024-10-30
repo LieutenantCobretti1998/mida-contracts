@@ -5,10 +5,11 @@
 {% block content_part %}
     <section class="main-container">
         <h1>Statistika</h1>
+
         <section class="statistics">
             <div class="contract_amount">
                 <div class="option-name">
-                    <p>Kontratlar</p>
+                    <p>Müqavilələr</p>
                 </div>
                 <div class="amount">
                     <em>{{ results.get('total_contracts') }}</em>
@@ -16,7 +17,7 @@
             </div>
             <div class="companies">
                  <div class="option-name">
-                    <p>Müqavilələr</p>
+                    <p>Şirkətlər</p>
                 </div>
                 <div class="amount">
                     <em>{{ results.get('total_companies') }}</em>
@@ -48,4 +49,5 @@
 {% endblock content_part %}
 {% block javascript %}
     <script src="{{ url_for('static', filename='js/tablesForDashboard.bundle.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dashboard_input.js') }}"></script>
 {% endblock javascript %}

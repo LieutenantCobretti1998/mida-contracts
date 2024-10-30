@@ -56,6 +56,45 @@ body {
   align-self: center;
 }
 
+.company-search-container {
+  display: flex;
+  justify-items: center;
+  align-items: center;
+  gap: 1.2rem;
+  flex-direction: column;
+}
+.company-search-container__search-input {
+  align-self: center;
+  display: flex;
+  gap: 1.2rem;
+  justify-items: center;
+  align-items: center;
+}
+
+#export-csv {
+  border: none;
+  width: 150px;
+  height: 50px;
+  background-color: green;
+  color: white;
+  border-radius: 1rem;
+  transition: background-color 0.2s ease-in-out;
+}
+#export-csv:hover {
+  cursor: pointer;
+  background-color: darkgreen !important;
+}
+
+.hidden {
+  display: none;
+}
+
+#company-name {
+  height: 5rem;
+  padding-left: 1rem;
+  border-radius: 0.35rem;
+}
+
 .statistics {
   margin-left: 1vw;
   display: flex;

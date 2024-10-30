@@ -147,6 +147,22 @@
                 </tr>
 
                 <tr>
+                    <td class="table__text">
+                        {{ form.comments.label() }}
+                    </td>
+                    <td>
+                        <div>
+                            {{ form.comments(class="table__input rounded comments", placeholder=form.comments.label.text)  }}
+                            <ul class="error-list">
+                            {% for error in form.comments.errors %}
+                                <li class="error-list__message">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
                     <td></td>
                     <td id="td-save">
                         {{ form.save(class="save-btn") }}

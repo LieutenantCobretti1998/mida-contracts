@@ -6,7 +6,7 @@ login_password_error_message = "Zəhmət olmasa düzgün formada parol təqdim e
 user_error_message = "Zəhmət olmasa düzgün formada e-poçt yazın."
 symbol_error_message = "Zəhmət olmasa 1 və 16 simvol arasında bir giriş daxil edin."
 empty_field = "Bu sahə tələb olunur."
-empty_space_message = "Lütfən, təmiz boşluq yerinə dəyər daxil edin."
+empty_space_message = "Təmiz boşluq yerinə dəyər daxil edin."
 voen_number_enough_error = "Zəhmət olmasa voen nömrəsini 10 simvolla daxil edin."
 swift_number_enough_error = "Zəhmət olmasa, 8 və 11 simvol arasında olan Swift nömrəni daxil edin."
 voen_only_number_error = "Vöen yalnız rəqəmlərdən ibarət olmalıdır."
@@ -23,7 +23,7 @@ def check_voen(form, field) -> None:
 
 # White space check
 def whitespace_check(form, field) -> None:
-    if field.data.replace(" ", "") == "":
+    if field.data and field.data.strip() == "":
         raise ValidationError(empty_space_message)
 
 

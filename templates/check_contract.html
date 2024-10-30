@@ -28,7 +28,7 @@
 
                 <tr>
                     <td class="table__text">
-                         <p>Kontrakt Nömrəsi</p>
+                         <p>Müqavilə Nömrəsi</p>
                     </td>
 
                     <td>
@@ -78,11 +78,21 @@
 
                 <tr>
                     <td class="table__text">
-                        <p>Ədv ödəyicisi</p>
+                        <p>Ədv Ödəyicisi</p>
                     </td>
 
                     <td>
-                        <p>{% if search_result.adv_payer %} Yes {% else %} No {% endif %}</p>
+                        <p>{% if search_result.adv_payer %} Bəli {% else %} Xeyr {% endif %}</p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="table__text">
+                        <p>Status</p>
+                    </td>
+
+                    <td class="{% if search_result.is_expired %}active{% else %}expired{% endif %}">
+                        <p class="white-text">{% if search_result.is_expired %} Davam Edir {% else %} Bitib {% endif %}</p>
                     </td>
                 </tr>
 
@@ -95,6 +105,16 @@
                         <button onclick="window.open('{{ url_for('all_contracts.preview_pdf', contract_id = contract_id) }}')" type="button" class="pdf-btn">Bax</button>
                     </td>
                 </tr>
+                {% if search_result.comments %}
+                    <tr>
+                        <td class="table__text">
+                            <label for="comments">Əlavə Qeydlər</label>
+                        </td>
+                        <td>
+                            <textarea class="comments" id="comments" readonly>{{ search_result.comments }}</textarea>
+                        </td>
+                    </tr>
+                {% endif %}
                 {% if current_user.role == 'admin' or current_user.role == 'editor' %}
                     <tr>
                         <td></td>

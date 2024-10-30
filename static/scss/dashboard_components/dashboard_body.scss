@@ -10,6 +10,47 @@
   }
 }
 
+.company-search-container {
+  display: flex;
+  justify-items: center;
+  align-items: center;
+  gap: 1.2rem;
+  flex-direction: column;
+
+  &__search-input {
+    align-self: center;
+    display: flex;
+     gap: 1.2rem;
+    justify-items: center;
+    align-items: center;
+  }
+}
+
+#export-csv {
+  border: none;
+  width: 150px;
+  height: 50px;
+  background-color: $color-green;
+  color: white;
+  border-radius: 1rem;
+  transition: background-color .2s ease-in-out;
+
+  &:hover {
+    cursor: pointer;
+    background-color: $color-dark-green !important;
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+#company-name {
+  height: 5rem;
+  padding-left: 1rem;
+  border-radius: .35rem;
+}
+
 .statistics {
   margin-left: 1vw;
   display: flex;

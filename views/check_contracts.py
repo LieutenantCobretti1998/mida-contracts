@@ -125,7 +125,9 @@ def update_contract(contract_id):
             amount=new_amount if new_amount else original_data.amount,
             remained_amount=new_remained_amount if new_remained_amount else original_data.remained_amount,
             adv_payer=True if form.is_adv_payer.data else False,
+            is_expired = True if form.status.data else False,
             pdf_file_path=filename if form.pdf_file.data else None,
+            comments = form.comments.data if form.comments.data else original_data.comments,
             category_id=form.categories.data if form.categories.data else original_data.category_id,
             end_date=form.end_date.data if form.end_date.data else original_data.end_date
 

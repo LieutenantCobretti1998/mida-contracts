@@ -1,5 +1,5 @@
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import StringField, SubmitField, DateField, DecimalField, SelectField
+from wtforms import StringField, SubmitField, DateField, DecimalField, SelectField, TextAreaField, BooleanField
 from wtforms.validators import NumberRange, Length, Optional
 from forms.create_contract_form import CreateContractForm
 from forms.custom_validators import *
@@ -16,7 +16,7 @@ class EditContractForm(CreateContractForm):
         validators=[Length(min=10, max=10, message=voen_number_enough_error), check_voen,
                     Optional(),
                     ])
-    contract_number = StringField("Kontrakt Nömrəsi",validators=[Length(min=1, max=16, message=symbol_error_message),
+    contract_number = StringField("Müqavilə Nömrəsi",validators=[Length(min=1, max=16, message=symbol_error_message),
                                               Optional(),
                                               whitespace_check])
     start_date = DateField("Başlama Tarixi", validators=[Optional(), is_date_valid])
@@ -28,7 +28,10 @@ class EditContractForm(CreateContractForm):
     categories = SelectField("Kategoriyalar", validate_choice=False, coerce=int,
                              validators=[Optional()])
 
+    status = BooleanField("Status", validators=[Optional()])
+
     pdf_file = FileField("Fayl",validators=[Optional(),
                                                 FileAllowed(["pdf", "gif", "png", "jpeg", "jpg"], selected_files_only)]
                          )
+    comments = TextAreaField("Əlavə Qeydlər", validators=[whitespace_check])
     save = SubmitField("Save")

@@ -61,6 +61,7 @@ def save_contract():
                 remained_amount=float(form.amount.data),
                 company_id=company.id,
                 adv_payer=form.is_adv_payer.data,
+                comments=form.comments.data,
                 pdf_file_path=file_path,
                 category_id=form.categories.data
             )

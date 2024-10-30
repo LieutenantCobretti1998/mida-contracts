@@ -52,11 +52,11 @@ const grid = new Grid({
                     name: "Kategoriya"
                 },
                 {
-                    name: "Ədv ödəyicisi",
+                    name: "Status",
                     formatter: (_, row) => {
-                        const advPayer = row.cells[9].data;
+                        const contract_status = row.cells[9].data;
                         return html(
-                            `<span>${advPayer ? "Yes": "No"}</span>`
+                            `<span>${contract_status ? "Davam Edir": "Bitib"}</span>`
                         )
                     }
                 },
@@ -91,7 +91,7 @@ const grid = new Grid({
 
                         const col = columns[0];
                         const dir = col.direction === 1 ? "asc": "desc";
-                        let colName = ["Contract Id", "Company Name", "Voen", "Contract Number", "Start Date", "End Date", "Amount", "Remained Amount", "Adv Payer", "Category"][col.index];
+                        let colName = ["Contract Id", "Company Name", "Voen", "Contract Number", "Start Date", "End Date", "Amount", "Remained Amount", "Category", "Is Existed"][col.index];
                         return `${prev}?order_by=${colName}&dir=${dir}`;
                     }
                 }
@@ -108,7 +108,7 @@ const grid = new Grid({
                     parseFloat(contract.amount).toFixed(2),
                     parseFloat(contract.remained_amount).toFixed(2),
                     contract.category,
-                    Boolean(contract.adv_payer),
+                    Boolean(contract.is_existed),
                 ]),
                 total: data => data.total_count
             },

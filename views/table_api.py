@@ -14,7 +14,7 @@ api_categories_bp = Blueprint('api_categories', __name__)
 api_additions_bp = Blueprint('api_additions', __name__)
 api_dashboard_bp = Blueprint('api_dashboard', __name__)
 api_users_bp = Blueprint('api_users', __name__)
-# Dictionary of tuples
+# Dictionary for different tables
 column_map_contracts = {
     "Company Name": ("company_name", Companies),
     "Voen": ("voen", Companies),
@@ -24,6 +24,7 @@ column_map_contracts = {
     "Amount": ("amount", Contract),
     "Remained Amount": ("remained_amount", Contract),
     "Adv Payer": ("adv_payer", Contract),
+    "Is Existed": ("is_existed", Contract),
     "Category": ("category_id", Contract),
 }
 

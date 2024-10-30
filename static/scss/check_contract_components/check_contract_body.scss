@@ -76,6 +76,10 @@
   }
 }
 
+.comments {
+  padding: 2rem;
+}
+
 .pdf-btn,
 .edit-btn{
   border: none;
@@ -191,4 +195,16 @@
     cursor: pointer;
     background-color: $color-dark-red;
   }
+}
+
+.white-text {
+  color: $color-white;
+}
+
+.active {
+  background-color: $color-green;
+}
+
+.expired {
+  background-color: $color-red;
 }

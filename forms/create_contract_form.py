@@ -1,8 +1,10 @@
+from datetime import datetime
+
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, DateField, DecimalField
 from flask_wtf.file import FileRequired, FileAllowed, FileField
 from wtforms.fields.choices import SelectField
-from wtforms.fields.simple import BooleanField
+from wtforms.fields.simple import BooleanField, TextAreaField
 from wtforms.validators import DataRequired, NumberRange, Length, Optional
 from forms.custom_validators import *
 
@@ -33,4 +35,5 @@ class CreateContractForm(FlaskForm):
     pdf_file = FileField("Fayl Yüklə", validators=[FileRequired(message=empty_field),
                                                   FileAllowed(["pdf", "gif", "png", "jpeg", "jpg"], selected_files_only)]
                          )
+    comments = TextAreaField("Əlavə Qeydlər", validators=[whitespace_check])
     save = SubmitField('Saxla')

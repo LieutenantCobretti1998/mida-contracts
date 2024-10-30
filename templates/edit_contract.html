@@ -63,7 +63,7 @@
                     </td>
 
                     <td>
-                       {{ form.start_date(placeholder=search_result.date, class="table__input rounded") | safe }}
+                       {{ form.start_date(value=search_result.date.strftime('%m/%d/%Y'), class="table__input rounded") | safe }}
                         <ul class="error-list">
                             {% for error in form.start_date.errors %}
                                 <li class="error-list__message">{{ error }}</li>
@@ -119,6 +119,21 @@
 
                 <tr>
                     <td class="table__text">
+                        {{ form.status.label() }}
+                    </td>
+
+                    <td>
+                        {{ form.status(checked=search_result.status) }}
+                        <ul class="error-list">
+                            {% for error in form.status.errors %}
+                                <li class="error-list__message">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="table__text">
                         {{ form.categories.label() }}
                     </td>
 
@@ -143,6 +158,22 @@
                                 <li class="error-list__message">{{ error }}</li>
                             {% endfor %}
                         </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="table__text">
+                        {{ form.comments.label() }}
+                    </td>
+                    <td>
+                        <div>
+                            {{ form.comments(placeholder=search_result.comments, class="table__input rounded comments") | safe }}
+                            <ul class="error-list">
+                            {% for error in form.comments.errors %}
+                                <li class="error-list__message">{{ error }}</li>
+                            {% endfor %}
+                            </ul>
+                        </div>
                     </td>
                 </tr>
 

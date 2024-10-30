@@ -116,6 +116,10 @@ body {
   font-weight: 700;
 }
 
+.comments {
+  padding: 2rem;
+}
+
 .pdf-btn,
 .edit-btn {
   border: none;
@@ -227,6 +231,18 @@ body {
 .delete-btn:hover {
   cursor: pointer;
   background-color: #9b1515;
+}
+
+.white-text {
+  color: white;
+}
+
+.active {
+  background-color: green;
+}
+
+.expired {
+  background-color: red;
 }
 
 /*# sourceMappingURL=check_contract.css.map */

@@ -45,6 +45,10 @@
   border-radius: .35rem;
 }
 
+.comments {
+  padding: 2rem;
+}
+
 .focused {
   scale: (1.05);
 }
@@ -123,7 +127,8 @@
     width: 0; /* Start with no fill */
 }
 
-#is_adv_payer {
+#is_adv_payer,
+#status {
   margin: 10px;
   & > li {
     list-style: none;

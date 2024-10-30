@@ -200,7 +200,7 @@ class SearchEngine(ValidatorWrapper):
             "end_date": contract.end_date,
             "amount": float(contract.amount),
             "remained_amount": float(contract.remained_amount),
-            "adv_payer": bool(contract.adv_payer),
+            "is_existed": bool(contract.is_expired),
             "category": contract.category.category_name
         } for contract in contracts]
         return contract_list, total_count

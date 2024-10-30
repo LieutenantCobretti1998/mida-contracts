@@ -6,21 +6,24 @@ import pdfReader from "./file_loader.js";
  * @param input_fields
  * @param save_btn
  * @param adv_payer
+ * @param status
  * @param categories
  * @param default_category
  */
-function updateSaveButtonState(input_fields= null, save_btn= null, adv_payer = null, categories = null, default_category = null) {
+function updateSaveButtonState(input_fields= null, save_btn= null, adv_payer = null, status=null,  categories = null, default_category = null) {
     const pdf_file_input = document.getElementById("pdf_file");
     const file = pdf_file_input.files[0];
     const default_adv_value = adv_payer.defaultChecked;
+    const default_status_value = status.defaultChecked;
 
     const all_fields_empty = input_fields.every(input => input.value.trim() === "");
     const adv_paid = adv_payer.checked === default_adv_value;
+    const contract_finished = status.checked === default_status_value;
     const category_selected = categories.value === default_category;
 
     const no_file_selected = !file;
 
-    const should_disable_button = all_fields_empty && adv_paid && no_file_selected && category_selected;
+    const should_disable_button = all_fields_empty && adv_paid && contract_finished && no_file_selected && category_selected;
 
     save_btn.disabled = should_disable_button;
     save_btn.style.pointerEvents = should_disable_button ? "none" : "auto";
@@ -31,25 +34,29 @@ function updateSaveButtonState(input_fields= null, save_btn= null, adv_payer = n
 function listenEditFields() {
     const save_button_element = document.querySelector("#save");
     const adv_payer = document.querySelector("#is_adv_payer");
+    const status = document.querySelector("#status");
     const categories = document.querySelector("#categories");
+    const comments = document.querySelector("#comments");
     const default_category = categories.value;
 
     save_button_element.disabled = true;
     save_button_element.style.pointerEvents = "none";
     save_button_element.style.cursor = "default";
     save_button_element.style.backgroundColor = "#EEEDEB";
-    const input_fields = Array.from(document.querySelectorAll("table input")).slice(0, -3);
+    const input_fields = [...Array.from(document.querySelectorAll("table input")).slice(0, -3), comments];
 
 
     const update_state = () => updateSaveButtonState(
         input_fields,
         save_button_element,
         adv_payer,
+        status,
         categories,
         default_category
     );
 
     adv_payer.addEventListener("change", update_state);
+    status.addEventListener("change", update_state);
     categories.addEventListener("change", update_state);
 
     input_fields.forEach(el => {

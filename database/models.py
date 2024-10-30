@@ -1,5 +1,5 @@
 
-from sqlalchemy import Column, Integer, CHAR, DATE, ForeignKey, DECIMAL, VARCHAR, BOOLEAN, DateTime
+from sqlalchemy import Column, Integer, CHAR, DATE, ForeignKey, DECIMAL, VARCHAR, BOOLEAN, TEXT
 from database.db_init import Base, db
 from sqlalchemy.orm import relationship
 from flask_login import UserMixin
@@ -9,7 +9,7 @@ class User(UserMixin, Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
     username = Column(VARCHAR(40), nullable=False, unique=True)
-    password = Column(VARCHAR(8), nullable=False)
+    password = Column(CHAR(12), nullable=False, unique=False)
     role = Column(VARCHAR(20), nullable=False, default='user')
 
 
@@ -42,7 +42,9 @@ class Contract(Base):
     remained_amount = Column(DECIMAL(), nullable=False)
     company = relationship("Companies", back_populates="contracts")
     adv_payer = Column("adv_payer", BOOLEAN, nullable=False, default=False)
+    is_expired = Column("is_expired", BOOLEAN, nullable=False, default=False)
     pdf_file_path = Column(VARCHAR, nullable=False)
+    comments = Column(TEXT, nullable=True)
     acts = relationship('Acts', back_populates='contract', cascade='all, delete, delete-orphan')
     additions = relationship('Additions', back_populates='contract', cascade='all, delete, delete-orphan')
 
