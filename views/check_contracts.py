@@ -47,6 +47,7 @@ def edit_contract(contract_id):
         form.start_date.default = search_result.date
         form.end_date.default = search_result.end_date
         form.process()
+
         return render_template("edit_contract.html",
                                search_result=search_result,
                                form=form,
@@ -85,6 +86,15 @@ def update_contract(contract_id):
         end_date_changed = new_end_date is not None and new_end_date != original_end_date
         new_amount = form.amount.data
         filename = ""
+        if form.comments.data is not None:
+            stripped_comments = form.comments.data.strip()
+            if stripped_comments == '':
+                comments = None  # User input only whitespace; set to None
+            else:
+                comments = stripped_comments  # Use the stripped comment
+        else:
+            comments = original_data.comments  # Field not submitted; keep original comment
+
         if start_date_changed and end_date_changed:
             if new_start_date >= new_end_date:
                 flash("Başlanğıc tarixi bitmə tarixindən sonra və ya ona bərabər ola bilməz", "warning")
@@ -111,12 +121,11 @@ def update_contract(contract_id):
 
             except ValueError:
                 flash(
-                    "The amount can be less than the original one. Delete the acts in order to increase the remained amount.",
+                    "Yeni məbləğ orijinal məbləğdən az ola bilər. Qalan məbləği artırmaq üçün aktları silin",
                     "warning")
                 return render_template('edit_contract.html', form=form, contract_id=contract_id,
                                        search_result=original_data,
                                        )
-
         data_dict = dict(
             company_name=filter_string_fields(
                 form.company.data) if form.company.data else original_data.company.company_name,
@@ -129,7 +138,7 @@ def update_contract(contract_id):
             adv_payer=True if form.is_adv_payer.data else False,
             is_expired = True if form.status.data else False,
             pdf_file_path=filename if form.pdf_file.data else None,
-            comments = form.comments.data if form.comments.data else original_data.comments,
+            comments = comments,
             category_id=form.categories.data if form.categories.data else original_data.category_id,
             end_date=form.end_date.data if form.end_date.data else original_data.end_date
 
@@ -146,7 +155,7 @@ def update_contract(contract_id):
                                    search_result=original_data,
                                    )
     else:
-        flash("Validation Error. Please check all fields", "error")
+        flash("Doğrulama xətası. Zəhmət olmasa, bütün sahələri yoxlayın.", "error")
         return render_template('edit_contract.html', form=form, contract_id=contract_id, search_result=original_data,
                                )
 
@@ -171,12 +180,12 @@ def delete_contract(contract_id):
     contract_on_delete = contract_manager.delete_contract(contract_id)
     if contract_on_delete:
         db.session.commit()
-        flash("Contract deleted successfully", "success")
+        flash("Müqavilə uğurla silindi", "success")
         return jsonify({
             'status': 'success',
         }), 200
     else:
-        flash("Could not delete the contract. Something went wrong on the server side", "error")
+        flash("Müqaviləni silmək mümkün olmadı.", "error")
         db.session.rollback()
         return jsonify({
             'status': 'error',

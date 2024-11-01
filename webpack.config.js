@@ -41,7 +41,7 @@ export default (env, argv) => {
     // Enable watch mode only in development
     watch: !isProduction,
     // Source maps for debugging
-    devtool: isProduction ? 'source-map' : 'inline-source-map',
+    devtool: isProduction ? false : 'inline-source-map',
     // Optimization settings for production
     optimization: isProduction
       ? {

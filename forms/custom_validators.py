@@ -20,12 +20,10 @@ def check_voen(form, field) -> None:
     if not field.data.isdigit():
         raise ValidationError(voen_only_number_error)
 
-
 # White space check
 def whitespace_check(form, field) -> None:
     if field.data and field.data.strip() == "":
         raise ValidationError(empty_space_message)
-
 
 # Check if the date is not actually just an empty date
 def is_date_valid(form, field) -> None:
@@ -33,7 +31,6 @@ def is_date_valid(form, field) -> None:
         raise ValidationError(empty_field)
 
     # Make the file name unique
-
 
 # Create a folder for newly added pdf
 def add_contract_pdf(directory: str, pdf_filename: str, company_name: str = None) -> str:

@@ -91,8 +91,8 @@
                         <p>Status</p>
                     </td>
 
-                    <td class="{% if search_result.is_expired %}active{% else %}expired{% endif %}">
-                        <p class="white-text">{% if search_result.is_expired %} Davam Edir {% else %} Bitib {% endif %}</p>
+                    <td class="{% if not search_result.is_expired %}active{% else %}expired{% endif %}">
+                        <p class="white-text">{% if not search_result.is_expired %} Davam Edir {% else %} Bitib {% endif %}</p>
                     </td>
                 </tr>
 
@@ -111,7 +111,7 @@
                             <label for="comments">Əlavə Qeydlər</label>
                         </td>
                         <td>
-                            <textarea class="comments" id="comments" readonly>{{ search_result.comments }}</textarea>
+                            <textarea class="comments" id="comments" readonly>{{ search_result.comments if search_result.comments != "" else "Məlumat yoxdur" }}</textarea>
                         </td>
                     </tr>
                 {% endif %}

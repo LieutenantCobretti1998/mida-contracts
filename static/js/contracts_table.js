@@ -56,7 +56,7 @@ const grid = new Grid({
                     formatter: (_, row) => {
                         const contract_status = row.cells[9].data;
                         return html(
-                            `<span>${contract_status ? "Davam Edir": "Bitib"}</span>`
+                            `<span>${!contract_status ? "Davam Edir": "Bitib"}</span>`
                         )
                     }
                 },

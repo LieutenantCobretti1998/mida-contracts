@@ -5,4 +5,4 @@ from forms.categories_form import SearchForm
 
 class EditCategoryForm(SearchForm):
     category = SearchField('Edit the selected category', validators=[Optional(), Length(max=30)])
-    save = SubmitField('save')
+    save = SubmitField('Saxla')

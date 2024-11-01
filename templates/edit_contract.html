@@ -123,7 +123,7 @@
                     </td>
 
                     <td>
-                        {{ form.status(checked=search_result.status) }}
+                        {{ form.status(checked=search_result.is_expired) }}
                         <ul class="error-list">
                             {% for error in form.status.errors %}
                                 <li class="error-list__message">{{ error }}</li>
@@ -167,7 +167,7 @@
                     </td>
                     <td>
                         <div>
-                            {{ form.comments(placeholder=search_result.comments, class="table__input rounded comments") | safe }}
+                            {{ form.comments(placeholder=search_result.comments if search_result.comments else "Məlumat yoxdur", class="table__input rounded comments") | safe }}
                             <ul class="error-list">
                             {% for error in form.comments.errors %}
                                 <li class="error-list__message">{{ error }}</li>

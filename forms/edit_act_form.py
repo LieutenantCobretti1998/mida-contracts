@@ -22,4 +22,4 @@ class EditActForm(CreateAct):
                                                        FileAllowed(["pdf", "gif", "png", "jpeg", "jpg"], selected_files_only)]
                              )
     contract_id = HiddenField("contract_id")
-    save = SubmitField('saxla')
+    save = SubmitField('Saxla')

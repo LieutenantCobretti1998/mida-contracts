@@ -5,8 +5,10 @@ const contract_end_date_grid = new Grid({
         "pagination": {
             "previous": "Əvvəlki",
             "next": "Növbəti️",
-            "showing": "Göstər",
-            "results": "Nəticələr"
+            "showing": "Göstərilir",
+             to: '-dən',
+             of: '-qədər Cəmi',
+            "results": "Nəticə",
         },
         noRecordsFound: "Uyğun qeydlər tapılmadı",
         error: "Məlumatların çıxarılması zamanı xəta baş verdi"
@@ -77,8 +79,10 @@ const contract_end_money_grid = new Grid({
         "pagination": {
             "previous": "Əvvəlki",
             "next": "Növbəti️",
-            "showing": "Göstər",
-            "results": "Nəticələr"
+            "showing": "Göstərilir",
+             to: '-dən',
+             of: '-qədər Cəmi',
+            "results": "Nəticə",
         },
         noRecordsFound: "Uyğun qeydlər tapılmadı",
         error: "Məlumatların çıxarılması zamanı xəta baş verdi"

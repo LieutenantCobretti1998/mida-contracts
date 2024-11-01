@@ -1,16 +1,41 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 from flask import Flask
+from flask_apscheduler import APScheduler
 from configuration import *
 from flask_migrate import Migrate
 from database.db_init import db
+from database.models import Contract
 from extensions import login_manager
 from flask_wtf.csrf import CSRFProtect
 csrf = CSRFProtect()
+scheduler = APScheduler()
 # Initialization of the app
+
 
 def create_app() -> Flask:
     app = Flask(__name__)
+    with app.app_context():
+        try:
+            # Calculate the cutoff date (90 days ago)
+            cutoff_date = datetime.now().date() - timedelta(days=90)
+
+            # Query contracts that have end_date older than cutoff_date and is_expired is False
+            contracts_to_expire = db.session.query(Contract).query.filter(
+                Contract.end_date <= cutoff_date,
+                Contract.is_expired == False
+            ).all()
+
+            if contracts_to_expire:
+                for contract in contracts_to_expire:
+                    contract.is_expired = True
+                # Commit changes to the database
+                db.session.commit()
+            else:
+                pass
+        except Exception as e:
+            db.session.rollback()
     app.config["WTF_CSRF_SECRET_KEY"] = WTF_CSRF_SECRET_KEY
+    app.config["SCHEDULER_API_ENABLED"] = True
     app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=8)
     app.config["SECRET_KEY"] = APP_SECRET_KEY
     app.config["SQLALCHEMY_DATABASE_URI"] = PRODUCTION_DB_URI
@@ -56,6 +81,32 @@ def create_app() -> Flask:
     migrate = Migrate()
     migrate.init_app(app, db, render_as_batch=True)
     csrf.init_app(app)
+    scheduler.init_app(app)
     with app.app_context():
         db.create_all()
+    @scheduler.task("cron", id="expire_contracts", hour=0)
+    def expire_old_contracts():
+        with app.app_context():
+            try:
+                # Calculate the cutoff date (90 days ago)
+                cutoff_date = datetime.now().date() - timedelta(days=90)
+
+                # Query contracts that have end_date older than cutoff_date and is_expired is False
+                contracts_to_expire = db.session.query(Contract).filter(
+                    Contract.end_date <= cutoff_date,
+                    Contract.is_expired == False
+                ).all()
+
+                if contracts_to_expire:
+                    for contract in contracts_to_expire:
+                        contract.is_expired = True
+                    # Commit changes to the database
+                    db.session.commit()
+                else:
+                    print("hello")
+            except Exception as e:
+                db.session.rollback()
+
+    # Start the scheduler
+    scheduler.start()
     return app

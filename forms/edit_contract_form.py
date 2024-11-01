@@ -28,10 +28,10 @@ class EditContractForm(CreateContractForm):
     categories = SelectField("Kategoriyalar", validate_choice=False, coerce=int,
                              validators=[Optional()])
 
-    status = BooleanField("Status", validators=[Optional()])
+    status = BooleanField("Bitib", validators=[Optional()])
 
     pdf_file = FileField("Fayl",validators=[Optional(),
                                                 FileAllowed(["pdf", "gif", "png", "jpeg", "jpg"], selected_files_only)]
                          )
-    comments = TextAreaField("Əlavə Qeydlər", validators=[whitespace_check])
-    save = SubmitField("Save")
+    comments = TextAreaField("Əlavə Qeydlər", validators=[Optional()])
+    save = SubmitField("Saxla")
