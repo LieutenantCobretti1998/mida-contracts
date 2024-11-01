@@ -1,12 +1,54 @@
-from datetime import timedelta
+import logging
+from datetime import timedelta, datetime, timezone
 from flask import Flask
+from apscheduler.schedulers.background import BackgroundScheduler
 from configuration import *
 from flask_migrate import Migrate
 from database.db_init import db
+from database.models import Contract
 from extensions import login_manager
 from flask_wtf.csrf import CSRFProtect
 csrf = CSRFProtect()
+scheduler = BackgroundScheduler()
 # Initialization of the app
+
+LOG_FOLDER = "logs"
+os.makedirs(LOG_FOLDER, exist_ok=True)  # Create log folder if it doesn't exist
+
+# Set up logging to only include time and message
+logger = logging.getLogger("ExpiredContractsLogger")
+logger.setLevel(logging.INFO)
+handler = logging.FileHandler(os.path.join(LOG_FOLDER, 'expired_contracts.log'))
+formatter = logging.Formatter('%(asctime)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+
+def update_expired_contracts():
+    try:
+        # Get the current time and calculate the cutoff date (contracts that expired more than 1 second ago)
+        current_time = datetime.now(timezone.utc)
+        cutoff_time = current_time - timedelta(seconds=1)
+
+        # Query contracts that have end_date older than the cutoff_time and is_expired is False
+        expired_contracts = db.session.query(Contract).filter(
+            Contract.end_date <= cutoff_time,
+            Contract.is_expired == False
+        ).all()
+
+        # Update is_expired status and log the information
+        if expired_contracts:
+            for contract in expired_contracts:
+                contract.is_expired = True
+                logger.info(f"Contract ID {contract.id} marked as expired.")
+
+            # Commit the changes to the database
+            db.session.commit()
+            logger.info(f"{len(expired_contracts)} contracts have been marked as expired.")
+        else:
+            logger.info("No contracts expired exactly 1 second ago.")
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"An error occurred while updating expired contracts: {e}")
 
 def create_app() -> Flask:
     app = Flask(__name__)
@@ -58,4 +100,14 @@ def create_app() -> Flask:
     csrf.init_app(app)
     with app.app_context():
         db.create_all()
+
+    def scheduler_job():
+        with app.app_context():
+            update_expired_contracts()
+
+    # Add the job to the scheduler
+    if not scheduler.running:
+        scheduler.start()
+    # Schedule the job to run daily at midnight
+    scheduler.add_job(func=scheduler_job, trigger='cron', hour="*", minute=0, id='update_expired_contracts')
     return app
