@@ -24,7 +24,7 @@ column_map_contracts = {
     "Amount": ("amount", Contract),
     "Remained Amount": ("remained_amount", Contract),
     "Adv Payer": ("adv_payer", Contract),
-    "Is Existed": ("is_existed", Contract),
+    "Is Existed": ("is_expired", Contract),
     "Category": ("category_id", Contract),
 }
 

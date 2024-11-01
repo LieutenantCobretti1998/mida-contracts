@@ -63,7 +63,7 @@
                     </td>
 
                     <td>
-                       {{ form.start_date(value=search_result.date.strftime('%m/%d/%Y'), class="table__input rounded") | safe }}
+                       {{ form.start_date(class="table__input rounded") | safe }}
                         <ul class="error-list">
                             {% for error in form.start_date.errors %}
                                 <li class="error-list__message">{{ error }}</li>

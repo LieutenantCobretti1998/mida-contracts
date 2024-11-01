@@ -18,7 +18,7 @@
                     </td>
 
                     <td>
-                        {{ form.company_name(list="companies_list", class="table__input rounded", placeholder="COMPANIES", id="default_input") }}
+                        {{ form.company_name(list="companies_list", class="table__input rounded", placeholder="Şirkət", id="default_input") }}
                         <datalist id="companies_list"></datalist>
                         <ul class="error-list">
                             {% for error in form.company_name.errors %}
@@ -48,7 +48,7 @@
                     </td>
                     <td>
                         <div>
-                            {{ form.addition_number(class="table__input rounded", placeholder="ADDITION NUMBER") }}
+                            {{ form.addition_number(class="table__input rounded", placeholder="Akt Nömrəsi") }}
                             <ul class="error-list">
                             {% for error in form.addition_number.errors %}
                                 <li class="error-list__message">{{ error }}</li>
@@ -63,7 +63,7 @@
                     </td>
                     <td>
                         <div>
-                            {{ form.addition_amount(class="table__input rounded", placeholder="AMOUNT")  }}
+                            {{ form.addition_amount(class="table__input rounded", placeholder="Məbləğ")  }}
                             <ul class="error-list">
                             {% for error in form.addition_amount.errors %}
                                 <li class="error-list__message">{{ error }}</li>
@@ -79,7 +79,7 @@
                     </td>
 
                     <td>
-                        {{ form.addition_date(class="table__input rounded", placeholder="DATE") }}
+                        {{ form.addition_date(class="table__input rounded", placeholder="Tarix") }}
                         <ul class="error-list">
                             {% for error in form.addition_date.errors %}
                                 <li class="error-list__message">{{ error }}</li>

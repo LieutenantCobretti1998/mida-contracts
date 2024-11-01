@@ -44,6 +44,8 @@ def edit_contract(contract_id):
         search_engine = SearchEngine(db.session, contract_id)
         search_result = search_engine.search_company_with_contract()
         form.categories.default = search_result.category_id
+        form.start_date.default = search_result.date
+        form.end_date.default = search_result.end_date
         form.process()
         return render_template("edit_contract.html",
                                search_result=search_result,

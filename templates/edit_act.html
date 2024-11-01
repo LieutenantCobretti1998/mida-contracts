@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block title %} Edit Act {% endblock title %}
 {% block style %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/edit_act.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edit_act.min.css') }}">
 {% endblock style %}
 {% block content_part %}
     <form action="{{ url_for('all_acts.update_act', act_id=act_id) }}"  method="post" enctype="multipart/form-data">
