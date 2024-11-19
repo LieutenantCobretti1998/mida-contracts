@@ -2,6 +2,8 @@ import logging
 from datetime import timedelta, datetime, timezone
 from flask import Flask
 from apscheduler.schedulers.background import BackgroundScheduler
+from sqlalchemy.orm import scoped_session, sessionmaker
+
 from configuration import *
 from flask_migrate import Migrate
 from database.db_init import db
@@ -24,13 +26,15 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 def update_expired_contracts():
+    Session = scoped_session(sessionmaker(bind=db.engine))
+    session = Session()
     try:
         # Get the current time and calculate the cutoff date (contracts that expired more than 1 second ago)
         current_time = datetime.now(timezone.utc)
         cutoff_time = current_time - timedelta(seconds=1)
 
         # Query contracts that have end_date older than the cutoff_time and is_expired is False
-        expired_contracts = db.session.query(Contract).filter(
+        expired_contracts = session.query(Contract).filter(
             Contract.end_date <= cutoff_time,
             Contract.is_expired == False
         ).all()
@@ -42,12 +46,12 @@ def update_expired_contracts():
                 logger.info(f"Contract ID {contract.id} marked as expired.")
 
             # Commit the changes to the database
-            db.session.commit()
+            session.commit()
             logger.info(f"{len(expired_contracts)} contracts have been marked as expired.")
         else:
             logger.info("No contracts expired exactly 1 second ago.")
     except Exception as e:
-        db.session.rollback()
+        session.rollback()
         logger.error(f"An error occurred while updating expired contracts: {e}")
 
 def create_app() -> Flask:
