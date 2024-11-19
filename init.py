@@ -25,34 +25,34 @@ formatter = logging.Formatter('%(asctime)s - %(message)s', datefmt='%Y-%m-%d %H:
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
-# def update_expired_contracts():
-#     Session = scoped_session(sessionmaker(bind=db.engine))
-#     session = Session()
-#     try:
-#         # Get the current time and calculate the cutoff date (contracts that expired more than 1 second ago)
-#         current_time = datetime.now(timezone.utc)
-#         cutoff_time = current_time - timedelta(seconds=1)
-#
-#         # Query contracts that have end_date older than the cutoff_time and is_expired is False
-#         expired_contracts = session.query(Contract).filter(
-#             Contract.end_date <= cutoff_time,
-#             Contract.is_expired == False
-#         ).all()
-#
-#         # Update is_expired status and log the information
-#         if expired_contracts:
-#             for contract in expired_contracts:
-#                 contract.is_expired = True
-#                 logger.info(f"Contract ID {contract.id} marked as expired.")
-#
-#             # Commit the changes to the database
-#             session.commit()
-#             logger.info(f"{len(expired_contracts)} contracts have been marked as expired.")
-#         else:
-#             logger.info("No contracts expired exactly 1 second ago.")
-#     except Exception as e:
-#         session.rollback()
-#         logger.error(f"An error occurred while updating expired contracts: {e}")
+def update_expired_contracts():
+    Session = scoped_session(sessionmaker(bind=db.engine))
+    session = Session()
+    try:
+        # Get the current time and calculate the cutoff date (contracts that expired more than 1 second ago)
+        current_time = datetime.now(timezone.utc)
+        cutoff_time = current_time - timedelta(seconds=1)
+
+        # Query contracts that have end_date older than the cutoff_time and is_expired is False
+        expired_contracts = session.query(Contract).filter(
+            Contract.end_date <= cutoff_time,
+            Contract.is_expired == False
+        ).all()
+
+        # Update is_expired status and log the information
+        if expired_contracts:
+            for contract in expired_contracts:
+                contract.is_expired = True
+                logger.info(f"Contract ID {contract.id} marked as expired.")
+
+            # Commit the changes to the database
+            session.commit()
+            logger.info(f"{len(expired_contracts)} contracts have been marked as expired.")
+        else:
+            logger.info("No contracts expired exactly 1 second ago.")
+    except Exception as e:
+        session.rollback()
+        logger.error(f"An error occurred while updating expired contracts: {e}")
 
 def create_app() -> Flask:
     app = Flask(__name__)
@@ -106,9 +106,8 @@ def create_app() -> Flask:
         db.create_all()
 
     def scheduler_job():
-        # with app.app_context():
-        #     update_expired_contracts()
-        pass
+        with app.app_context():
+            update_expired_contracts()
 
     # Add the job to the scheduler
     if not scheduler.running:
