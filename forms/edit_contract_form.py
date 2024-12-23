@@ -16,11 +16,11 @@ class EditContractForm(CreateContractForm):
         validators=[Length(min=10, max=10, message=voen_number_enough_error), check_voen,
                     Optional(),
                     ])
-    contract_number = StringField("Müqavilə Nömrəsi",validators=[Length(min=1, max=16, message=symbol_error_message),
+    contract_number = StringField("Müqavilə nömrəsi",validators=[Length(min=1, max=16, message=symbol_error_message),
                                               Optional(),
                                               whitespace_check])
-    start_date = DateField("Başlama Tarixi", validators=[Optional(), is_date_valid])
-    end_date = DateField("Bitmə Tarixi", validators=[Optional(), is_date_valid])
+    start_date = DateField("Başlama tarixi", validators=[Optional(), is_date_valid])
+    end_date = DateField("Bitmə tarixi", validators=[Optional(), is_date_valid])
     amount = DecimalField("Məbləğ", validators=[NumberRange(min=1, max=1000000000, message=amount_error_message),
                                       Optional(),
                                       ])
@@ -30,8 +30,8 @@ class EditContractForm(CreateContractForm):
 
     status = BooleanField("Bitib", validators=[Optional()])
 
-    pdf_file = FileField("Fayl",validators=[Optional(),
+    pdf_file = FileField("Müqavilə yüklə",validators=[Optional(),
                                                 FileAllowed(["pdf", "gif", "png", "jpeg", "jpg"], selected_files_only)]
                          )
-    comments = TextAreaField("Əlavə Qeydlər", validators=[Optional()])
+    comments = TextAreaField("Əlavə qeydlər", validators=[Optional()])
     save = SubmitField("Saxla")

@@ -5,5 +5,5 @@ from forms.login import LoginForm
 
 
 class CreateUserForm(LoginForm):
-    role = SelectField('İstifadəçi Rolu', choices=[('viewer', 'Viewer'), ('editor', 'Manager'), ('admin', 'Admin')])
+    role = SelectField('İstifadəçi rolu', choices=[('viewer', 'Viewer'), ('editor', 'Manager'), ('admin', 'Admin')])
     submit = SubmitField('Saxla')

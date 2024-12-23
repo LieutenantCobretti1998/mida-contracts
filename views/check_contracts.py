@@ -1,4 +1,6 @@
-from flask import Blueprint, render_template, redirect, url_for, jsonify, flash, send_file, abort
+import os
+
+from flask import Blueprint, render_template, redirect, url_for, jsonify, flash, send_file, abort, json, current_app
 from flask_login import login_required, current_user
 from sqlalchemy.exc import NoResultFound
 from werkzeug.utils import secure_filename
@@ -23,9 +25,11 @@ def get_contract(contract_id):
     try:
         search_engine = SearchEngine(db.session, contract_id)
         search_result = search_engine.search_company_with_contract()
+        additional_files = json.loads(search_result.pdf_file_paths) if search_result.pdf_file_paths else []
         return render_template("check_contract.html",
                                search_result=search_result,
-                               contract_id=contract_id
+                               contract_id=contract_id,
+                               additional_files=additional_files
                                )
     except NoResultFound:
         abort(404)
@@ -43,6 +47,7 @@ def edit_contract(contract_id):
         form.categories.choices = [(category.id, category.category_name) for category in categories]
         search_engine = SearchEngine(db.session, contract_id)
         search_result = search_engine.search_company_with_contract()
+        additional_files = json.loads(search_result.pdf_file_paths) if search_result.pdf_file_paths else []
         form.categories.default = search_result.category_id
         form.start_date.default = search_result.date
         form.end_date.default = search_result.end_date
@@ -52,6 +57,7 @@ def edit_contract(contract_id):
                                search_result=search_result,
                                form=form,
                                contract_id=contract_id,
+                               additional_files=additional_files
                                )
     except NoResultFound:
         abort(404)
@@ -167,6 +173,19 @@ def preview_pdf(contract_id):
     search_result = search_engine.search_company_with_contract()
     try:
         return send_file(search_result.pdf_file_path)
+    except FileNotFoundError:
+        abort(404)
+
+@check_contracts_bp.route('/preview_additional_pdf/<path:document_name>', methods=['GET'])
+@login_required
+def preview_additional_pdf(document_name):
+    print(document_name)
+    upload_folder = os.path.join(current_app.root_path)
+    file_path = os.path.join(upload_folder, document_name)
+    if not file_path.startswith(os.path.abspath('upload_folder')):
+        abort(403)
+    try:
+        return send_file(file_path)
     except FileNotFoundError:
         abort(404)
 

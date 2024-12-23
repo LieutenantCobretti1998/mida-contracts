@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, flash, url_for, current_app, abort
+from flask import Blueprint, render_template, redirect, flash, url_for, current_app, abort, json
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from sqlalchemy.exc import OperationalError, DBAPIError
@@ -50,6 +50,18 @@ def save_contract():
             return render_template('add_contract.html', form=form)
         try:
             file = form.pdf_file.data
+            additional_files = form.additional_files.data
+            serialized_file_paths = None
+            if additional_files:
+                additional_file_paths = []
+                for additional_file in additional_files:
+                    additional_filename = secure_filename(additional_file.filename)
+                    additional_file_path = add_contract_pdf(current_app.config['UPLOAD_FOLDER'], additional_filename,
+                                                            filtered_company_name)
+                    additional_file.save(additional_file_path)
+                    additional_file_paths.append(additional_file_path)
+                serialized_file_paths = json.dumps(additional_file_paths)
+
             filename = secure_filename(file.filename)
             file_path = add_contract_pdf(current_app.config['UPLOAD_FOLDER'], filename, filtered_company_name)
             company = contract_manager.get_or_create_company(filtered_company_name, filtered_voen)
@@ -63,6 +75,7 @@ def save_contract():
                 adv_payer=form.is_adv_payer.data,
                 comments=form.comments.data,
                 pdf_file_path=file_path,
+                pdf_file_paths=serialized_file_paths,
                 category_id=form.categories.data
             )
             db.session.add(contract)
@@ -74,7 +87,8 @@ def save_contract():
         except ValueError as e:
             flash(str(e), "warning")
             db.session.rollback()
-        except (DBAPIError, OperationalError):
+        except (DBAPIError, OperationalError) as e:
+            print(e)
             flash("Xəta baş verdi. əməliyyat bərpa edildi", "error")
             db.session.rollback()
     else:

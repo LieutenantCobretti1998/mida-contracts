@@ -44,6 +44,7 @@ class Contract(Base):
     adv_payer = Column("adv_payer", BOOLEAN, nullable=False, default=False)
     is_expired = Column("is_expired", BOOLEAN, nullable=False, default=False)
     pdf_file_path = Column(VARCHAR, nullable=False)
+    pdf_file_paths = Column(VARCHAR, nullable=True)
     comments = Column(TEXT, nullable=True)
     acts = relationship('Acts', back_populates='contract', cascade='all, delete, delete-orphan')
     additions = relationship('Additions', back_populates='contract', cascade='all, delete, delete-orphan')

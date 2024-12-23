@@ -161,6 +161,18 @@
                     </td>
                 </tr>
 
+                {% for file_path in additional_files %}
+                    <tr>
+                    <td>
+                        <p>Əlavə sənəd {{ loop.index0 + 1 }}</p>
+                    </td>
+
+                    <td id="pdf">
+                        <button onclick="window.open('{{ url_for('all_contracts.preview_additional_pdf', document_name = file_path) }}')" type="button" class="pdf-btn">Bax</button>
+                    </td>
+                </tr>
+                {% endfor %}
+
                 <tr>
                     <td class="table__text">
                         {{ form.comments.label() }}

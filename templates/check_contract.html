@@ -98,13 +98,24 @@
 
                 <tr>
                     <td>
-                        <p>Fayl</p>
+                        <p>Müqavilə</p>
                     </td>
 
                     <td id="pdf">
                         <button onclick="window.open('{{ url_for('all_contracts.preview_pdf', contract_id = contract_id) }}')" type="button" class="pdf-btn">Bax</button>
                     </td>
                 </tr>
+                {% for file_path in additional_files %}
+                    <tr>
+                    <td>
+                        <p>Əlavə sənəd {{ loop.index0 + 1 }}</p>
+                    </td>
+
+                    <td id="pdf">
+                        <button onclick="window.open('{{ url_for('all_contracts.preview_additional_pdf', document_name = file_path) }}')" type="button" class="pdf-btn">Bax</button>
+                    </td>
+                </tr>
+                {% endfor %}
                 {% if search_result.comments %}
                     <tr>
                         <td class="table__text">
