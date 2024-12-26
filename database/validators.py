@@ -5,14 +5,12 @@ import os
 import shutil
 import flask
 import sqlalchemy
-from flask import current_app
+from flask import current_app, json
 from flask_login import current_user
 from flask_sqlalchemy.session import Session
 from sqlalchemy import or_, desc, asc, func, and_, cast, Float
 from sqlalchemy.exc import NoResultFound, SQLAlchemyError, DBAPIError, OperationalError
 from sqlalchemy.orm import InstrumentedAttribute
-from werkzeug.exceptions import NotFound
-
 from configuration import PERCENTAGE_AMOUNT
 from database.models import *
 from abc import ABC
@@ -320,8 +318,9 @@ class EditContract(ValidatorWrapper):
         result = self.db_session.query(Companies).filter_by(company_name=company_name, voen=voen_result).first()
         return result.id if result else False
 
-    def change_pdf_file_path(self, company_id: int, old_file_path: str) -> str:
+    def change_pdf_file_path(self, company_id: int, old_file_path: str, file_operations_history: list) -> str:
         """
+        :param file_operations_history: list
         :param company_id:
         :param old_file_path:
         :return: str
@@ -336,9 +335,29 @@ class EditContract(ValidatorWrapper):
         old_file_pattern = r'(?<=\\contracts\\)[^\\]+(?=\\)'
         new_file_path = os.path.join(str(company_upload_path),
                                      os.path.basename(re.sub(old_file_pattern, new_company_name, old_file_path)))
+        file_operations_history.append((old_file_path, new_file_path))
         os.rename(old_file_path, new_file_path)
         new_file_path = os.path.normpath(new_file_path)
         return new_file_path
+
+    def change_additional_pdf_files_paths(self, files: dict, company_id: int, old_files) -> str:
+        """
+        :param files: dict
+        :param company_id: int
+        :param old_files:
+        :return: str
+        This method allows the system to change the old collection of files
+        """
+        old_file_paths = json.loads(old_files)
+        updated_paths = []
+        for old_file_path in old_file_paths:
+            try:
+                new_path = self.change_pdf_file_path(company_id, old_file_path)
+                updated_paths.append(new_path)
+            except FileNotFoundError:
+                raise FileNotFoundError(f"File not found: {old_file_path}")
+        return json.dumps(updated_paths)
+
 
     def calculate_total_contract_addition(self, contract_id: int) -> float:
         """
@@ -388,6 +407,7 @@ class EditContract(ValidatorWrapper):
             contract to update based on different situations
         """
         update_status = {'company_and_voen_updated': False}
+        file_operations = []
         contract_to_update = self.db_session.query(Contract).join(Contract.company).filter(
             Contract.id == int(self.id)).with_for_update().first()
         if not contract_to_update:
@@ -396,6 +416,8 @@ class EditContract(ValidatorWrapper):
         try:
             company_name = changes.get("company_name")
             voen = changes.get("voen")
+            additional_files = changes.get("additional_files")
+            old_add_files = contract_to_update.pdf_file_paths
             if voen != contract_to_update.company.voen and company_name != contract_to_update.company.company_name:
                 existed_company_id = self.voen_and_company_matched(company_name, voen)
                 if existed_company_id:
@@ -414,9 +436,11 @@ class EditContract(ValidatorWrapper):
                                     try:
                                         new_pdf_file_path = self.change_pdf_file_path(existed_company_id,
                                                                                       contract_to_update.pdf_file_path,
-                                                                                      )
+                                                                                      file_operations)
+                                        new_files_paths = self.change_additional_pdf_files_paths(additional_files, existed_company_id, old_add_files)
                                         contract_to_update.company_id = existed_company_id
                                         contract_to_update.pdf_file_path = new_pdf_file_path
+                                        contract_to_update.pdf_file_paths = new_files_paths
                                     except FileNotFoundError:
                                         return False, (
                                             "Fayl yolunda problem var. Fayl zədələnmiş və ya mövcud deyil. Zəhmət olmasa, əvvəlcə yeni bir PDF yükləyin"
@@ -431,8 +455,12 @@ class EditContract(ValidatorWrapper):
                                         new_pdf_file_path = self.change_pdf_file_path(existed_voen_id,
                                                                                       contract_to_update.pdf_file_path,
                                                                                       )
+                                        new_files_paths = self.change_additional_pdf_files_paths(additional_files,
+                                                                                                 existed_company_id,
+                                                                                                 old_add_files)
                                         contract_to_update.company_id = existed_voen_id
                                         contract_to_update.pdf_file_path = new_pdf_file_path
+                                        contract_to_update.pdf_file_paths = new_files_paths
                                     except FileNotFoundError:
                                         return False, (
                                             "Fayl yolunda problem var. Fayl zədələnmiş və ya mövcud deyil. Zəhmət olmasa, əvvəlcə yeni bir PDF yükləyin"
@@ -443,17 +471,28 @@ class EditContract(ValidatorWrapper):
                     current_value = getattr(contract_to_update, key)
                     if key == "pdf_file_path":
                         if value is not None:
+                            print(value)
                             try:
                                 new_pdf_path = self.change_pdf_itself(current_value, value)
                                 setattr(contract_to_update, key, new_pdf_path)
                                 pdf_file.save(new_pdf_path)
                             except FileNotFoundError:
                                 return False, "Fayl yolunda problem var. Fayl zədələnmiş və ya mövcud deyil."
+                    elif key == "pdf_file_paths":
+                        if value is not None:
+                            try:
+                                # new_additional_files = self
+                                pass
+                            except TypeError:
+                                pass
                     else:
                         setattr(contract_to_update, key, value)
 
             return True, "Müqavilə uğurla yeniləndi"
         except DBAPIError:
+            for new_path, old_path in reversed(file_operations):
+                if os.path.exists(new_path):
+                    os.rename(new_path, old_path)
             return False, "Serverdə xəta baş verdi."
 
 

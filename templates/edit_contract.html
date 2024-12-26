@@ -161,16 +161,16 @@
                     </td>
                 </tr>
 
-                {% for file_path in additional_files %}
+                {% for i, file_path in additional_files %}
                     <tr>
-                    <td>
-                        <p>Əlavə sənəd {{ loop.index0 + 1 }}</p>
-                    </td>
-
-                    <td id="pdf">
-                        <button onclick="window.open('{{ url_for('all_contracts.preview_additional_pdf', document_name = file_path) }}')" type="button" class="pdf-btn">Bax</button>
-                    </td>
-                </tr>
+                      <td>Əlavə sənəd {{ i + 1 }}</td>
+                      <td>
+                        <div class="upload-container">
+                          <input type="file" name="updated_file_{{ i }}" class="table__pdf-upload" />
+                          <div class="progress-bar"><div id="progress"></div></div>
+                        </div>
+                      </td>
+                    </tr>
                 {% endfor %}
 
                 <tr>
