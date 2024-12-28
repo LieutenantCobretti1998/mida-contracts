@@ -340,9 +340,9 @@ class EditContract(ValidatorWrapper):
         new_file_path = os.path.normpath(new_file_path)
         return new_file_path
 
-    def change_additional_pdf_files_paths(self, files: dict, company_id: int, old_files) -> str:
+    def change_additional_pdf_files_paths(self, company_id: int, old_files, file_operations: list) -> str:
         """
-        :param files: dict
+        :param file_operations: dict
         :param company_id: int
         :param old_files:
         :return: str
@@ -352,12 +352,38 @@ class EditContract(ValidatorWrapper):
         updated_paths = []
         for old_file_path in old_file_paths:
             try:
-                new_path = self.change_pdf_file_path(company_id, old_file_path)
+                new_path = self.change_pdf_file_path(company_id, old_file_path, file_operations)
                 updated_paths.append(new_path)
             except FileNotFoundError:
                 raise FileNotFoundError(f"File not found: {old_file_path}")
         return json.dumps(updated_paths)
 
+    @staticmethod
+    def change_pdf_itself(previous_pdf_file_path: str, new_pdf_file_name: str) -> str:
+        """
+        :param previous_pdf_file_path:
+        :param new_pdf_file_name:
+        :return: str:
+        Help to change pdf in the main folder logic of upload files of contracts
+        """
+        new_pdf_path = os.path.join(os.path.dirname(previous_pdf_file_path), new_pdf_file_name)
+        new_pdf_path = os.path.normpath(new_pdf_path)
+        os.remove(previous_pdf_file_path)
+        return new_pdf_path
+
+
+    def change_additional_files_itself(self, old_files: str, additional_files: dict) -> str:
+        """
+        :param old_files: str
+        :param additional_files: dict
+        :return: str
+        """
+        updated_paths = []
+        old_file_paths = json.loads(old_files)
+        for i, new_file_path in additional_files.items():
+            file_to_change = old_file_paths[i]
+            self.change_pdf_itself(file_to_change, new_file_path)
+        return json.dumps(updated_paths)
 
     def calculate_total_contract_addition(self, contract_id: int) -> float:
         """
@@ -383,18 +409,6 @@ class EditContract(ValidatorWrapper):
         total_addition = sum(act.amount for act in contract.acts)
         return total_addition
 
-    @staticmethod
-    def change_pdf_itself(previous_pdf_file_path: str, new_pdf_file_name: str) -> str:
-        """
-        :param previous_pdf_file_path:
-        :param new_pdf_file_name:
-        :return: str:
-        Help to change pdf in the main folder logic of upload files of contracts
-        """
-        new_pdf_path = os.path.join(os.path.dirname(previous_pdf_file_path), new_pdf_file_name)
-        new_pdf_path = os.path.normpath(new_pdf_path)
-        os.remove(previous_pdf_file_path)
-        return new_pdf_path
 
     # Helpers methods for update logic
     #  Main update logic is here
@@ -437,7 +451,10 @@ class EditContract(ValidatorWrapper):
                                         new_pdf_file_path = self.change_pdf_file_path(existed_company_id,
                                                                                       contract_to_update.pdf_file_path,
                                                                                       file_operations)
-                                        new_files_paths = self.change_additional_pdf_files_paths(additional_files, existed_company_id, old_add_files)
+                                        new_files_paths = self.change_additional_pdf_files_paths(additional_files,
+                                                                                                 existed_company_id,
+                                                                                                 old_add_files,
+                                                                                                 file_operations)
                                         contract_to_update.company_id = existed_company_id
                                         contract_to_update.pdf_file_path = new_pdf_file_path
                                         contract_to_update.pdf_file_paths = new_files_paths
@@ -454,10 +471,11 @@ class EditContract(ValidatorWrapper):
                                     try:
                                         new_pdf_file_path = self.change_pdf_file_path(existed_voen_id,
                                                                                       contract_to_update.pdf_file_path,
-                                                                                      )
+                                                                                      file_operations)
                                         new_files_paths = self.change_additional_pdf_files_paths(additional_files,
                                                                                                  existed_company_id,
-                                                                                                 old_add_files)
+                                                                                                 old_add_files,
+                                                                                                 file_operations)
                                         contract_to_update.company_id = existed_voen_id
                                         contract_to_update.pdf_file_path = new_pdf_file_path
                                         contract_to_update.pdf_file_paths = new_files_paths
