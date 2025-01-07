@@ -318,30 +318,37 @@ class EditContract(ValidatorWrapper):
         result = self.db_session.query(Companies).filter_by(company_name=company_name, voen=voen_result).first()
         return result.id if result else False
 
-    def change_pdf_file_path(self, company_id: int, old_file_path: str, file_operations_history: list) -> str:
+    def change_pdf_file_path(self, old_file_path: str, file_operations_history: list, company_id: int = None, voen: str = None) -> str:
         """
+        :param voen: str
         :param file_operations_history: list
         :param company_id:
         :param old_file_path:
         :return: str
         The method which help to change the pdf file path
         """
-        new_company_name = self.db_session.query(Companies).where(Companies.id == company_id).first().company_name
+        new_company_voen = None
+        if company_id:
+            new_company_voen = self.db_session.query(Companies).where(Companies.id == company_id).first().company_name
+        else:
+            new_company_voen = self.db_session.query(Companies).where(Companies.voen == voen).first().company_name
 
-        company_upload_path = os.path.join(current_app.config['UPLOAD_FOLDER'], new_company_name)
+
+        company_upload_path = os.path.join(current_app.config['UPLOAD_FOLDER'], new_company_voen)
         company_upload_path = os.path.normpath(company_upload_path)
 
         old_file_path = os.path.normpath(old_file_path)
         old_file_pattern = r'(?<=\\contracts\\)[^\\]+(?=\\)'
         new_file_path = os.path.join(str(company_upload_path),
-                                     os.path.basename(re.sub(old_file_pattern, new_company_name, old_file_path)))
+                                     os.path.basename(re.sub(old_file_pattern, new_company_voen, old_file_path)))
         file_operations_history.append((old_file_path, new_file_path))
         os.rename(old_file_path, new_file_path)
         new_file_path = os.path.normpath(new_file_path)
         return new_file_path
 
-    def change_additional_pdf_files_paths(self, company_id: int, old_files, file_operations: list) -> str:
+    def change_additional_pdf_files_paths(self, old_files, file_operations: list, company_id: int = None, voen: str = None) -> str:
         """
+        :param voen: str
         :param file_operations: dict
         :param company_id: int
         :param old_files:
@@ -352,7 +359,7 @@ class EditContract(ValidatorWrapper):
         updated_paths = []
         for old_file_path in old_file_paths:
             try:
-                new_path = self.change_pdf_file_path(company_id, old_file_path, file_operations)
+                new_path = self.change_pdf_file_path(old_file_path, file_operations, company_id=company_id, voen=voen)
                 updated_paths.append(new_path)
             except FileNotFoundError:
                 raise FileNotFoundError(f"File not found: {old_file_path}")
@@ -372,17 +379,24 @@ class EditContract(ValidatorWrapper):
         return new_pdf_path
 
 
-    def change_additional_files_itself(self, old_files: str, additional_files: dict) -> str:
+    def change_additional_files_itself(self, old_files: str, additional_files: dict, file_objects: dict[int, "FileStorage"]) -> str:
         """
+        :param file_objects:
         :param old_files: str
         :param additional_files: dict
         :return: str
         """
         updated_paths = []
+        print(additional_files)
         old_file_paths = json.loads(old_files)
         for i, new_file_path in additional_files.items():
             file_to_change = old_file_paths[i]
             self.change_pdf_itself(file_to_change, new_file_path)
+            updated_paths.append(new_file_path)
+
+            if i in file_objects:
+                file_obj = file_objects[i]
+                file_obj.save(new_file_path)
         return json.dumps(updated_paths)
 
     def calculate_total_contract_addition(self, contract_id: int) -> float:
@@ -412,10 +426,11 @@ class EditContract(ValidatorWrapper):
 
     # Helpers methods for update logic
     #  Main update logic is here
-    def update_data(self, changes: dict, pdf_file: flask) -> tuple[bool, str]:
+    def update_data(self, changes: dict, pdf_file: flask, additional_file_objects: dict) -> tuple[bool, str]:
         """
-        :param changes:
-        :param pdf_file:
+        :param changes: dict
+        :param pdf_file: flask
+        :param additional_file_objects: dict
         :return: tuple[bool, str]
         The main update logic after contract's edit. it will check all the possibilities of updating or refuse the
             contract to update based on different situations
@@ -448,11 +463,12 @@ class EditContract(ValidatorWrapper):
                                 existed_company_id = self.is_company_exists(value)
                                 if existed_company_id:
                                     try:
-                                        new_pdf_file_path = self.change_pdf_file_path(existed_company_id,
+                                        new_pdf_file_path = self.change_pdf_file_path(
                                                                                       contract_to_update.pdf_file_path,
-                                                                                      file_operations)
+                                                                                      file_operations,
+                                                                                      company_id=existed_company_id
+                                        )
                                         new_files_paths = self.change_additional_pdf_files_paths(additional_files,
-                                                                                                 existed_company_id,
                                                                                                  old_add_files,
                                                                                                  file_operations)
                                         contract_to_update.company_id = existed_company_id
@@ -489,7 +505,6 @@ class EditContract(ValidatorWrapper):
                     current_value = getattr(contract_to_update, key)
                     if key == "pdf_file_path":
                         if value is not None:
-                            print(value)
                             try:
                                 new_pdf_path = self.change_pdf_itself(current_value, value)
                                 setattr(contract_to_update, key, new_pdf_path)
@@ -499,10 +514,10 @@ class EditContract(ValidatorWrapper):
                     elif key == "pdf_file_paths":
                         if value is not None:
                             try:
-                                # new_additional_files = self
-                                pass
-                            except TypeError:
-                                pass
+                                new_additional_files = self.change_additional_files_itself(current_value, value, additional_file_objects)
+                                setattr(contract_to_update, key, new_additional_files)
+                            except FileNotFoundError:
+                                return False, "Fayl yolunda problem var. Fayl zədələnmiş və ya mövcud deyil."
                     else:
                         setattr(contract_to_update, key, value)
 

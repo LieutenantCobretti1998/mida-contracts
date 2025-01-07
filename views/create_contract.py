@@ -49,6 +49,7 @@ def save_contract():
             flash('Bitmə tarixi orijinal başlanğıc tarixindən əvvəl və ya ona bərabər ola bilməz', 'warning')
             return render_template('add_contract.html', form=form)
         try:
+            company = contract_manager.get_or_create_company(filtered_company_name, filtered_voen)
             file = form.pdf_file.data
             additional_files = form.additional_files.data
             serialized_file_paths = None
@@ -64,7 +65,6 @@ def save_contract():
 
             filename = secure_filename(file.filename)
             file_path = add_contract_pdf(current_app.config['UPLOAD_FOLDER'], filename, filtered_company_name)
-            company = contract_manager.get_or_create_company(filtered_company_name, filtered_voen)
             contract = Contract(
                 contract_number=filtered_contract,
                 date=form.start_date.data,

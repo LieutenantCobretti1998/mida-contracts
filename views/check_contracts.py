@@ -87,6 +87,7 @@ def update_contract(contract_id):
     if form.validate_on_submit():
         new_remained_amount = None
         new_files = {}
+        file_objects = {}
         file = form.pdf_file.data
         original_start_date = original_data.date
         original_end_date = original_data.end_date
@@ -106,6 +107,7 @@ def update_contract(contract_id):
                     return render_template('edit_contract.html', form=form, contract_id=contract_id,
                                            search_result=original_data, additional_files=old_additional_files )
                 new_files[i] = filename_lower
+                file_objects[i] = uploaded_file
 
         filename = ""
         if form.comments.data is not None:
@@ -166,7 +168,7 @@ def update_contract(contract_id):
             end_date=form.end_date.data if form.end_date.data else original_data.end_date
 
         )
-        success, message = edit_engine.update_data(data_dict, form.pdf_file.data)
+        success, message = edit_engine.update_data(data_dict, form.pdf_file.data, file_objects)
         if success:
             db.session.commit()
             flash(message, "success")
@@ -196,12 +198,12 @@ def preview_pdf(contract_id):
 @check_contracts_bp.route('/preview_additional_pdf/<path:document_name>', methods=['GET'])
 @login_required
 def preview_additional_pdf(document_name):
-    upload_folder = os.path.join(current_app.root_path)
-    file_path = os.path.join(upload_folder, document_name)
-    if not file_path.startswith(os.path.abspath('upload_folder')):
+    upload_folder = current_app.config['UPLOAD_FOLDER']
+    # Create the absolute path of the file directly using the document_name
+    if not upload_folder.startswith(upload_folder):
         abort(403)
     try:
-        return send_file(file_path)
+        return send_file(document_name)
     except FileNotFoundError:
         abort(404)
 
