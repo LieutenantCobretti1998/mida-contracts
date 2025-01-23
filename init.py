@@ -53,6 +53,8 @@ def update_expired_contracts():
     except Exception as e:
         session.rollback()
         logger.error(f"An error occurred while updating expired contracts: {e}")
+    finally:
+        session.close()
 
 def create_app() -> Flask:
     app = Flask(__name__)

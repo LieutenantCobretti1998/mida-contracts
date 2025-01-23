@@ -137,7 +137,7 @@ def update_user(user_id):
         flash('Yanlış kateqoriya seçilib. Zəhmət olmasa düzgün seçimi edin', 'error')
         return redirect(url_for('parameters.edit_user', user_id=user_id))
     if form.validate_on_submit():
-        user_exist = user_manager.is_user_existed(form.username.data)
+        user_exist = user_manager.is_user_existed(form.username.data, exclude_user_id=user_id)
         if user_exist:
             flash("İstifadəçi artıq mövcuddur", "warning")
             return render_template('edit_user.html', form=form, user_id=user_id,

@@ -48,7 +48,8 @@ def edit_contract(contract_id):
         form.categories.choices = [(category.id, category.category_name) for category in categories]
         search_engine = SearchEngine(db.session, contract_id)
         search_result = search_engine.search_company_with_contract()
-        additional_files = enumerate(json.loads(search_result.pdf_file_paths)) if search_result.pdf_file_paths else []
+        additional_files_data = enumerate(json.loads(search_result.pdf_file_paths)) if search_result.pdf_file_paths else []
+        additional_files = list(additional_files_data)
         form.categories.default = search_result.category_id
         form.start_date.default = search_result.date
         form.end_date.default = search_result.end_date
@@ -75,7 +76,8 @@ def update_contract(contract_id):
     contract_manager = ContractManager(db.session)
     categories = contract_manager.search_categories()
     original_data = search_engine.search_company_with_contract()
-    old_additional_files = enumerate(json.loads(original_data.pdf_file_paths)) if original_data.pdf_file_paths else []
+    old_additional_files_data = enumerate(json.loads(original_data.pdf_file_paths)) if original_data.pdf_file_paths else []
+    old_additional_files = list(enumerate(old_additional_files_data))
     form = EditContractForm()
     form.categories.choices = [(category.id, category.category_name) for category in categories]
     form.categories.default = original_data.category_id
@@ -123,7 +125,7 @@ def update_contract(contract_id):
             if new_start_date >= new_end_date:
                 flash("Başlanğıc tarixi bitmə tarixindən sonra və ya ona bərabər ola bilməz", "warning")
                 return render_template('edit_contract.html', form=form, contract_id=contract_id,
-                                       search_result=original_data, additional_files=old_additional_files )
+                                       search_result=original_data, additional_files=old_additional_files)
         elif start_date_changed:
             if new_start_date >= original_end_date:
                 flash("Başlanğıc tarixi original bitmə tarixindən sonra və ya ona bərabər ola bilməz", "warning")
@@ -133,7 +135,7 @@ def update_contract(contract_id):
             if new_end_date <= original_start_date:
                 flash("Bitmə tarixi orijinal başlanğıc tarixindən əvvəl və ya ona bərabər ola bilməz", "warning")
                 return render_template('edit_contract.html', form=form, contract_id=contract_id,
-                                       search_result=original_data, additional_files=old_additional_files )
+                                       search_result=original_data, additional_files=old_additional_files)
         if file:
             filename = secure_filename(make_unique(f"{file.filename}"))
         if (original_data.amount != new_amount) and new_amount:

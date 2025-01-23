@@ -373,8 +373,10 @@ class EditContract(ValidatorWrapper):
         :return: str:
         Help to change pdf in the main folder logic of upload files of contracts
         """
+        print(os.path.dirname(previous_pdf_file_path))
         new_pdf_path = os.path.join(os.path.dirname(previous_pdf_file_path), new_pdf_file_name)
         new_pdf_path = os.path.normpath(new_pdf_path)
+        print(new_pdf_path)
         os.remove(previous_pdf_file_path)
         return new_pdf_path
 
@@ -387,16 +389,27 @@ class EditContract(ValidatorWrapper):
         :return: str
         """
         updated_paths = []
-        print(additional_files)
-        old_file_paths = json.loads(old_files)
-        for i, new_file_path in additional_files.items():
-            file_to_change = old_file_paths[i]
-            self.change_pdf_itself(file_to_change, new_file_path)
-            updated_paths.append(new_file_path)
+        old_file_paths = json.loads(old_files)  # Load the old file paths as a list
 
-            if i in file_objects:
-                file_obj = file_objects[i]
-                file_obj.save(new_file_path)
+        for i, old_file_path in enumerate(old_file_paths):
+            # Check if this file path is being updated
+            if i in additional_files:
+                new_file_name = additional_files[i]
+                print(f"Updating file at index {i} from {old_file_path} to {new_file_name}")
+
+                # Update the file itself
+                new_file_path = self.change_pdf_itself(old_file_path, new_file_name)
+                updated_paths.append(new_file_path)
+
+                # Save the file object if it exists
+                if i in file_objects:
+                    file_obj = file_objects[i]
+                    file_obj.save(new_file_path)
+            else:
+                # If the file is not updated, keep the old file path
+                print(f"No update for file at index {i}, keeping {old_file_path}")
+                updated_paths.append(old_file_path)
+
         return json.dumps(updated_paths)
 
     def calculate_total_contract_addition(self, contract_id: int) -> float:
@@ -1487,16 +1500,19 @@ class UserManager(ValidatorWrapper):
     def __init__(self, db_session: Session):
         super().__init__(db_session)
 
-    def is_user_existed(self, username: str) -> bool:
+    def is_user_existed(self, username: str, exclude_user_id=None) -> bool:
         """
-        :param username:
-        :return: bool
-        Simple checking of user's existence
+        Check if any user (other than exclude_user_id) has this username.
         """
-        query = self.db_session.query(User).filter(User.username == username).first()
-        if query:
-            return True if query.username == username else False
-        return False
+        # Start with any user matching the username
+        query = self.db_session.query(User).filter(User.username == username)
+
+        # Exclude the user we're editing, so they can keep their own username
+        if exclude_user_id is not None:
+            query = query.filter(User.id != exclude_user_id)
+
+        # Check if such a user exists
+        return self.db_session.query(query.exists()).scalar()
 
     def delete_user(self, user_id: str):
         try:

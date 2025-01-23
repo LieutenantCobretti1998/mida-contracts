@@ -159,10 +159,11 @@ body {
   margin-left: 10px; /* Space between the file input and progress bar */
 }
 
-#progress {
-  height: 100%;
-  background-color: green;
-  width: 0; /* Start with no fill */
+.progress-bar div {
+  height: 100%; /* Full height to match the container */
+  width: 0;
+  background-color: green; /* Fill color for the progress bar */
+  transition: width 0.3s ease; /* Smooth width transition */
 }
 
 #is_adv_payer,
