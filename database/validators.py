@@ -373,10 +373,8 @@ class EditContract(ValidatorWrapper):
         :return: str:
         Help to change pdf in the main folder logic of upload files of contracts
         """
-        print(os.path.dirname(previous_pdf_file_path))
         new_pdf_path = os.path.join(os.path.dirname(previous_pdf_file_path), new_pdf_file_name)
         new_pdf_path = os.path.normpath(new_pdf_path)
-        print(new_pdf_path)
         os.remove(previous_pdf_file_path)
         return new_pdf_path
 
@@ -395,7 +393,6 @@ class EditContract(ValidatorWrapper):
             # Check if this file path is being updated
             if i in additional_files:
                 new_file_name = additional_files[i]
-                print(f"Updating file at index {i} from {old_file_path} to {new_file_name}")
 
                 # Update the file itself
                 new_file_path = self.change_pdf_itself(old_file_path, new_file_name)
@@ -407,7 +404,6 @@ class EditContract(ValidatorWrapper):
                     file_obj.save(new_file_path)
             else:
                 # If the file is not updated, keep the old file path
-                print(f"No update for file at index {i}, keeping {old_file_path}")
                 updated_paths.append(old_file_path)
 
         return json.dumps(updated_paths)
