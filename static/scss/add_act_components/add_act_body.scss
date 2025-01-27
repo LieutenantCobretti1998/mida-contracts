@@ -118,11 +118,13 @@
     margin-left: 10px; /* Space between the file input and progress bar */
 }
 
-#progress {
-    height: 100%;
-    background-color: green;
-    width: 0; /* Start with no fill */
+#progress, #progress-files {
+    height: 100%; /* Full height to match the container */
+    background-color: green; /* Fill color for the progress bar */
+    width: 0;
+    transition: width 0.3s ease; /* Smooth width transition */
 }
+
 
 #is_adv_payer {
   padding: 10px;

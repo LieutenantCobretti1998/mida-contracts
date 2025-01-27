@@ -1,5 +1,6 @@
 import re
 from datetime import datetime, timedelta
+from json import JSONDecodeError
 from typing import Any, Type, List, Union, Dict
 import os
 import shutil
@@ -41,6 +42,17 @@ class ContractManager(ValidatorWrapper):
             os.remove(contract_pdf_path)
         except FileNotFoundError:
             raise FileNotFoundError("Pdf file is not found")
+
+        try:
+            if contract.pdf_file_paths:
+                additional_files  = json.loads(contract.pdf_file_paths)
+                for additional_file in additional_files:
+                    if os.path.exists(additional_file):
+                        os.remove(additional_file)
+                    else:
+                        print(f"File not found: {additional_file}")
+        except (FileNotFoundError, JSONDecodeError) as e:
+            print(f"Error while deleting additional files: {e}")
 
     def delete_contract(self, contract_id: int) -> bool:
         contract = self.db_session.query(Contract).filter_by(id=contract_id).first()

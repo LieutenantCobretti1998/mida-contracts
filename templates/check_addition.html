@@ -66,7 +66,7 @@
                         <button onclick="window.open('{{ url_for('all_additions.preview_pdf', addition_id = addition_id) }}')"  type="button" class="pdf-btn">Bax</button>
                     </td>
                 </tr>
-                {% if current_user.role == 'admin' or current_user.role == 'editor' %}
+                {% if current_user.role == 'admin' %}
                     <tr>
                         <td></td>
                         <td id="edit">
