@@ -68,6 +68,21 @@ body {
   border-radius: 0 !important;
 }
 
+.gridjs-head {
+  display: flex;
+  justify-content: space-between; /* space out items */
+  align-items: center;
+}
+
+/* Push the search box to the right */
+.gridjs .gridjs-search {
+  margin-left: auto; /* or float: right; */
+}
+
+.gridjs-title {
+  font-size: 2.5rem;
+}
+
 .table {
   border-collapse: collapse;
   width: 70%;
@@ -243,6 +258,11 @@ body {
 
 .expired {
   background-color: red;
+}
+
+.file-flex {
+  display: flex;
+  justify-content: space-between;
 }
 
 /*# sourceMappingURL=check_contract.css.map */

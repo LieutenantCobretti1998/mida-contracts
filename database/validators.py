@@ -153,6 +153,23 @@ class SearchEngine(ValidatorWrapper):
         result = self.db_session.query(Companies).filter_by(id=self.search).first()
         return result
 
+    def delete_pdf(self, pdf_id):
+        result = self.db_session.query(Contract).filter_by(id=self.search).first()
+        print(result)
+        if result:
+            contract_files = json.loads(result.pdf_file_paths)
+            file_to_delete = contract_files[pdf_id]
+            try:
+                os.remove(file_to_delete)
+                contract_files.pop(pdf_id)
+                result.pdf_file_paths = json.dumps(contract_files)
+                self.db_session.commit()
+            except Exception as e:
+                raise e
+
+        else:
+            raise FileNotFoundError
+
     def search_company_with_contract(self) -> Contract | None:
         result = self.db_session.query(Contract).join(Companies).filter(Contract.id == self.search).first()
         if result:
@@ -357,6 +374,7 @@ class EditContract(ValidatorWrapper):
         os.rename(old_file_path, new_file_path)
         new_file_path = os.path.normpath(new_file_path)
         return new_file_path
+
 
     def change_additional_pdf_files_paths(self, old_files, file_operations: list, company_id: int = None, voen: str = None) -> str:
         """

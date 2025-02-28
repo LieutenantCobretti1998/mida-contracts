@@ -9,6 +9,9 @@ export default function openPopUpMenu(url, csrf_token) {
            case url.includes("delete_contract"):
                delete_type = "müqaviləni";
                break;
+           case url.includes("delete_pdf"):
+               delete_type = "əlavə faylı";
+               break;
            case url.includes("delete_act"):
                delete_type = "aktı";
                break;
@@ -67,3 +70,27 @@ function deleteContract(url, csrf_token) {
         })
     })
 }
+
+function deletePdf(csrf_token, contract_id, pdf_id) {
+    fetch(`/contracts/delete_pdf/${contract_id}/${pdf_id}`, {
+        method: "DELETE",
+        headers: {
+            "X-CSRF-Token": csrf_token,
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Deletion failed");
+            }
+            return response.json();
+        })
+        .then(data => {
+            window.location.href = data.redirect;
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        })
+}
+
+window.deletePdf = deletePdf;

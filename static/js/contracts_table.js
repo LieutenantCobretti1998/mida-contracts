@@ -127,3 +127,4 @@ headers.forEach((header, index) => {
     const columnName = grid.config.columns[index].name;
     header.textContent = columnName;  // Replace with label if available
 });
+

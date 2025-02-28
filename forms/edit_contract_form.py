@@ -1,8 +1,6 @@
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileField, FileAllowed
+from flask_wtf.file import FileField, FileAllowed, MultipleFileField
 from wtforms import StringField, SubmitField, DateField, DecimalField, SelectField, TextAreaField, BooleanField
-from wtforms.fields.form import FormField
-from wtforms.fields.list import FieldList
 from wtforms.validators import NumberRange, Length, Optional
 from forms.create_contract_form import CreateContractForm
 from forms.custom_validators import *
@@ -44,11 +42,8 @@ class EditContractForm(CreateContractForm):
     pdf_file = FileField("Müqavilə yüklə",validators=[Optional(),
                                                 FileAllowed(["pdf", "gif", "png", "jpeg", "jpg"], selected_files_only)]
                          )
-    additional_files = FieldList(
-        FormField(AdditionalFileForm),
-        min_entries=0,
-        max_entries=5,
-        label="Əlavə fayllar"
-    )
+    additional_files = MultipleFileField("Əlavə sənədlər. (Maksimum 5 fayl)", validators=[
+        Optional(),
+        FileAllowed(["pdf", "gif", "png", "jpeg", "jpg"], selected_files_only)])
     comments = TextAreaField("Əlavə qeydlər", validators=[Optional()])
     save = SubmitField("Saxla")

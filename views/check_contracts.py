@@ -99,17 +99,30 @@ def update_contract(contract_id):
         start_date_changed = new_start_date is not None and new_start_date != original_start_date
         end_date_changed = new_end_date is not None and new_end_date != original_end_date
         new_amount = form.amount.data
-        for i, old_path in enumerate(old_additional_files):
-            field_name = f"updated_file_{i}"
-            uploaded_file = request.files.get(field_name)
-            if uploaded_file:
-                filename_lower = secure_filename(uploaded_file.filename.lower())
-                if not filename_lower.endswith(allowed_extensions):
-                    flash(f"Fayl icazə verilən formatda deyil: {uploaded_file.filename}", "error")
-                    return render_template('edit_contract.html', form=form, contract_id=contract_id,
-                                           search_result=original_data, additional_files=old_additional_files )
-                new_files[i] = filename_lower
-                file_objects[i] = uploaded_file
+        additional_files = form.additional_files.data
+
+        if not additional_files:
+            for i, old_path in enumerate(old_additional_files):
+                field_name = f"updated_file_{i}"
+                uploaded_file = request.files.get(field_name)
+                if uploaded_file:
+                    filename_lower = secure_filename(uploaded_file.filename.lower())
+                    if not filename_lower.endswith(allowed_extensions):
+                        flash(f"Fayl icazə verilən formatda deyil: {uploaded_file.filename}", "error")
+                        return render_template('edit_contract.html', form=form, contract_id=contract_id,
+                                               search_result=original_data, additional_files=old_additional_files )
+                    new_files[i] = filename_lower
+                    file_objects[i] = uploaded_file
+        else:
+            additional_file_paths = []
+            for additional_file in additional_files:
+                additional_filename = secure_filename(additional_file.filename)
+                additional_file_path = add_contract_pdf(current_app.config['UPLOAD_FOLDER'], additional_filename,
+                                                        original_data.company.company_name)
+                additional_file.save(additional_file_path)
+                additional_file_paths.append(additional_file_path)
+            serialized_file_paths = json.dumps(additional_file_paths)
+            original_data.pdf_file_paths = serialized_file_paths
 
         filename = ""
         if form.comments.data is not None:
@@ -194,8 +207,29 @@ def preview_pdf(contract_id):
     search_result = search_engine.search_company_with_contract()
     try:
         return send_file(search_result.pdf_file_path)
+
     except FileNotFoundError:
         abort(404)
+
+@check_contracts_bp.route('/delete_pdf/<int:contract_id>/<int:pdf_id>', methods=['DELETE'])
+@login_required
+def delete_pdf(contract_id, pdf_id):
+    if current_user.role == "viewer" or current_user.role == "editor":
+        abort(401)
+
+    search_engine = SearchEngine(db.session, contract_id)
+    try:
+        search_engine.delete_pdf(pdf_id)
+        flash("Əlavə fayl uğurla silindi", "success")
+        return jsonify({
+            "redirect": url_for('all_contracts.get_contract', contract_id=contract_id)
+        })
+    except FileNotFoundError:
+        abort(404)
+    except Exception as e:
+        print(e)
+        flash("Müqaviləni silmək mümkün olmadı", "error")
+        return jsonify({"redirect": url_for('all_contracts.get_contract', contract_id=contract_id)}), 500
 
 @check_contracts_bp.route('/preview_additional_pdf/<path:document_name>', methods=['GET'])
 @login_required
@@ -224,7 +258,7 @@ def delete_contract(contract_id):
             'status': 'success',
         }), 200
     else:
-        flash("Müqaviləni silmək mümkün olmadı.", "error")
+        flash("Müqaviləni silmək mümkün olmadı", "error")
         db.session.rollback()
         return jsonify({
             'status': 'error',

@@ -96,6 +96,7 @@ async function editCategory(id, category_name, csrf_token) {
         id: id,
         category_name: category_name,
     }
+    console.log(data)
     try {
         const response = await fetch('/api/all_categories/update_category', {
             method: 'PUT',

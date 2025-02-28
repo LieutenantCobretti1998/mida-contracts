@@ -160,20 +160,41 @@
                         </ul>
                     </td>
                 </tr>
-
-                {% for i, file_path in additional_files %}
+                {% if additional_files %}
+                    {% for i, file_path in additional_files %}
+                        <tr>
+                            <td>Əlavə sənəd {{ i + 1 }}</td>
+                            <td>
+                                <div class="upload-container">
+                                    <input type="file" name="updated_file_{{ i }}" class="table__pdf-upload" />
+                                    <div class="progress-bar">
+                                        <div id="progress_{{ i + 1 }}"></div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
                     <tr>
-                      <td>Əlavə sənəd {{ i + 1 }}</td>
-                      <td>
-                        <div class="upload-container">
-                          <input type="file" name="updated_file_{{ i }}" class="table__pdf-upload" />
-                          <div class="progress-bar">
-                              <div id="progress_{{ i + 1 }}"></div>
-                          </div>
-                        </div>
-                      </td>
+                        <td class="table__text">
+                            {{ form.additional_files.label() }}
+                        </td>
+                        <td>
+                            <div class="upload-container">
+                                {{ form.additional_files(class="table__pdf-upload") }}
+                                <div class="progress-bar">
+                                    <div id="progress-files"></div>
+                                </div>
+                            </div>
+                            <ul class="error-list">
+                                {% for error in form.additional_files.errors %}
+                                    <li class="error-list__message">{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
                     </tr>
-                {% endfor %}
+                {% endif %}
+
 
                 <tr>
                     <td class="table__text">

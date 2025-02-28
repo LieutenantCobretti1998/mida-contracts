@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block title %} Check Contract {% endblock title %}
 {% block style %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/check_contract.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/check_contract.css') }}">
 {% endblock style %}
 {% block content_part %}
         <table  class="table">
@@ -111,8 +111,11 @@
                         <p>Əlavə sənəd {{ loop.index0 + 1 }}</p>
                     </td>
 
-                    <td id="pdf">
+                    <td id="pdf" class="file-flex">
                         <button onclick="window.open('{{ url_for('all_contracts.preview_additional_pdf', document_name = file_path) }}')" type="button" class="pdf-btn">Bax</button>
+                        {% if current_user.role == 'admin' %}
+                            <button onclick="deletePdf('{{ csrf_token() }}', '{{ search_result.id }}', '{{ loop.index0 }}')" type="button" class="pdf-btn delete-btn">Sil</button>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}
@@ -195,6 +198,10 @@
         const role = "{{ current_user.role }}";
         let pdf_url_base = "{{ url_for('all_acts.preview_pdf', act_id = 0 ) }}";
         pdf_url_base = pdf_url_base.replace(/\/0$/, "/");
+
+
+
+        delete_pdf_url_base = pdf_url_base.replace(/\/0$/, "/");
 
         let delete_url_base = "{{ url_for('all_acts.delete_act', act_id = 0) }}";
         delete_url_base = delete_url_base.replace(/\/0$/, "/");

@@ -121,7 +121,7 @@
     margin-left: 10px; /* Space between the file input and progress bar */
 }
 
-.progress-bar  div {
+.progress-bar >  div {
     height: 100%; /* Full height to match the container */
     width: 0;
     background-color: green; /* Fill color for the progress bar */

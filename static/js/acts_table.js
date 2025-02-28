@@ -86,3 +86,12 @@ const grid = new Grid( {
             },
 })
 grid.render(document.getElementById("results"));
+
+const gridHeader = document.querySelector(".gridjs-head");
+if (gridHeader) {
+  const titleElement = document.createElement("div");
+  titleElement.className = "gridjs-title";
+  titleElement.textContent = "Aktlar";
+  // Insert the title at the beginning of the header
+  gridHeader.prepend(titleElement);
+}

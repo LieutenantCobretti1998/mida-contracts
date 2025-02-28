@@ -22,7 +22,6 @@
         const edit_form = '{{ update_form.category }}';
         let delete_url_base = "{{ url_for('api_categories.delete_category', category_id = 0) }}";
         delete_url_base = delete_url_base.replace(/\/0$/, "/");
-        console.log(delete_url_base)
 
         let edit_url_base = "{{ url_for('parameters.edit_category', category_id = 0) }}";
         edit_url_base = edit_url_base.replace(/\/0$/, "/");
