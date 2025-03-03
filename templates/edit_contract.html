@@ -160,10 +160,12 @@
                         </ul>
                     </td>
                 </tr>
+                {% set existing_files_count = additional_files|length if additional_files is defined else 0 %}
+                {% set max_files = 5 %}
                 {% if additional_files %}
-                    {% for i, file_path in additional_files %}
+                    {% for i, file_path, full_name in additional_files %}
                         <tr>
-                            <td>Əlavə sənəd {{ i + 1 }}</td>
+                            <td><span class="ellipsis">{{ full_name }}</span></td>
                             <td>
                                 <div class="upload-container">
                                     <input type="file" name="updated_file_{{ i }}" class="table__pdf-upload" />
@@ -173,6 +175,21 @@
                                 </div>
                             </td>
                         </tr>
+                    {% endfor %}
+                    {% for i in range(existing_files_count, max_files) %}
+                      <tr>
+                        <td>
+                          Yeni sənəd {{ i + 1 }}
+                        </td>
+                        <td>
+                          <div class="upload-container">
+                            <input type="file" name="new_file_{{ i }}" class="table__pdf-upload" />
+                            <div class="progress-bar">
+                              <div id="progress_{{ i + 1 }}"></div>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
                     {% endfor %}
                 {% else %}
                     <tr>

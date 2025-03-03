@@ -189,4 +189,12 @@ select {
   width: 100%;
 }
 
+.ellipsis {
+  display: inline-block; /* or block if you prefer */
+  max-width: 300px; /* adjust as needed */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /*# sourceMappingURL=edit_contract.css.map */

@@ -347,7 +347,7 @@ class EditContract(ValidatorWrapper):
         result = self.db_session.query(Companies).filter_by(company_name=company_name, voen=voen_result).first()
         return result.id if result else False
 
-    def change_pdf_file_path(self, old_file_path: str, file_operations_history: list, company_id: int = None, voen: str = None) -> str:
+    def change_pdf_file_path(self, old_file_path: str, file_operations_history: list, company_id: int = None, voen_id: str = None) -> str:
         """
         :param voen: str
         :param file_operations_history: list
@@ -356,11 +356,12 @@ class EditContract(ValidatorWrapper):
         :return: str
         The method which help to change the pdf file path
         """
+        print(company_id, voen_id)
         new_company_voen = None
         if company_id:
             new_company_voen = self.db_session.query(Companies).where(Companies.id == company_id).first().company_name
         else:
-            new_company_voen = self.db_session.query(Companies).where(Companies.voen == voen).first().company_name
+            new_company_voen = self.db_session.query(Companies).where(Companies.id == voen_id).first().company_name
 
 
         company_upload_path = os.path.join(current_app.config['UPLOAD_FOLDER'], new_company_voen)
@@ -376,7 +377,7 @@ class EditContract(ValidatorWrapper):
         return new_file_path
 
 
-    def change_additional_pdf_files_paths(self, old_files, file_operations: list, company_id: int = None, voen: str = None) -> str:
+    def change_additional_pdf_files_paths(self, old_files, file_operations: list, company_id: int = None, voen_id: str = None) -> str:
         """
         :param voen: str
         :param file_operations: dict
@@ -389,7 +390,7 @@ class EditContract(ValidatorWrapper):
         updated_paths = []
         for old_file_path in old_file_paths:
             try:
-                new_path = self.change_pdf_file_path(old_file_path, file_operations, company_id=company_id, voen=voen)
+                new_path = self.change_pdf_file_path(old_file_path, file_operations, company_id=company_id, voen_id=voen_id)
                 updated_paths.append(new_path)
             except FileNotFoundError:
                 raise FileNotFoundError(f"File not found: {old_file_path}")
@@ -417,24 +418,29 @@ class EditContract(ValidatorWrapper):
         :return: str
         """
         updated_paths = []
-        old_file_paths = json.loads(old_files)  # Load the old file paths as a list
+        old_file_paths = json.loads(old_files) if old_files else []
 
-        for i, old_file_path in enumerate(old_file_paths):
-            # Check if this file path is being updated
+        # Determine the maximum index to iterate over
+        max_index = max(len(old_file_paths), max(additional_files.keys(), default=-1) + 1)
+
+        for i in range(max_index):
             if i in additional_files:
                 new_file_name = additional_files[i]
-
-                # Update the file itself
-                new_file_path = self.change_pdf_itself(old_file_path, new_file_name)
+                # If there's an old file at this index, update it; otherwise, create a new file path
+                if i < len(old_file_paths):
+                    new_file_path = self.change_pdf_itself(old_file_paths[i], new_file_name)
+                else:
+                    # If no old file exists, create a new file path (using your logic from add_contract_pdf or similar)
+                    new_file_path = self.change_pdf_file_path(old_file_paths[i], new_file_name,
+                                                     original_data.company.company_name)
                 updated_paths.append(new_file_path)
-
-                # Save the file object if it exists
                 if i in file_objects:
                     file_obj = file_objects[i]
                     file_obj.save(new_file_path)
             else:
-                # If the file is not updated, keep the old file path
-                updated_paths.append(old_file_path)
+                # No new file provided for this index; keep the old file if it exists.
+                if i < len(old_file_paths):
+                    updated_paths.append(old_file_paths[i])
 
         return json.dumps(updated_paths)
 
@@ -524,13 +530,13 @@ class EditContract(ValidatorWrapper):
                                 existed_voen_id = self.is_voen_exists(value)
                                 if existed_voen_id:
                                     try:
-                                        new_pdf_file_path = self.change_pdf_file_path(existed_voen_id,
-                                                                                      contract_to_update.pdf_file_path,
-                                                                                      file_operations)
-                                        new_files_paths = self.change_additional_pdf_files_paths(additional_files,
-                                                                                                 existed_company_id,
-                                                                                                 old_add_files,
-                                                                                                 file_operations)
+                                        new_pdf_file_path = self.change_pdf_file_path(contract_to_update.pdf_file_path,
+                                                                                      file_operations,
+                                                                                      voen_id=existed_voen_id)
+                                        new_files_paths = self.change_additional_pdf_files_paths(old_add_files,
+                                                                                                 file_operations,
+                                                                                                 voen_id=existed_voen_id,
+                                                                                                 )
                                         contract_to_update.company_id = existed_voen_id
                                         contract_to_update.pdf_file_path = new_pdf_file_path
                                         contract_to_update.pdf_file_paths = new_files_paths

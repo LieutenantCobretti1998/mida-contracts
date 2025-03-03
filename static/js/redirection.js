@@ -5,7 +5,7 @@ function attachEventHandlers() {
     document.addEventListener('DOMContentLoaded', () => {
         const gridContainer = document.querySelectorAll(".results-table");
         gridContainer.forEach(grid => {
-            grid.addEventListener("click", (event) => {
+            grid.addEventListener("click", async (event) => {
             const contract_id = event.target.getAttribute("data-id");
             const category_name = event.target.getAttribute("data-value");
             const data_voen = event.target.getAttribute("data-voen");
@@ -31,11 +31,45 @@ function attachEventHandlers() {
                 case event.target.classList.contains("related-btn"):
                     openRelatedContracts(data_voen);
                     break;
-                case event.target.classList.contains("edit-btn"):
-                    editCategory(contract_id, category_name, csrf_token);
+                case event.target.classList.contains("edit-btn"): {
+                    const button = event.target;
+                  const rowElement = button.closest("tr");
+                  const categoryInput = rowElement.querySelector("input.editable-category");
+                  const updatedCategory = categoryInput ? categoryInput.value : "";
+                  const categoryId = button.getAttribute("data-id");
+                  const csrf = button.getAttribute("data-csrf-token");
+
+                  // Enable editing: remove readonly and change button to save state
+                  categoryInput.removeAttribute("readonly");
+                  categoryInput.focus();
+                  button.textContent = "Yadda Saxla"; // Change text to "Save"
+                  button.classList.remove("edit-btn");
+                  button.classList.add("save-btn");
+                  break;
+                }
+                case event.target.classList.contains("save-btn"): {
+                    const button = event.target;
+                    const rowElement = button.closest("tr");
+                    const categoryInput = rowElement.querySelector("input.editable-category");
+                    const updatedCategory = categoryInput ? categoryInput.value : "";
+                    const categoryId = button.getAttribute("data-id");
+                    const csrf = button.getAttribute("data-csrf-token");
+                    try {
+                          // Wait for the asynchronous update to complete.
+                          await editCategory(categoryId, updatedCategory, csrf);
+                          // After successful update, set input to read-only and revert button appearance.
+                          categoryInput.setAttribute("readonly", "true");
+                          button.textContent = "Redakta Et"; // revert to Edit label
+                          button.classList.remove("save-btn");
+                          button.classList.add("edit-btn");
+                    } catch (error) {
+                      console.error("Error updating category:", error);
+                      // Optionally show an error message in the UI.
+                    }
                     break;
-            }
-        });
+                    }
+                }
+            });
         })
 
     });
@@ -96,9 +130,8 @@ async function editCategory(id, category_name, csrf_token) {
         id: id,
         category_name: category_name,
     }
-    console.log(data)
     try {
-        const response = await fetch('/api/all_categories/update_category', {
+        const response = await fetch(`/api/all_categories/update_category`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

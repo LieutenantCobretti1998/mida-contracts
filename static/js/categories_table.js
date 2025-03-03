@@ -27,7 +27,7 @@ const grid = new Grid( {
         {
             name: "Kategoriyalar",
             formatter: (cell, row) => {
-                return html(`<input type="text" class="editable-category" value="${cell}" />`);
+            return html(`<input type="text" class="editable-category" readonly value="${cell}" />`);
             }
         },
 
@@ -36,9 +36,10 @@ const grid = new Grid( {
             name: "Əməliyyatlar",
             formatter: (cell, row) => {
                         const category_id = row.cells[0].data;
+                        const category_name = row.cells[1].data;
                          return html(
                                `<span style="display: flex; justify-content: space-between">` +
-                                    `<button data-csrf-token=${csrf_token} type="button" class="edit-btn" data-id=${category_id}>Redakta Et</button>`+
+                                    `<button data-csrf-token=${csrf_token} type="button" class="edit-btn" data-value=${category_name} data-id=${category_id}>Redakta Et</button>`+
                                `</span>`
                            );
                     }

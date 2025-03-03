@@ -7,7 +7,7 @@ import regex
 def filter_string_fields(string_data: str) -> str:
     if string_data != "":
         sanitized_name = sanitize_company(string_data)
-        return ' '.join(sanitized_name.lower().split())
+        return ' '.join(sanitized_name.split())
 
 
 def sanitize_company(company_name: str) -> str:

@@ -41,7 +41,7 @@ def edit_category(category_id):
         abort(404)
 
 
-@parameter_bp.route('/categories/update_category/<string:category_id>', methods=['POST'])
+@parameter_bp.route('/categories/update_category/<int:category_id>', methods=['POST'])
 @login_required
 def update_category(category_id):
     if current_user.role == "viewer" or current_user.role == "editor":

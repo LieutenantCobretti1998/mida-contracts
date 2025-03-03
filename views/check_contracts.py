@@ -26,10 +26,12 @@ def get_contract(contract_id):
     try:
         search_engine = SearchEngine(db.session, contract_id)
         search_result = search_engine.search_company_with_contract()
+        category = search_result.category.category_name
         additional_files = json.loads(search_result.pdf_file_paths) if search_result.pdf_file_paths else []
         return render_template("check_contract.html",
                                search_result=search_result,
                                contract_id=contract_id,
+                               category=category,
                                additional_files=additional_files
                                )
     except NoResultFound:
@@ -48,8 +50,19 @@ def edit_contract(contract_id):
         form.categories.choices = [(category.id, category.category_name) for category in categories]
         search_engine = SearchEngine(db.session, contract_id)
         search_result = search_engine.search_company_with_contract()
-        additional_files_data = enumerate(json.loads(search_result.pdf_file_paths)) if search_result.pdf_file_paths else []
-        additional_files = list(additional_files_data)
+        if search_result.pdf_file_paths:
+            file_paths = json.loads(search_result.pdf_file_paths)
+            # Create a list of tuples: (index, full file path, file name)
+            additional_files = [
+                (
+                    i,
+                    fp,
+                    os.path.basename(fp).split("_", 1)[1] if "_" in os.path.basename(fp) else os.path.basename(fp)
+                )
+                for i, fp in enumerate(file_paths)
+            ]
+        else:
+            additional_files = []
         form.categories.default = search_result.category_id
         form.start_date.default = search_result.date
         form.end_date.default = search_result.end_date
@@ -100,7 +113,6 @@ def update_contract(contract_id):
         end_date_changed = new_end_date is not None and new_end_date != original_end_date
         new_amount = form.amount.data
         additional_files = form.additional_files.data
-
         if not additional_files:
             for i, old_path in enumerate(old_additional_files):
                 field_name = f"updated_file_{i}"
@@ -111,8 +123,29 @@ def update_contract(contract_id):
                         flash(f"Fayl icazə verilən formatda deyil: {uploaded_file.filename}", "error")
                         return render_template('edit_contract.html', form=form, contract_id=contract_id,
                                                search_result=original_data, additional_files=old_additional_files )
-                    new_files[i] = filename_lower
+                    # Here you may want to append the new file's details to your lists/dicts for further processing
+                    # For example, adding to new_files and file_objects or directly appending to a list of file paths
+                    new_files[i] = make_unique(filename_lower)
                     file_objects[i] = uploaded_file
+
+            for i in range(len(old_additional_files), 5):
+                new_field = f"new_file_{i}"
+                new_file = request.files.get(new_field)
+                if new_file:
+                    new_filename = secure_filename(new_file.filename.lower())
+                    if not new_filename.endswith(allowed_extensions):
+                        flash(f"Fayl icazə verilən formatda deyil: {new_file.filename}", "error")
+                        return render_template(
+                            'edit_contract.html',
+                            form=form,
+                            contract_id=contract_id,
+                            search_result=original_data,
+                            additional_files=old_additional_files
+                        )
+                    # Here you may want to append the new file's details to your lists/dicts for further processing
+                    # For example, adding to new_files and file_objects or directly appending to a list of file paths
+                    new_files[i] = make_unique(new_filename)
+                    file_objects[i] = new_file
         else:
             additional_file_paths = []
             for additional_file in additional_files:
@@ -123,7 +156,7 @@ def update_contract(contract_id):
                 additional_file_paths.append(additional_file_path)
             serialized_file_paths = json.dumps(additional_file_paths)
             original_data.pdf_file_paths = serialized_file_paths
-
+        print(new_files)
         filename = ""
         if form.comments.data is not None:
             stripped_comments = form.comments.data.strip()
