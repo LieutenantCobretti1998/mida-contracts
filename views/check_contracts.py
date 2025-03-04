@@ -170,18 +170,45 @@ def update_contract(contract_id):
         if start_date_changed and end_date_changed:
             if new_start_date >= new_end_date:
                 flash("Başlanğıc tarixi bitmə tarixindən sonra və ya ona bərabər ola bilməz", "warning")
+                file_paths = json.loads(original_data.pdf_file_paths)
+                additional_files = [
+                    (
+                        i,
+                        fp,
+                        os.path.basename(fp).split("_", 1)[1] if "_" in os.path.basename(fp) else os.path.basename(fp)
+                    )
+                    for i, fp in enumerate(file_paths)
+                ]
                 return render_template('edit_contract.html', form=form, contract_id=contract_id,
-                                       search_result=original_data, additional_files=old_additional_files)
+                                       search_result=original_data, additional_files=additional_files)
         elif start_date_changed:
             if new_start_date >= original_end_date:
                 flash("Başlanğıc tarixi original bitmə tarixindən sonra və ya ona bərabər ola bilməz", "warning")
+                file_paths = json.loads(original_data.pdf_file_paths)
+                additional_files = [
+                    (
+                        i,
+                        fp,
+                        os.path.basename(fp).split("_", 1)[1] if "_" in os.path.basename(fp) else os.path.basename(fp)
+                    )
+                    for i, fp in enumerate(file_paths)
+                ]
                 return render_template('edit_contract.html', form=form, contract_id=contract_id,
-                                       search_result=original_data, additional_files=old_additional_files)
+                                       search_result=original_data, additional_files=additional_files)
         elif end_date_changed:
             if new_end_date <= original_start_date:
                 flash("Bitmə tarixi orijinal başlanğıc tarixindən əvvəl və ya ona bərabər ola bilməz", "warning")
+                file_paths = json.loads(original_data.pdf_file_paths)
+                additional_files = [
+                    (
+                        i,
+                        fp,
+                        os.path.basename(fp).split("_", 1)[1] if "_" in os.path.basename(fp) else os.path.basename(fp)
+                    )
+                    for i, fp in enumerate(file_paths)
+                ]
                 return render_template('edit_contract.html', form=form, contract_id=contract_id,
-                                       search_result=original_data, additional_files=old_additional_files)
+                                       search_result=original_data, additional_files=additional_files)
         if file:
             filename = secure_filename(make_unique(f"{file.filename}"))
         if (original_data.amount != new_amount) and new_amount:
@@ -195,8 +222,17 @@ def update_contract(contract_id):
                 flash(
                     "Yeni məbləğ orijinal məbləğdən az ola bilər. Qalan məbləği artırmaq üçün aktları silin",
                     "warning")
+                file_paths = json.loads(original_data.pdf_file_paths)
+                additional_files = [
+                    (
+                        i,
+                        fp,
+                        os.path.basename(fp).split("_", 1)[1] if "_" in os.path.basename(fp) else os.path.basename(fp)
+                    )
+                    for i, fp in enumerate(file_paths)
+                ]
                 return render_template('edit_contract.html', form=form, contract_id=contract_id,
-                                       search_result=original_data, additional_files=old_additional_files
+                                       search_result=original_data, additional_files=additional_files
                                        )
         data_dict = dict(
             company_name=filter_string_fields(
@@ -224,12 +260,31 @@ def update_contract(contract_id):
         else:
             db.session.rollback()
             flash(message, "warning")
+            # Create a list of tuples: (index, full file path, file name)
+            file_paths = json.loads(original_data.pdf_file_paths)
+            additional_files = [
+                (
+                    i,
+                    fp,
+                    os.path.basename(fp).split("_", 1)[1] if "_" in os.path.basename(fp) else os.path.basename(fp)
+                )
+                for i, fp in enumerate(file_paths)
+            ]
             return render_template('edit_contract.html', form=form, contract_id=contract_id,
-                                   search_result=original_data, additional_files=old_additional_files
+                                   search_result=original_data, additional_files=additional_files
                                    )
     else:
         flash("Doğrulama xətası. Zəhmət olmasa, bütün sahələri yoxlayın.", "error")
-        return render_template('edit_contract.html', form=form, contract_id=contract_id, search_result=original_data, additional_files=old_additional_files
+        file_paths = json.loads(original_data.pdf_file_paths)
+        additional_files = [
+            (
+                i,
+                fp,
+                os.path.basename(fp).split("_", 1)[1] if "_" in os.path.basename(fp) else os.path.basename(fp)
+            )
+            for i, fp in enumerate(file_paths)
+        ]
+        return render_template('edit_contract.html', form=form, contract_id=contract_id, search_result=original_data, additional_files=additional_files
                                )
 
 

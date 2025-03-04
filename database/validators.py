@@ -16,7 +16,7 @@ from configuration import PERCENTAGE_AMOUNT
 from database.models import *
 from abc import ABC
 from database.models import Companies, Category
-from forms.custom_validators import check_amount, NegativeAmountError
+from forms.custom_validators import check_amount, NegativeAmountError, add_contract_pdf
 
 
 class ValidatorWrapper(ABC):
@@ -410,8 +410,9 @@ class EditContract(ValidatorWrapper):
         return new_pdf_path
 
 
-    def change_additional_files_itself(self, old_files: str, additional_files: dict, file_objects: dict[int, "FileStorage"]) -> str:
+    def change_additional_files_itself(self, old_files: str, additional_files: dict, file_objects: dict[int, "FileStorage"], company_name: str) -> str:
         """
+        :param company_name
         :param file_objects:
         :param old_files: str
         :param additional_files: dict
@@ -424,6 +425,7 @@ class EditContract(ValidatorWrapper):
         max_index = max(len(old_file_paths), max(additional_files.keys(), default=-1) + 1)
 
         for i in range(max_index):
+            print(f"i = {i}, len(old_file_paths) = {len(old_file_paths)}")
             if i in additional_files:
                 new_file_name = additional_files[i]
                 # If there's an old file at this index, update it; otherwise, create a new file path
@@ -431,8 +433,7 @@ class EditContract(ValidatorWrapper):
                     new_file_path = self.change_pdf_itself(old_file_paths[i], new_file_name)
                 else:
                     # If no old file exists, create a new file path (using your logic from add_contract_pdf or similar)
-                    new_file_path = self.change_pdf_file_path(old_file_paths[i], new_file_name,
-                                                     original_data.company.company_name)
+                    new_file_path = add_contract_pdf(current_app.config['UPLOAD_FOLDER'], new_file_name, company_name)
                 updated_paths.append(new_file_path)
                 if i in file_objects:
                     file_obj = file_objects[i]
@@ -513,9 +514,9 @@ class EditContract(ValidatorWrapper):
                                                                                       file_operations,
                                                                                       company_id=existed_company_id
                                         )
-                                        new_files_paths = self.change_additional_pdf_files_paths(additional_files,
-                                                                                                 old_add_files,
-                                                                                                 file_operations)
+                                        new_files_paths = self.change_additional_pdf_files_paths(old_add_files,
+                                                                                                 file_operations,
+                                                                                                 company_id=existed_company_id)
                                         contract_to_update.company_id = existed_company_id
                                         contract_to_update.pdf_file_path = new_pdf_file_path
                                         contract_to_update.pdf_file_paths = new_files_paths
@@ -540,7 +541,8 @@ class EditContract(ValidatorWrapper):
                                         contract_to_update.company_id = existed_voen_id
                                         contract_to_update.pdf_file_path = new_pdf_file_path
                                         contract_to_update.pdf_file_paths = new_files_paths
-                                    except FileNotFoundError:
+                                    except FileNotFoundError as e:
+                                        print(e)
                                         return False, (
                                             "Fayl yolunda problem var. Fayl zədələnmiş və ya mövcud deyil. Zəhmət olmasa, əvvəlcə yeni bir PDF yükləyin"
                                             )
@@ -559,7 +561,8 @@ class EditContract(ValidatorWrapper):
                     elif key == "pdf_file_paths":
                         if value is not None:
                             try:
-                                new_additional_files = self.change_additional_files_itself(current_value, value, additional_file_objects)
+                                new_company_name = contract_to_update.company.company_name
+                                new_additional_files = self.change_additional_files_itself(current_value, value, additional_file_objects, new_company_name)
                                 setattr(contract_to_update, key, new_additional_files)
                             except FileNotFoundError:
                                 return False, "Fayl yolunda problem var. Fayl zədələnmiş və ya mövcud deyil."
@@ -1484,7 +1487,7 @@ class DashBoard(ValidatorWrapper):
         Get card information api for the tables in dashboard
         """
         today = datetime.today().date()
-        end_date_threshold = today + timedelta(days=90)
+        end_date_threshold = today + timedelta(days=120)
         contracts_in_ending = ((self.db_session.query(Contract)
                                 .filter(Contract.end_date <= end_date_threshold, Contract.end_date >= today))
         )

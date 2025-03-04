@@ -215,4 +215,13 @@ body {
   border-radius: 0.35rem;
 }
 
+.editable-category {
+  border: none;
+  outline: none;
+}
+.editable-category:focus {
+  outline: none;
+  box-shadow: none;
+}
+
 /*# sourceMappingURL=categories.css.map */

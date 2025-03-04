@@ -11,6 +11,8 @@
   width: 50%;
 }
 
+
+
 .categories {
   display: flex;
   flex-direction: column;
@@ -174,4 +176,14 @@
   height: 3rem;
   padding-left: 5px;
   border-radius: .35rem;
+}
+
+.editable-category {
+  border: none;
+  outline: none;
+
+  &:focus {
+    outline: none;
+    box-shadow: none;
+  }
 }

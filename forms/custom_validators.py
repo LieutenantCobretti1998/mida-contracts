@@ -54,7 +54,7 @@ def add_contract_pdf(directory: str, pdf_filename: str, company_name: str = None
         unique_filename = make_unique(f"{pdf_filename}")
         directory_folder = os.path.normpath(directory)
         file_path = os.path.join(directory_folder, unique_filename)
-
+    print(file_path)
     return file_path
 
 
