@@ -801,7 +801,7 @@ class EditCompany(EditContract):
         pattern = re.compile(r'(?<=\\contracts\\)[^\\]+(?=\\)')
         try:
             file_paths = json.loads(contract.pdf_file_paths)
-        except (TypeError, json.JSONDecodeError):
+        except (TypeError, ValueError):
             file_paths = []
 
         updated_paths = [pattern.sub(new_company_name, path) for path in file_paths]
