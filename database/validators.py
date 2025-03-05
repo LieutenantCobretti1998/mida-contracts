@@ -796,12 +796,24 @@ class EditCompany(EditContract):
         updated_path = pattern.sub(new_company_name, contract.pdf_file_path)
         setattr(contract, 'pdf_file_path', updated_path)
 
+    @staticmethod
+    def update_additional_paths(contract, new_company_name: str) -> None:
+        pattern = re.compile(r'(?<=\\contracts\\)[^\\]+(?=\\)')
+        try:
+            file_paths = json.loads(contract.pdf_file_paths)
+        except (TypeError, json.JSONDecodeError):
+            file_paths = []
+
+        updated_paths = [pattern.sub(new_company_name, path) for path in file_paths]
+        setattr(contract, 'pdf_file_paths', json.dumps(updated_paths))
+
     def update_company_pdf_and_path(self, new_company_name: str, old_company_name: str) -> None:
         company = self.db_session.query(Companies).filter_by(company_name=new_company_name).first()
         folder_updated = self.update_folder(new_company_name, old_company_name)
         if folder_updated:
             related_contracts = company.contracts
             list(map(lambda contract: self.update_path(contract, new_company_name), related_contracts))
+            list(map(lambda contract: self.update_additional_paths(contract, new_company_name), related_contracts))
 
     def update_data(self, changes: dict, pdf_file: flask = None, *args, **kwargs) -> tuple[bool, str]:
         """
