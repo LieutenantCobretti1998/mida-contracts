@@ -805,7 +805,7 @@ class EditCompany(EditContract):
             file_paths = []
 
         updated_paths = [pattern.sub(new_company_name, path) for path in file_paths]
-        setattr(contract, 'pdf_file_paths', json.dumps(updated_paths))
+        setattr(contract, 'pdf_file_paths', json.dumps(updated_paths, ensure_ascii=False))
 
     def update_company_pdf_and_path(self, new_company_name: str, old_company_name: str) -> None:
         company = self.db_session.query(Companies).filter_by(company_name=new_company_name).first()
