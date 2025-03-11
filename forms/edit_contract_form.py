@@ -30,7 +30,7 @@ class EditContractForm(CreateContractForm):
                                               whitespace_check])
     start_date = DateField("Başlama tarixi", validators=[Optional(), is_date_valid])
     end_date = DateField("Bitmə tarixi", validators=[Optional(), is_date_valid])
-    amount = DecimalField("Məbləğ", validators=[NumberRange(min=1, max=1000000000, message=amount_error_message),
+    amount = DecimalField("Məbləğ", validators=[NumberRange(min=0, max=1000000000, message=amount_error_message),
                                       Optional(),
                                       ])
 

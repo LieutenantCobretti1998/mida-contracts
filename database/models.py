@@ -21,7 +21,7 @@ class Companies(Base):
     bank_name = Column(VARCHAR())
     m_h = Column(VARCHAR())
     h_h = Column(VARCHAR())
-    swift = Column(VARCHAR(11), unique=True)
+    swift = Column(VARCHAR(11))
     email = Column(VARCHAR())
     telephone_number = Column(VARCHAR())
     address = Column(VARCHAR())

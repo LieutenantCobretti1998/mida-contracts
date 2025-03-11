@@ -5,7 +5,7 @@ from wtforms import StringField, SubmitField, DateField, DecimalField
 from flask_wtf.file import FileRequired, FileAllowed, FileField, MultipleFileField
 from wtforms.fields.choices import SelectField
 from wtforms.fields.simple import BooleanField, TextAreaField
-from wtforms.validators import DataRequired, NumberRange, Length, Optional
+from wtforms.validators import DataRequired, NumberRange, Length, Optional, InputRequired
 from forms.custom_validators import *
 
 
@@ -24,8 +24,8 @@ class CreateContractForm(FlaskForm):
                                                      message=symbol_error_message)])
     start_date = DateField("Başlama tarixi", validators=[DataRequired(message=empty_field)])
     end_date = DateField("Bitmə tarixi", validators=[DataRequired(message=empty_field)])
-    amount = DecimalField("Məbləğ", validators=[DataRequired(message=empty_field),
-                                                NumberRange(min=1, max=1000000000, message=amount_error_message)]
+    amount = DecimalField("Məbləğ", validators=[InputRequired(message=empty_field),
+                                                NumberRange(min=0, max=1000000000, message=amount_error_message)]
                           )
 
     is_adv_payer = BooleanField("Ədv ödəyicisi", validators=[Optional()])

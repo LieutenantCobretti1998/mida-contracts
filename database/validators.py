@@ -773,7 +773,7 @@ class EditCompany(EditContract):
         super().__init__(db_session, company_id)
         self.company_id = company_id
 
-    def update_company_voen_or_swift(self, key: str, value: str | int) -> InstrumentedAttribute | None:
+    def update_company_voen(self, key: str, value: str | int) -> InstrumentedAttribute | None:
         result = self.db_session.query(Companies).filter_by(**{key: value}).first()
         if result:
             return result.company_name
@@ -828,10 +828,10 @@ class EditCompany(EditContract):
         for key, value in changes.items():
             try:
                 if value != company_to_update_dict[key]:
-                    if key in ["voen", "swift", "company_name"]:
-                        check_voen_or_swift = self.update_company_voen_or_swift(key, value)
-                        if check_voen_or_swift:
-                            return False, f"Bu {key} artıq {check_voen_or_swift} ilə əlaqələndirilib."
+                    if key in ["voen", "company_name"]:
+                        check_voen = self.update_company_voen(key, value)
+                        if check_voen:
+                            return False, f"Bu {key} artıq {check_voen} ilə əlaqələndirilib."
                         setattr(company_to_update, key, value)
                         if key == "company_name":
                             self.update_company_pdf_and_path(value, company_to_update_dict["company_name"])
