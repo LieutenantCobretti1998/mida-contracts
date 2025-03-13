@@ -1527,6 +1527,7 @@ class DashBoard(ValidatorWrapper):
                                           .label('percentage_remained')).order_by(Contract.remained_amount.asc()).all()
         filtered_contracts = []
         for contract, remained_amount in contracts:
+            print(remained_amount)
             if remained_amount <= float(PERCENTAGE_AMOUNT):
                 filtered_contracts.append(contract)
             continue

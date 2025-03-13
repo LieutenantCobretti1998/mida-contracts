@@ -33,3 +33,9 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('login.login'))
+
+
+@login_bp.after_request
+def remove_session(response):
+    db.session.remove()
+    return response

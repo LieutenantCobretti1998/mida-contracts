@@ -115,5 +115,5 @@ def create_app() -> Flask:
     if not scheduler.running:
         scheduler.start()
     # Schedule the job to run daily at midnight
-    scheduler.add_job(func=scheduler_job, trigger='cron', hour="*", minute=0, id='update_expired_contracts')
+    scheduler.add_job(func=scheduler_job, trigger='cron', hour="*", minute=0, id='update_expired_contracts', max_instances=1)
     return app
